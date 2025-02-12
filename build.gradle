@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.8'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.j30n'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot 기본 스타터
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // MySQL 데이터베이스 드라이버
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Lombok (코드 간결화)
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 개발용 편의 도구 (자동 리로드 등)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Spring Security & JWT (로그인 및 인증)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'  // JSON 처리를 위한 Jackson 구현체
+
+    // AI 연동 (Flask API 호출)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // Redis (장바구니 캐싱)
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // API 문서화 (Swagger 대체 - OpenAPI)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    // 테스트 관련
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
