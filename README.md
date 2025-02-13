@@ -58,31 +58,31 @@
 
 1. **구조 패턴**
 
-   - **Adapter Pattern**
-     - 외부 API 연동 (알라딘 API, GPT API)
-     - 헥사고날 아키텍처의 어댑터 구현
-   - **Facade Pattern**
-     - AI 요약 프로세스 단순화
-     - 복잡한 비즈니스 로직 캡슐화
+    - **Adapter Pattern**
+        - 외부 API 연동 (알라딘 API, GPT API)
+        - 헥사고날 아키텍처의 어댑터 구현
+    - **Facade Pattern**
+        - AI 요약 프로세스 단순화
+        - 복잡한 비즈니스 로직 캡슐화
 
 2. **생성 패턴**
 
-   - **Builder Pattern**
-     - 요약 대시보드 객체 생성
-     - API 응답 객체 생성
+    - **Builder Pattern**
+        - 요약 대시보드 객체 생성
+        - API 응답 객체 생성
 
 3. **행위 패턴**
 
-   - **Strategy Pattern**
-     - 요약 알고리즘 전략 선택
-   - **Observer Pattern**
-     - 알림 이벤트 처리
+    - **Strategy Pattern**
+        - 요약 알고리즘 전략 선택
+    - **Observer Pattern**
+        - 알림 이벤트 처리
 
 4. **아키텍처 패턴**
-   - **Hexagonal Architecture**
-     - 도메인 중심 설계
-     - 외부 시스템과의 결합도 감소
-       - 기술 스토크스 언어 확장성 극대화
+    - **Hexagonal Architecture**
+        - 도메인 중심 설계
+        - 외부 시스템과의 결합도 감소
+            - 기술 스토크스 언어 확장성 극대화
 
 ---
 
@@ -228,10 +228,10 @@
 
 1. 회원가입 API
 
-   - `POST /api/users`
+    - `POST /api/users`
 
 2. 로그아웃 API 추가
-   - `DELETE /api/auth/token`
+    - `POST /api/v1/auth/logout`
 
 #### 3. 상품 관리
 
@@ -240,9 +240,9 @@
 - **Endpoint**: `GET /api/products/search`
 - **설명**: 키워드로 도서를 검색합니다
 - **Parameters**:
-  - `keyword` (필수): 검색어 (도서명, 저자명)
-  - `page` (선택): 페이지 번호 (기본값: 0)
-  - `size` (선택): 페이지당 결과 수 (기본값: 10)
+    - `keyword` (필수): 검색어 (도서명, 저자명)
+    - `page` (선택): 페이지 번호 (기본값: 0)
+    - `size` (선택): 페이지당 결과 수 (기본값: 10)
 - **Response**
   ```json
   {
