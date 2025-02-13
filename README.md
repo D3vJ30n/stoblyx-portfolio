@@ -48,11 +48,11 @@
 
 ### 아키텍처 다이어그램
 
-![ARCHITECTURE](./docs/image/architecture_V2.png)
+![ARCHITECTURE](./docs/image/architecture_V3.png)
 
 ### 시스템 순서도
 
-![FLOWCHART](./docs/image/flowchart_V2.png)
+![FLOWCHART](./docs/image/flowchart_V3.png)
 
 ### 핵심 디자인 패턴
 
@@ -157,7 +157,7 @@
 
 ### ERD
 
-![ERD](./docs/image/dbdiagram_V4.png)
+![ERD](./docs/image/dbdiagram_V6.png)
 
 ---
 
@@ -172,51 +172,22 @@
 
 #### 1. 회원 관리
 
-##### 회원가입 API
+1. 회원가입 API
+    - `POST /api/users`
 
-- **Endpoint**: `POST /api/users/signup`
-- **설명**: 새로운 사용자를 등록합니다
-- **Request Body**
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "password123"
-  }
-  ```
-- **Response**
-  ```json
-  {
-    "result": "SUCCESS",
-    "message": "회원가입이 완료되었습니다",
-    "data": {
-      "userId": 1,
-      "email": "user@example.com"
-    }
-  }
-  ```
+2. 로그인 API
+    - `POST /api/auth/token`
 
-##### 로그인 API
+3. 로그아웃 API 추가
+    - `DELETE /api/auth/token`
 
-- **Endpoint**: `POST /api/users/login`
-- **설명**: 사용자 인증 및 JWT 토큰 발급
-- **Request Body**
-  ```json
-  {
-    "email": "user@example.com",
-    "password": "password123"
-  }
-  ```
-- **Response**
-  ```json
-  {
-    "result": "SUCCESS",
-    "message": "로그인 성공",
-    "data": {
-      "accessToken": "eyJhbGciOiJIUzI1NiJ9...",
-      "refreshToken": "eyJhbGciOiJIUzI1NiJ9..."
-    }
-  }
-  ```
+4. 상품 검색 API
+    - `GET /api/books?query=검색어`
+
+5. 장바구니 API
+    - `POST /api/users/{userId}/cart`
+    - `POST /api/cart`
+    - `DELETE /api/cart/{bookId}`
 
 #### 2. 상품 관리
 
@@ -302,6 +273,141 @@
     }
   }
   ```
+
+---
+
+### **5. 즐겨찾기(좋아요) API**
+
+#### **좋아요 추가 API**
+
+- **Endpoint**: `POST /api/favorites`
+- **설명**: 사용자가 특정 도서를 즐겨찾기에 추가합니다.
+- **Request Body**
+  ```json
+  {
+    "bookId": 1
+  }
+  ```
+- **Response**
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "도서를 즐겨찾기에 추가했습니다."
+  }
+  ```
+
+---
+
+#### **좋아요 삭제 API**
+
+- **Endpoint**: `DELETE /api/favorites/{bookId}`
+- **설명**: 사용자가 특정 도서를 즐겨찾기에서 제거합니다.
+- **Response**
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "도서를 즐겨찾기에서 삭제했습니다."
+  }
+  ```
+
+---
+
+#### **좋아요 조회 API**
+
+- **Endpoint**: `GET /api/favorites`
+- **설명**: 사용자가 즐겨찾기한 도서 목록을 조회합니다.
+- **Response**
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "즐겨찾기 목록 조회 성공",
+    "data": [
+      {
+        "bookId": 1,
+        "title": "스프링 부트 실전",
+        "author": "김개발"
+      },
+      {
+        "bookId": 2,
+        "title": "자바의 정석",
+        "author": "남궁성"
+      }
+    ]
+  }
+  ```
+
+`Redis 캐싱 적용 가능성`
+
+현재 즐겨찾기(좋아요) 기능은 MySQL 기반으로 동작하고 있습니다. 사용자의 즐겨찾기한 도서 목록을 빠르게 조회하기 위해 Redis 캐싱을 적용하였습니다. 이 방식은 사용자의 userId를 기반으로 즐겨찾기
+목록을 캐싱하여 API 요청 시 MySQL 조회 부하를 줄이고 응답 속도를 향상시킵니다.
+
+하이라이트 API 부분만 따로 정리해서 제공해드립니다.
+
+---
+
+#### **6. 하이라이트 API**
+
+##### **하이라이트 추가 API**
+
+- **Endpoint**: `POST /api/highlights`
+- **설명**: 사용자가 특정 도서에서 중요한 문장을 하이라이트합니다.
+- **Request Body**
+  ```json
+  {
+    "bookId": 1,
+    "content": "이 문장은 중요한 내용입니다.",
+    "pageNumber": 42
+  }
+  ```
+- **Response**
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "하이라이트가 추가되었습니다."
+  }
+  ```
+
+---
+
+##### **하이라이트 삭제 API**
+
+- **Endpoint**: `DELETE /api/highlights/{highlightId}`
+- **설명**: 사용자가 저장한 특정 하이라이트를 삭제합니다.
+- **Response**
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "하이라이트가 삭제되었습니다."
+  }
+  ```
+
+---
+
+##### **하이라이트 조회 API**
+
+- **Endpoint**: `GET /api/highlights/{bookId}`
+- **설명**: 사용자가 특정 도서에서 저장한 하이라이트 목록을 조회합니다.
+- **Response**
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "하이라이트 목록 조회 성공",
+    "data": [
+      {
+        "highlightId": 1,
+        "content": "이 문장은 중요한 내용입니다.",
+        "pageNumber": 42
+      },
+      {
+        "highlightId": 2,
+        "content": "이 부분은 다시 읽어볼 가치가 있습니다.",
+        "pageNumber": 128
+      }
+    ]
+  }
+  ```
+
+---
 
 ### 공통 사항
 
