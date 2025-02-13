@@ -48,7 +48,7 @@
 
 ### 아키텍처 다이어그램
 
-![ARCHITECTURE](./docs/image/architecture.png)
+![ARCHITECTURE](./docs/image/architecture_V2.png)
 
 ### 시스템 순서도
 
