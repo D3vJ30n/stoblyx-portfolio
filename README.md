@@ -187,7 +187,58 @@
 #### 인증
 
 - Bearer Token 방식의 JWT 인증 사용
-- 인증이 필요한 API는 🔒 표시
+
+### API 인증 요구사항
+
+모든 API 엔드포인트는 다음과 같이 인증이 필요한 경우 [인증필요] 로 표시됩니다.
+
+1. 인증 API
+
+- 로그인: POST /api/v1/auth/login
+- 로그아웃: POST /api/v1/auth/logout [인증필요]
+- 토큰 갱신: POST /api/v1/auth/refresh [인증필요]
+
+2. 사용자 API
+
+- 회원가입: POST /api/v1/users
+- 프로필 조회: GET /api/v1/users/{id} [인증필요]
+- 프로필 수정: PUT /api/v1/users/{id} [인증필요]
+- 즐겨찾기 목록: GET /api/v1/users/{id}/favorites [인증필요]
+
+3. 도서 API
+
+- 도서 검색: GET /api/v1/books?query={검색어}
+- 도서 상세: GET /api/v1/books/{id}
+
+4. 장바구니 API
+
+- 장바구니 조회: GET /api/v1/users/{id}/cart [인증필요]
+- 장바구니 추가: POST /api/v1/users/{id}/cart [인증필요]
+- 장바구니 삭제: DELETE /api/v1/users/{id}/cart/{bookId} [인증필요]
+
+5. 요약 API
+
+- 요약 생성: POST /api/v1/books/{id}/summary [인증필요]
+- 요약 조회: GET /api/v1/books/{id}/summary [인증필요]
+
+6. 대시보드 API
+
+- 대시보드 조회: GET /api/v1/users/{id}/dashboard [인증필요]
+
+7. 좋아요/후기 API
+
+- 좋아요 추가: POST /api/v1/books/{id}/likes [인증필요]
+- 좋아요 취소: DELETE /api/v1/books/{id}/likes [인증필요]
+- 후기 작성: POST /api/v1/books/{id}/reviews [인증필요]
+- 후기 수정: PUT /api/v1/books/{id}/reviews/{reviewId} [인증필요]
+- 후기 삭제: DELETE /api/v1/books/{id}/reviews/{reviewId} [인증필요]
+- 후기 목록 조회: GET /api/v1/books/{id}/reviews
+
+8. 하이라이트 API
+
+- 하이라이트 추가: POST /api/v1/books/{id}/highlights [인증필요]
+- 하이라이트 삭제: DELETE /api/v1/books/{id}/highlights/{highlightId} [인증필요]
+- 하이라이트 목록 조회: GET /api/v1/books/{id}/highlights [인증필요]
 
 #### 에러 응답
 
@@ -378,8 +429,6 @@
 
 현재 즐겨찾기(좋아요) 기능은 MySQL 기반으로 동작하고 있습니다. 사용자의 즐겨찾기한 도서 목록을 빠르게 조회하기 위해 Redis 캐싱을 적용하였습니다. 이 방식은 사용자의 userId를 기반으로 즐겨찾기
 목록을 캐싱하여 API 요청 시 MySQL 조회 부하를 줄이고 응답 속도를 향상시킵니다.
-
-하이라이트 API 부분만 따로 정리해서 제공해드립니다.
 
 #### **7. 하이라이트 API**
 
