@@ -50,7 +50,7 @@
 
 ![ARCHITECTURE](./docs/image/architecture_V3.png)
 
-### 시스템 순서도
+### 시스템 흐름도
 
 ![FLOWCHART](./docs/image/flowchart_V3.png)
 
