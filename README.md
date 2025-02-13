@@ -48,38 +48,41 @@
 
 ### 아키텍처 다이어그램
 
-![ARCHITECTURE](./docs/image/architecture_V3.png)
+![ARCHITECTURE](docs/images/architecture_V3.png)
 
 ### 시스템 흐름도
 
-![FLOWCHART](./docs/image/flowchart_V3.png)
+![FLOWCHART](docs/images/flowchart_V3.png)
 
 ### 핵심 디자인 패턴
 
 1. **구조 패턴**
-    - **Adapter Pattern**
-        - 외부 API 연동 (알라딘 API, GPT API)
-        - 헥사고날 아키텍처의 어댑터 구현
-    - **Facade Pattern**
-        - AI 요약 프로세스 단순화
-        - 복잡한 비즈니스 로직 캡슐화
+
+   - **Adapter Pattern**
+     - 외부 API 연동 (알라딘 API, GPT API)
+     - 헥사고날 아키텍처의 어댑터 구현
+   - **Facade Pattern**
+     - AI 요약 프로세스 단순화
+     - 복잡한 비즈니스 로직 캡슐화
 
 2. **생성 패턴**
-    - **Builder Pattern**
-        - 요약 대시보드 객체 생성
-        - API 응답 객체 생성
+
+   - **Builder Pattern**
+     - 요약 대시보드 객체 생성
+     - API 응답 객체 생성
 
 3. **행위 패턴**
-    - **Strategy Pattern**
-        - 요약 알고리즘 전략 선택
-    - **Observer Pattern**
-        - 알림 이벤트 처리
+
+   - **Strategy Pattern**
+     - 요약 알고리즘 전략 선택
+   - **Observer Pattern**
+     - 알림 이벤트 처리
 
 4. **아키텍처 패턴**
-    - **Hexagonal Architecture**
-        - 도메인 중심 설계
-        - 외부 시스템과의 결합도 감소
-            - 기술 스토크스 언어 확장성 극대화
+   - **Hexagonal Architecture**
+     - 도메인 중심 설계
+     - 외부 시스템과의 결합도 감소
+       - 기술 스토크스 언어 확장성 극대화
 
 ---
 
@@ -157,48 +160,89 @@
 
 ### ERD
 
-![ERD](./docs/image/dbdiagram_V6.png)
+![ERD](docs/images/dbdiagram_V6.png)
 
 ---
 
 ## 4. API 문서화
 
-### API 문서 접근 방법
+### 공통 사항
 
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- OpenAPI 명세: `http://localhost:8080/v3/api-docs`
+#### API 버전
 
-### 주요 API 상세
+- 모든 API는 `/api/v1`을 기본 경로로 사용
+- 버전 변경 시 하위 호환성 유지
+- 새로운 버전은 `/api/v2/...` 형식으로 제공
 
-#### 1. 회원 관리
+#### 표준 응답 형식
+
+```json
+{
+  "result": "SUCCESS/ERROR",
+  "message": "응답 메시지",
+  "data": "응답 데이터"
+}
+```
+
+#### 인증
+
+- Bearer Token 방식의 JWT 인증 사용
+- 인증이 필요한 API는 🔒 표시
+
+#### 에러 응답
+
+```json
+{
+  "result": "ERROR",
+  "message": "에러 메시지",
+  "data": null
+}
+```
+
+### API 목록
+
+#### 1. 인증 API
+
+##### 로그인
+
+- **Endpoint**: `POST /api/v1/auth/login`
+- **Request Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "result": "SUCCESS",
+    "message": "로그인 성공",
+    "data": {
+      "token": "eyJhbGciOiJ..."
+    }
+  }
+  ```
+
+#### 2. 회원 관리
 
 1. 회원가입 API
-    - `POST /api/users`
 
-2. 로그인 API
-    - `POST /api/auth/token`
+   - `POST /api/users`
 
-3. 로그아웃 API 추가
-    - `DELETE /api/auth/token`
+2. 로그아웃 API 추가
+   - `DELETE /api/auth/token`
 
-4. 상품 검색 API
-    - `GET /api/books?query=검색어`
-
-5. 장바구니 API
-    - `POST /api/users/{userId}/cart`
-    - `POST /api/cart`
-    - `DELETE /api/cart/{bookId}`
-
-#### 2. 상품 관리
+#### 3. 상품 관리
 
 ##### 상품 검색 API
 
 - **Endpoint**: `GET /api/products/search`
 - **설명**: 키워드로 도서를 검색합니다
 - **Parameters**:
-    - `keyword` (필수): 검색어 (도서명, 저자명)
-    - `page` (선택): 페이지 번호 (기본값: 0)
-    - `size` (선택): 페이지당 결과 수 (기본값: 10)
+  - `keyword` (필수): 검색어 (도서명, 저자명)
+  - `page` (선택): 페이지 번호 (기본값: 0)
+  - `size` (선택): 페이지당 결과 수 (기본값: 10)
 - **Response**
   ```json
   {
@@ -219,7 +263,7 @@
   }
   ```
 
-#### 3. AI 기능
+#### 4. AI 기능
 
 ##### AI 요약 API
 
@@ -244,7 +288,7 @@
   }
   ```
 
-#### 4. 요약 대시보드 API
+#### 5. 요약 대시보드 API
 
 ##### 대시보드 조회 API
 
@@ -274,9 +318,7 @@
   }
   ```
 
----
-
-### **5. 즐겨찾기(좋아요) API**
+### **6. 즐겨찾기(좋아요) API**
 
 #### **좋아요 추가 API**
 
@@ -296,8 +338,6 @@
   }
   ```
 
----
-
 #### **좋아요 삭제 API**
 
 - **Endpoint**: `DELETE /api/favorites/{bookId}`
@@ -310,11 +350,9 @@
   }
   ```
 
----
-
 #### **좋아요 조회 API**
 
-- **Endpoint**: `GET /api/favorites`
+- **Endpoint**: `GET  /api/users/{id}/favorites`
 - **설명**: 사용자가 즐겨찾기한 도서 목록을 조회합니다.
 - **Response**
   ```json
@@ -343,9 +381,7 @@
 
 하이라이트 API 부분만 따로 정리해서 제공해드립니다.
 
----
-
-#### **6. 하이라이트 API**
+#### **7. 하이라이트 API**
 
 ##### **하이라이트 추가 API**
 
@@ -367,8 +403,6 @@
   }
   ```
 
----
-
 ##### **하이라이트 삭제 API**
 
 - **Endpoint**: `DELETE /api/highlights/{highlightId}`
@@ -380,8 +414,6 @@
     "message": "하이라이트가 삭제되었습니다."
   }
   ```
-
----
 
 ##### **하이라이트 조회 API**
 
@@ -407,33 +439,15 @@
   }
   ```
 
----
+### HTTP 상태 코드
 
-### 공통 사항
-
-- **인증**: Bearer Token 방식의 JWT 인증 사용
-- **에러 응답 형식**
-  ```json
-  {
-    "result": "ERROR",
-    "message": "에러 메시지",
-    "data": null
-  }
-  ```
-- **HTTP 상태 코드**
-    - 200: 성공
-    - 201: 생성 성공
-    - 400: 잘못된 요청
-    - 401: 인증 실패
-    - 403: 권한 없음
-    - 404: 리소스 없음
-    - 500: 서버 에러
-
-### API 버전 관리
-
-- 현재 버전: v1
-- 버전 변경 시 하위 호환성 유지
-- 새로운 버전은 `/api/v2/...` 형식으로 제공
+- 200: 성공
+- 201: 생성 성공
+- 400: 잘못된 요청
+- 401: 인증 실패
+- 403: 권한 없음
+- 404: 리소스 없음
+- 500: 서버 에러
 
 ### 테스트 환경
 
@@ -588,7 +602,7 @@ Copyright (c) 2025 Booksum. All rights reserved.
 
 ### 배포 아키텍처
 
-![Deployment Architecture](./docs/image/deployment.png)
+![Deployment Architecture](docs/images/deployment.png)
 
 ### 배포 환경
 
@@ -605,6 +619,7 @@ Copyright (c) 2025 Booksum. All rights reserved.
 
 2. 환경 변수 설정
    `.env.example` 파일을 `.env`로 복사한 후, 아래 환경 변수를 설정하세요.
+
    ```
    SPRING_PROFILES_ACTIVE=prod
    DB_URL=${KOYEB_MYSQL_URL}
