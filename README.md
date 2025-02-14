@@ -884,4 +884,4 @@ ex) `https://stoblyx.koyeb.app`
 - **출처 명시 필수**: 원본을 유지하더라도 반드시 출처를 밝혀야 함
 
 © 2025 Stoblyx.  
-이 프로젝트는 **[CC BY-NC-ND 4.0 라이선스](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko)**에 따라 보호됩니다.
+이 프로젝트는 [CC BY-NC-ND 4.0 라이선스](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko)에 따라 보호됩니다.
