@@ -1,14 +1,18 @@
-## Booksum - AI 기반 독서 숏폼 커뮤니티 플랫폼
+## 스토블릭스 (Stoblyx) - 이야기의 오벨리스크
 
-"기억에 남는 글귀, 당신의 인사이트를 공유하세요!"  
-Booksum은 단순한 독서 기록을 넘어, 책을 매개로 사람과 사람을 연결하는 AI 기반 독서 커뮤니티를 제공합니다.  
-사용자는 기억에 남는 글귀나 인용문을 검색하고, AI가 추천하는 관련 영상을 시청하며, 다른 독자와 독서 경험을 공유할 수 있습니다.
+### **Stoblyx = Story + Obelisk**
+
+**“책 속의 한 문장은 사라지지 않는다. 그것은 오벨리스크처럼 남아, 사람들에게 영감을 준다.”**
+
+책 속 문장 하나하나가 디지털 기념비(Obelisk)처럼 기억되고, AI를 통해 숏폼 영상으로 재탄생하는 곳.
+
+과거, 현재, 미래를 잇는 독서의 타임캡슐.
 
 ---
 
 ### 1. 프로젝트 개요
 
-**프로젝트명:** Booksum (북썸)
+**프로젝트명:** 스토블릭스 (Stoblyx)
 
 **개발 기간:** 1개월 (2025년 2월 ~ 2025년 3월)
 
@@ -49,7 +53,7 @@ Booksum은 단순한 독서 기록을 넘어, 책을 매개로 사람과 사람�
 
 ### 시스템 흐름도
 
-![flowchart](docs/images/flowchart_V4.png)
+![flowchart](docs/images/flowchart_V5.png)
 
 ---
 
@@ -826,7 +830,7 @@ src/
 
 ### 10. 라이선스
 
-Copyright (c) 2025 Booksum.
+Copyright (c) 2025 스토블릭스.
 All rights reserved.
 
 이 프로젝트는 개인 포트폴리오 용도로 제작되었습니다.
@@ -869,4 +873,4 @@ All rights reserved.
 
 #### 배포 URL
 
-ex) `https://booksum.koyeb.app`
+ex) `https://스토블릭스.koyeb.app`
