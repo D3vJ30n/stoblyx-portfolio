@@ -22,7 +22,10 @@
 - Database: MySQL 8.0
 - Cache: Redis 7.0
 - Security: JWT, Spring Security
-- AI Integration: OpenAI API(무료 서비스 이용)
+- AI Integration
+    - 텍스트 요약: KoBART (한국어 최적화 오픈소스 모델)
+    - 영상 생성: Pika Labs (AI 기반 숏폼 영상 생성, 실시간 생성 X)
+    - 음성 변환: Google Cloud TTS (텍스트 음성 변환, 실시간 생성 X)
 - Deployment: Koyeb
 
 **아키텍처:** 헥사고날 아키텍처 (Hexagonal Architecture / Ports and Adapters)
@@ -107,7 +110,7 @@
 | **1위~3위**   | AI 추천 문구 영상 커스텀 제작 + 독서 상품권 5만원 |
 | **4위~10위**  | 독서 상품권 3만원                      |
 | **11위~30위** | 전자책 쿠폰 2만원                      |
-| **31위~50위** | 독서 포인트 1만점 (Booksum 내 사용 가능)    |
+| **31위~50위** | 독서 포인트 1만점 (Stoblyx 내 사용 가능)    |
 
 **랭킹 리셋 주기:** **매월 1일**
 
@@ -258,7 +261,7 @@
 
 #### **1. User (사용자)**
 
-사용자는 Booksum 플랫폼을 이용하는 회원을 의미합니다. 이메일과 비밀번호를 사용하여 인증되며, 문구 저장, 좋아요, 댓글 작성 등의 활동을 수행할 수 있습니다.
+사용자는 Stoblyx 플랫폼을 이용하는 회원을 의미합니다. 이메일과 비밀번호를 사용하여 인증되며, 문구 저장, 좋아요, 댓글 작성 등의 활동을 수행할 수 있습니다.
 
 **주요 속성**
 
@@ -557,61 +560,94 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 
 ---
 
-### **6. 보안 및 확장성 고려 사항**
+### 6. 보안 및 확장성 고려 사항
 
 ---
-
-### **보안 구현**
 
 #### **1. 인증 및 인가**
 
-- Booksum은 **JWT(Json Web Token) 기반 인증 시스템**을 적용하여 사용자 인증 및 권한 관리를 수행합니다.
-- 회원가입 및 로그인 시 **Access Token과 Refresh Token을 분리 운영**하며, Refresh Token은 서버 측(예: Redis)에서 관리하여 무단 접근을 방지합니다.
-- 역할(Role) 기반 접근 제어(RBAC)를 적용하여 **일반 사용자(USER)와 관리자(ADMIN)의 권한을 구분**합니다.
-- 인증이 필요한 API는 `@PreAuthorize` 또는 `@Secured` 애노테이션을 사용하여 보호합니다.
-
-#### **2. JWT 토큰 관리**
-
-- **JWT 서명(Signature) 검증**을 통해 위변조 여부를 확인하고, 유효하지 않은 토큰에 대해서는 `401 Unauthorized` 응답을 반환합니다.
-- **Access Token의 유효 기간을 짧게 설정**하고, Refresh Token을 이용해 재발급하는 방식으로 보안성을 강화합니다.
-- 사용자가 로그아웃할 경우 **Refresh Token을 무효화하는 기능**을 적용하여 탈취된 토큰의 악용을 방지합니다.
-- Redis를 활용하여 **블랙리스트 처리된 JWT 토큰을 저장**하고, 만료된 토큰이 사용되지 않도록 관리합니다.
-
-#### **3. 데이터 암호화**
-
-- 사용자 비밀번호는 **BCrypt 해싱 알고리즘을 적용**하여 안전하게 저장합니다.
-- **AES-256 또는 RSA 암호화를 적용**하여 사용자 개인정보(예: 이메일, 프로필 정보)를 보호합니다.
-- 클라이언트와 서버 간의 모든 데이터 전송은 **HTTPS를 적용**하여 보안을 강화합니다.
-
-#### **4. XSS(크로스사이트 스크립팅) 방지**
-
-- Booksum은 **사용자 입력값 검증을 강화**하여 악성 스크립트 삽입을 방지합니다.
-- XSS 공격을 방지하기 위해, **입력값 필터링과 Escape 처리**를 적용합니다.
-- Spring Security의 **Content Security Policy(CSP) 설정**을 통해 불필요한 JavaScript 실행을 차단합니다.
+- **개선 사항**
+    - **JWT 서명 알고리즘 명시**
+      ```markdown
+      - JWT 서명 알고리즘으로 HMAC SHA256을 사용하여 토큰 무결성 보장
+      ```  
+    - **RBAC 구현 예시 추가**
+      ```markdown
+      - 관리자 전용 API는 `@PreAuthorize("hasRole('ADMIN')")` 애노테이션으로 접근 제한  
+      ```  
 
 ---
 
-### **확장성 설계**
+#### **2. JWT 토큰 관리**
 
-#### **1. 캐시 계층 (Caching Layer)**
+- **개선 사항**
+    - **Access Token 유효 기간 구체화**
+      ```markdown
+      - Access Token 유효 기간: 30분
+      - Refresh Token 유효 기간: 7일
+      ```  
+    - **로그아웃 시 Access Token 처리**
+      ```markdown
+      - 로그아웃 시 Access Token의 남은 유효 시간을 Redis에 저장하여 강제 만료 처리  
+      ```  
 
-- Booksum은 **Redis를 캐싱 레이어로 활용**하여 API 응답 속도를 개선합니다.
-- 주요 캐싱 대상은 다음과 같습니다.
-    - **인기 문구 목록**: 자주 조회되는 문구 데이터를 캐싱하여 성능을 최적화합니다.
-    - **사용자 검색 기록**: 빠른 검색 결과 제공을 위해 최근 검색어를 캐싱합니다.
-    - **AI 추천 결과**: 추천 시스템의 연산 부하를 줄이기 위해 결과를 캐싱합니다.
-    - **인증 토큰 저장**: Refresh Token을 Redis에서 관리하여 인증 프로세스를 개선합니다.
-- **TTL(Time-To-Live) 정책을 적용하여 캐시 데이터를 자동 갱신**하도록 설정합니다.
+---
 
-#### **2. 비동기 처리 (Asynchronous Processing)**
+#### **3. 데이터 암호화**
 
-- Booksum은 대용량 트래픽을 처리하기 위해 **비동기 이벤트 기반 아키텍처**를 적용하였습니다.
-- Spring의 `@Async` 또는 `CompletableFuture`를 활용하여 **시간이 오래 걸리는 작업을 비동기 처리**합니다.
-- 메시지 큐(Message Queue) 시스템(RabbitMQ 또는 Kafka)을 도입하여 **트래픽이 집중되는 기능을 분산 처리**합니다.
-- 비동기 처리가 필요한 주요 기능은 다음과 같습니다.
-    - **AI 기반 문구 추천**: AI가 분석한 추천 결과를 비동기적으로 생성 및 저장합니다.
-    - **이메일 및 푸시 알림 전송**: 사용자 알림 시스템을 비동기 이벤트 기반으로 설계하였습니다.
-    - **인기 문구 랭킹 업데이트**: 일정 주기마다 문구 랭킹을 계산하여 캐싱합니다.
+- **개선 사항**
+    - **암호화 대상 필드 명시**
+      ```markdown
+      - 사용자 이메일: AES-256 암호화 적용  
+      - 프로필 정보: RSA를 이용한 암호화  
+      ```  
+    - **HTTPS 추가 설명**
+      ```markdown
+      - TLS 1.3 프로토콜 적용 및 Let's Encrypt 인증서 사용  
+      ```  
+
+---
+
+#### **4. XSS 방지**
+
+- **개선 사항**
+    - **입력값 검증 예시**
+      ```markdown
+      - 사용자 입력값에 대해 정규식(`^[a-zA-Z0-9가-힣 ]*$`)으로 특수문자 필터링  
+      ```  
+    - **CSP 정책 명시**
+      ```markdown
+      - `Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted-cdn.com`  
+      ```  
+
+---
+
+#### **5. 캐시 계층**
+
+- **개선 사항**
+    - **TTL 구체화**
+      ```markdown
+      - 인기 문구 목록: 1시간
+      - AI 추천 결과: 24시간
+      ```  
+    - **캐시 전략 명시**
+      ```markdown
+      - Cache-Aside 전략 적용: 캐시 미스 시 DB 조회 후 결과 캐싱  
+      ```  
+
+---
+
+#### **6. 비동기 처리**
+
+- **개선 사항**
+    - **메시지 큐 선택 이유**
+      ```markdown
+      - **RabbitMQ** 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수  
+      ```  
+    - **재시도 정책 추가**
+      ```markdown
+      - 작업 실패 시 최대 3회 재시도, 지수 백오프(Exponential Backoff) 적용  
+      ```
 
 ---
 
@@ -619,25 +655,10 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 
 ex)
 
-#### 1. JPA N+1 문제 해결
+#### 1. AI 모델 통합 지연
 
-- **문제 상황**: 문구 목록 조회 시 연관된 사용자 정보를 가져오는 과정에서 N+1 쿼리 발생
-- **해결 방안**
-
-#### 2. 동시성 이슈
-
-- **문제 상황**: 좋아요 카운트 업데이트 시 동시성 문제 발생
-- **해결 방안**
-
-#### 3. 대용량 트래픽 처리
-
-- **문제 상황**: 인기 문구 조회 시 DB 부하 발생
-- **해결 방안**
-
-#### 4. 메모리 누수
-
-- **문제 상황**: 이미지 처리 시 메모리 누수 발생
-- **해결 방안**
+- **문제 상황**: KoBART 모델 로딩 시간이 길어 API 응답 지연
+- **해결 방안**: 모델 초기화를 비동기로 처리하고, 추론 시 GPU 가속 활용
 
 ---
 
@@ -650,7 +671,6 @@ ex)
     - JDK 17
     - MySQL 8.0
     - Redis 7.0
-    - Docker (선택사항)
 
 2. **환경변수 설정**
 
@@ -659,9 +679,9 @@ ex)
 1. **데이터베이스 설정**
 
    ```sql
-   CREATE DATABASE booksum_data;
-   CREATE USER 'booksum'@'localhost' IDENTIFIED BY 'your_password';
-   GRANT ALL PRIVILEGES ON booksum_data.* TO 'booksum'@'localhost';
+   CREATE DATABASE stoblyx_db;
+   CREATE USER 'stoblyx'@'localhost' IDENTIFIED BY 'your_password';
+   GRANT ALL PRIVILEGES ON stoblyx_data.* TO 'stoblyx'@'localhost';
    ```
 
 2. **Redis 설정**
@@ -681,8 +701,8 @@ ex)
 1. **소스코드 클론**
 
    ```bash
-   git clone https://github.com/yourusername/booksum.git
-   cd booksum
+   git clone https://github.com/yourusername/stoblyx.git
+   cd stoblyx
    ```
 
 2. **프로젝트 빌드**
@@ -705,7 +725,7 @@ docker-compose up -d
 # 개별 컨테이너 실행
 docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0
 docker run -d --name redis -p 6379:6379 redis:7.0
-docker run -d --name booksum -p 8080:8080 booksum:latest
+docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 ```
 
 #### 테스트
@@ -715,7 +735,7 @@ docker run -d --name booksum -p 8080:8080 booksum:latest
 ./gradlew test
 
 # 특정 테스트 실행
-./gradlew test --tests "com.booksum.api.QuoteControllerTest"
+./gradlew test --tests "com.stoblyx.api.QuoteControllerTest"
 ```
 
 #### API 문서 확인
@@ -734,7 +754,7 @@ src/
 ├── main/
 │   ├── java/
 │   │   └── com/
-│   │       └── booksum/
+│   │       └── stoblyx/
 │   │           ├── domain/                   # 도메인 계층 - 비즈니스 로직을 담당
 │   │           │   ├── model/                # 도메인 모델 - 핵심 엔티티 및 값 객체 정의
 │   │           │   │   ├── quote/            # 문구(Quote) 관련 도메인 모델
@@ -772,7 +792,7 @@ src/
 └── test/                                     # 테스트 코드 디렉터리
     └── java/
         └── com/
-            └── booksum/
+            └── stoblyx/
                 ├── domain/                   # 도메인 계층 테스트 (비즈니스 로직 검증)
                 ├── application/              # 애플리케이션 계층 테스트 (유스케이스 검증)
                 ├── adapter/                  # 어댑터 계층 테스트 (API 및 외부 연동 테스트)
@@ -785,46 +805,79 @@ src/
 
 #### **1. 도메인 계층 (Domain Layer)**
 
-- 도메인 계층은 **비즈니스 로직을 담당하는 핵심 계층**으로, 애플리케이션의 도메인 모델과 규칙을 정의합니다.
-- **외부 기술과의 의존성을 최소화**하여 비즈니스 로직을 독립적으로 유지하고, 애플리케이션의 확장성을 고려하여 설계하였습니다.
-- 주요 구성 요소는 다음과 같습니다.
-    - **도메인 모델(Entity, Aggregate)**
-        - `User`, `Book`, `Quote`, `Comment` 등의 핵심 엔티티를 정의합니다.
-        - 연관된 도메인 객체를 하나의 Aggregate로 묶어, 데이터 일관성을 유지합니다.
-    - **도메인 서비스 (Domain Service)**
-        - 특정 도메인 모델 간의 복잡한 로직을 캡슐화하여 관리합니다.
-    - **도메인 이벤트 (Domain Events)**
-        - 특정 도메인 객체에서 발생하는 이벤트를 관리하고, 비동기적으로 처리할 수 있도록 설계하였습니다.
+- **개선 사항**
+    - **Aggregate Root 명시**
+      ```markdown
+      - `User`와 `Quote`는 각각 Aggregate Root로, 하위 엔티티(예: `Comment`, `Like`)를 관리  
+      ```  
+    - **도메인 이벤트 예시**
+      ```markdown
+      - `QuoteCreatedEvent`: 문구 생성 시 이벤트 발행, 비동기 처리로 알림 전송  
+      ```  
 
 ---
 
 #### **2. 포트 인터페이스 (Port Interface)**
 
-- 포트 인터페이스 계층은 **애플리케이션과 외부 시스템 간의 경계를 정의**하며, **헥사고날 아키텍처(Ports & Adapters)** 원칙을 따릅니다.
-- 애플리케이션 내부 비즈니스 로직이 **외부 의존성(Database, API 등)과 강하게 결합되지 않도록 설계**하였습니다.
-- 주요 구성 요소는 다음과 같습니다.
-    - **인바운드 포트 (Inbound Port)**
-        - 클라이언트가 애플리케이션에 접근할 수 있도록 API, 이벤트 핸들러 등의 인터페이스를 제공합니다.
-        - `UserService`, `QuoteService` 등 **사용자와 직접 상호작용하는 서비스 인터페이스**를 정의합니다.
-    - **아웃바운드 포트 (Outbound Port)**
-        - 데이터베이스, 외부 API와의 통신을 추상화하여 비즈니스 로직이 특정 기술 스택에 의존하지 않도록 합니다.
-        - `UserRepository`, `QuoteRepository` 등을 통해 데이터 저장소와의 상호작용을 정의합니다.
-- 이 계층을 통해 **도메인 로직이 외부 환경 변화에 영향을 받지 않고 독립적으로 유지될 수 있도록 보장**합니다.
+- **개선 사항**
+    - **인바운드 포트 예시**
+      ```markdown
+      - `UserServicePort`: 사용자 관련 비즈니스 로직 인터페이스  
+      - `QuoteServicePort`: 문구 관련 비즈니스 로직 인터페이스  
+      ```  
+    - **아웃바운드 포트 예시**
+      ```markdown
+      - `UserRepositoryPort`: 사용자 데이터 조회 및 저장 인터페이스  
+      - `QuoteRepositoryPort`: 문구 데이터 조회 및 저장 인터페이스  
+      ```  
 
 ---
 
 #### **3. 어댑터 구현 (Adapter Implementation)**
 
-- 어댑터 계층은 **포트 인터페이스의 실제 구현을 담당**하며, 외부 시스템과 애플리케이션을 연결하는 역할을 합니다.
-- 포트 인터페이스를 구현한 클래스를 통해 **데이터베이스, 외부 API, 메시지 큐 등과의 통합을 수행**합니다.
-- 주요 구성 요소는 다음과 같습니다.
-    - **인바운드 어댑터 (Inbound Adapter)**
-        - 클라이언트 요청을 받아 애플리케이션 내부의 도메인 계층으로 전달합니다.
-        - REST API 컨트롤러(`UserController`, `QuoteController` 등)를 포함합니다.
-    - **아웃바운드 어댑터 (Outbound Adapter)**
-        - 데이터베이스, 외부 API와 직접 통신하는 역할을 수행합니다.
-        - `JpaUserRepository`, `JpaQuoteRepository` 등을 통해 JPA를 활용하여 데이터베이스와 연결합니다.
-        - OpenAI API, 외부 도서 정보 API 등의 서드파티 API를 호출하는 어댑터를 구현합니다.
+- **개선 사항**
+    - **인바운드 어댑터 예시**
+      ```markdown
+      - `UserController`: 사용자 관련 REST API 컨트롤러  
+      - `QuoteController`: 문구 관련 REST API 컨트롤러  
+      ```  
+    - **아웃바운드 어댑터 예시 추가**
+      ```markdown
+      - `JpaUserRepository`: JPA를 이용한 사용자 데이터 저장소 구현  
+      - `JpaQuoteRepository`: JPA를 이용한 문구 데이터 저장소 구현  
+      ```  
+
+---
+
+#### **4. 공통 모듈 (Common Module)**
+
+- **개선 사항**
+    - **유틸리티 클래스 예시**
+      ```markdown
+      - `DateUtils`: 날짜 변환 및 계산 유틸리티  
+      - `EncryptionUtils`: AES-256 암호화 유틸리티  
+      ```  
+    - **예외 처리 예시**
+      ```markdown
+      - `GlobalExceptionHandler`: 전역 예외 처리 클래스  
+      - `CustomException`: 사용자 정의 예외 클래스  
+      ```  
+
+---
+
+#### **5. 테스트 계층 (Test Layer)**
+
+- **개선 사항**
+    - **테스트 범위 명시**
+      ```markdown
+      - 도메인 계층 테스트: 비즈니스 로직 검증  
+      - 어댑터 계층 테스트: API 및 외부 연동 검증  
+      ```  
+    - **테스트 도구 예시**
+      ```markdown
+      - JUnit 5: 단위 테스트  
+      - Mockito: 모의 객체 생성  
+      ```
 
 ---
 
