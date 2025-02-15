@@ -1,18 +1,27 @@
 ## 스토블릭스 (Stoblyx) - 이야기의 오벨리스크
 
+### **Stoblyx = Story + Obelisk**
+
+**"책 속의 한 문장은 사라지지 않는다. 그것은 오벨리스크처럼 남아, 사람들에게 영감을 준다."**
+
+책 속 문장 하나하나가 디지털 기념비(Obelisk)처럼 기억되고, AI를 통해 숏폼 영상으로 재탄생하는 곳.
+
+과거, 현재, 미래를 잇는 독서의 타임캡슐.
+
 ## 목차
 
 1. [프로젝트 개요](#1-프로젝트-개요)
 2. [Stoblyx만의 차별점](#2-stoblyx만의-차별점)
-3. [주요 기능](#3-주요-기능)
-4. [데이터베이스 설계](#4-데이터베이스-설계)
-5. [API 문서](#5-api-문서)
-6. [개발 환경 설정](#6-개발-환경-설정)
-7. [프로젝트 구조](#7-프로젝트-구조)
-8. [테스트](#8-테스트)
-9. [성능 최적화](#9-성능-최적화)
-10. [배포 환경](#10-배포-환경)
-11. [라이선스](#11-라이선스)
+3. [아키텍처 설계](#3-아키텍처-설계)
+4. [주요 기능](#4-주요-기능)
+5. [데이터베이스 설계](#5-데이터베이스-설계)
+6. [API 문서](#6-api-문서)
+7. [개발 환경 설정](#7-개발-환경-설정)
+8. [프로젝트 구조](#8-프로젝트-구조)
+9. [테스트](#9-테스트)
+10. [성능 최적화](#10-성능-최적화)
+11. [배포 환경](#11-배포-환경)
+12. [라이선스](#12-라이선스)
 
 ### **Stoblyx = Story + Obelisk**
 
@@ -51,23 +60,6 @@
     - 기술 스택 변경에 유연한 대응
     - 마이크로서비스 전환 용이성
 
-### 아키텍처 원칙
-
-1. **도메인 중심 설계**
-
-    - 비즈니스 로직을 순수한 도메인 계층에 격리
-    - 도메인 모델은 외부 의존성 없이 독립적으로 동작
-
-2. **포트와 어댑터 분리**
-
-    - 인바운드 포트: 애플리케이션 진입점 (REST API, 이벤트 핸들러)
-    - 아웃바운드 포트: 외부 시스템 연동점 (데이터베이스, 외부 API)
-    - 어댑터: 포트 인터페이스의 실제 구현체
-
-### 아키텍처 다이어그램
-
-![Architecture Diagram](docs/images/architecture_V5.png)
-
 ### 시스템 흐름도
 
 ![Architecture Diagram](docs/images/flowchart_V5.png)
@@ -85,7 +77,7 @@
 **예시**
 
 - 사용자가 "인생을 바꾸는 책" 검색
-- AI가 관련된 **책 속 문장과 최대한 유사한 것을 매칭
+- AI가 관련된 \*\*책 속 문장과 최대한 유사한 것을 매칭
 - **배경 이미지 + 텍스트 애니메이션 + 자막 + BGM** 자동 생성
 - 숏폼 영상으로 제공
 
@@ -155,7 +147,108 @@
 
 ---
 
-### 3. 주요 기능
+### 3. 아키텍처 설계
+
+### 아키텍처 원칙
+
+1. **도메인 중심 설계**
+
+    - 비즈니스 로직을 순수한 도메인 계층에 격리
+    - 도메인 모델은 외부 의존성 없이 독립적으로 동작
+
+2. **포트와 어댑터 분리**
+
+    - 인바운드 포트: 애플리케이션 진입점 (REST API, 이벤트 핸들러)
+    - 아웃바운드 포트: 외부 시스템 연동점 (데이터베이스, 외부 API)
+    - 어댑터: 포트 인터페이스의 실제 구현체
+
+### 아키텍처 다이어그램
+
+![Architecture Diagram](docs/images/architecture_V5.png)
+
+#### 1. Client Layer
+
+- **사용자 인터페이스**
+    - 웹 애플리케이션
+    - 모바일 애플리케이션
+- **통신 방식**: HTTP/HTTPS 프로토콜
+
+#### 2. API Gateway Layer
+
+- **API Gateway**
+    - 모든 클라이언트 요청의 단일 진입점
+    - 요청 라우팅 및 로드 밸런싱
+    - 인증/인가 처리
+    - 요청/응답 변환
+
+#### 3. Service Layer
+
+##### 3.1 User Interest Service
+
+- **기능**: 사용자 관심사 분석 및 추천
+- **주요 컴포넌트**: User Interest System
+- **데이터 처리**: 사용자 행동 패턴 분석, 관심사 매칭
+- **기술 스택**
+    - Spring Boot
+    - MySQL (사용자 관심사 데이터)
+    - Redis (캐싱)
+
+##### 3.2 Community Service
+
+- **Ranking System**
+
+    - 사용자 활동 점수 계산
+    - 실시간 랭킹 업데이트
+    - Redis 기반 랭킹 데이터 관리
+
+- **User Reward System**
+    - 보상 정책 관리
+    - 자동 보상 지급
+    - 보상 이력 추적
+
+##### 3.3 Book Service
+
+- **도서 데이터 관리**
+
+    - MySQL 기반 도서 정보 저장
+    - 도서 메타데이터 관리
+    - 검색 기능 제공
+
+- **AI Engine**
+    - 텍스트 요약 (KoBART)
+    - 영상 생성 (Pika Labs)
+    - 음성 변환 (Google Cloud TTS)
+
+##### 3.4 Auth Service
+
+- **인증 관리**
+    - JWT 기반 인증
+    - Redis Token 저장소
+    - 접근 권한 관리
+    - 보안 정책 적용
+
+#### 4. 서비스 간 통신
+
+- **동기 통신**: REST API
+- **비동기 통신**: 이벤트 기반 메시징 (RabbitMQ)
+- **데이터 일관성**: Eventual Consistency 모델 적용
+
+#### 5. 데이터 저장소
+
+- **MySQL**: 도서 데이터, 사용자 데이터
+- **Redis**
+    - 토큰 저장
+    - 랭킹 데이터
+    - 캐시 데이터
+- **Elasticsearch**: 전문 검색
+
+#### 6. 모니터링 및 로깅
+
+- **시스템 모니터링**: Prometheus + Grafana
+- **로그 관리**: ELK Stack
+- **성능 추적**: Spring Cloud Sleuth
+
+### 4. 주요 기능
 
 #### 회원가입 및 로그인
 
@@ -169,6 +262,38 @@
     - Bcrypt를 통한 비밀번호 암호화
     - API Rate Limiting (Redis 기반)
     - JWT 블랙리스트 관리 (로그아웃, 토큰 무효화)
+
+#### 게시글 관리 시스템
+
+- **검색 기능**
+
+    - 키워드 기반 전문 검색 (Elasticsearch)
+    - 필터링 (카테고리, 날짜, 작성자 등)
+    - 정렬 옵션 (최신순, 인기순, 관련도순)
+    - 검색 결과 하이라이팅
+
+- **게시글 CRUD**
+
+    - 작성: 마크다운 에디터 지원
+    - 조회: 페이징 처리된 목록 view
+    - 수정: 작성자 본인만 가능
+    - 삭제: 작성자 본인만 가능
+    - 임시저장 기능
+
+- **권한 관리**
+
+    - 비로그인: 조회만 가능
+    - 로그인: 작성 가능
+    - 본인 게시글: 수정/삭제 가능
+    - 관리자: 모든 권한
+    - 부적절한 컨텐츠 신고 기능
+
+- **부가 기능**
+    - 게시글 좋아요/북마크
+    - 댓글/대댓글
+    - 게시글 공유
+    - 조회수 통계
+    - 인기글 알고리즘
 
 #### 책 속 문구 검색 & AI 추천
 
@@ -214,7 +339,7 @@
 
 ---
 
-### 4. 데이터베이스 설계
+### 5. 데이터베이스 설계
 
 #### 설계 원칙
 
@@ -254,7 +379,7 @@
 
 ---
 
-### 5. API 문서
+### 6. API 문서
 
 ### 공통 사항
 
@@ -299,9 +424,7 @@
 - `recent_searches` (TEXT, NN) - 최근 검색어 목록
 - `favorite_genres` (TEXT, NN) - 사용자의 선호 장르
 - `created_at` (TIMESTAMP) - 관심사 저장 날짜
--
-
----
+- ***
 
 #### **3. UserReward (사용자 보상)**
 
@@ -458,6 +581,7 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 - **Endpoint**: `POST /api/v1/auth/register`
 
   사용자가 회원가입을 할 수 있도록 하는 API입니다. 사용자는 `username`, `email`, `password`를 입력하여 계정을 생성할 수 있습니다.
+
 - **요청 (Request)**
     - `username` (문자열, 필수) - 사용자 이름
     - `email` (문자열, 필수) - 사용자 이메일
@@ -473,6 +597,7 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 - **Endpoint**: `POST /api/v1/auth/login`
 
   사용자가 로그인할 수 있도록 하는 API입니다. 로그인 성공 시 JWT 토큰이 반환됩니다.
+
 - **요청 (Request)**
     - `email` (문자열, 필수) - 사용자 이메일
     - `password` (문자열, 필수) - 사용자 비밀번호
@@ -489,6 +614,7 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 - **Endpoint**: `GET /api/v1/quotes`
 
   전체 문구 목록을 페이징하여 조회하는 API입니다. 사용자는 특정 페이지, 페이지 크기, 정렬 기준을 설정하여 요청할 수 있습니다.
+
 - **요청 (Request)**
     - `page` (정수, 선택) - 페이지 번호 (기본값: 0)
     - `size` (정수, 선택) - 페이지 크기 (기본값: 20)
@@ -503,6 +629,7 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 - **Endpoint**: `GET /api/v1/quotes/search`
 
   사용자가 특정 키워드를 입력하여 문구를 검색할 수 있도록 하는 API입니다.
+
 - **요청 (Request)**
     - `keyword` (문자열, 필수) - 검색어
     - `page` (정수, 선택) - 페이지 번호
@@ -520,6 +647,7 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 - **Endpoint**: `GET /api/v1/quotes/{quoteId}/recommendations`
 
   특정 문구와 관련된 영상을 AI가 추천하여 제공하는 API입니다.
+
 - **요청 (Request)**
     - `quoteId` (UUID, 필수) - 추천할 문구의 ID
 - **응답 (Response)**
@@ -574,117 +702,15 @@ Comment 엔티티는 특정 문구(Quote)에 대한 사용자 의견을 저장�
 
 ---
 
-### 6. 보안 및 확장성 고려 사항
-
----
-
-#### **1. 인증 및 인가**
-
-- **개선 사항**
-    - **JWT 서명 알고리즘 명시**
-      ```markdown
-      - JWT 서명 알고리즘으로 HMAC SHA256을 사용하여 토큰 무결성 보장
-      ```  
-    - **RBAC 구현 예시 추가**
-      ```markdown
-      - 관리자 전용 API는 `@PreAuthorize("hasRole('ADMIN')")` 애노테이션으로 접근 제한  
-      ```  
-
----
-
-#### **2. JWT 토큰 관리**
-
-- **개선 사항**
-    - **Access Token 유효 기간 구체화**
-      ```markdown
-      - Access Token 유효 기간: 30분
-      - Refresh Token 유효 기간: 7일
-      ```  
-    - **로그아웃 시 Access Token 처리**
-      ```markdown
-      - 로그아웃 시 Access Token의 남은 유효 시간을 Redis에 저장하여 강제 만료 처리  
-      ```  
-
----
-
-#### **3. 데이터 암호화**
-
-- **개선 사항**
-    - **암호화 대상 필드 명시**
-      ```markdown
-      - 사용자 이메일: AES-256 암호화 적용  
-      - 프로필 정보: RSA를 이용한 암호화  
-      ```  
-    - **HTTPS 추가 설명**
-      ```markdown
-      - TLS 1.3 프로토콜 적용 및 Let's Encrypt 인증서 사용  
-      ```  
-
----
-
-#### **4. XSS 방지**
-
-- **개선 사항**
-    - **입력값 검증 예시**
-      ```markdown
-      - 사용자 입력값에 대해 정규식(`^[a-zA-Z0-9가-힣 ]*$`)으로 특수문자 필터링  
-      ```  
-    - **CSP 정책 명시**
-      ```markdown
-      - `Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted-cdn.com`  
-      ```  
-
----
-
-#### **5. 캐시 계층**
-
-- **개선 사항**
-    - **TTL 구체화**
-      ```markdown
-      - 인기 문구 목록: 1시간
-      - AI 추천 결과: 24시간
-      ```  
-    - **캐시 전략 명시**
-      ```markdown
-      - Cache-Aside 전략 적용: 캐시 미스 시 DB 조회 후 결과 캐싱  
-      ```  
-
----
-
-#### **6. 비동기 처리**
-
-- **개선 사항**
-    - **메시지 큐 선택 이유**
-      ```markdown
-      - **RabbitMQ** 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수  
-      ```  
-    - **재시도 정책 추가**
-      ```markdown
-      - 작업 실패 시 최대 3회 재시도, 지수 백오프(Exponential Backoff) 적용  
-      ```
-
----
-
-### 7. 트러블슈팅
-
-ex)
-
-#### 1. AI 모델 통합 지연
-
-- **문제 상황**: KoBART 모델 로딩 시간이 길어 API 응답 지연
-- **해결 방안**: 모델 초기화를 비동기로 처리하고, 추론 시 GPU 가속 활용
-
----
-
-### 8. 프로젝트 실행 방법
+### 7. 프로젝트 실행 방법
 
 #### 개발 환경 설정
 
 1. **필수 요구사항**
 
     - JDK 17
-    - MySQL 8.0
-    - Redis 7.0
+    - MySQL 8.0.41
+    - Redis 7.0.15
 
 2. **환경변수 설정**
 
@@ -737,8 +763,8 @@ ex)
 docker-compose up -d
 
 # 개별 컨테이너 실행
-docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0
-docker run -d --name redis -p 6379:6379 redis:7.0
+docker run -d --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=root mysql:8.0.41
+docker run -d --name redis -p 6379:6379 redis:7.0.15
 docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 ```
 
@@ -756,6 +782,106 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - API 문서: `http://localhost:8080/v3/api-docs`
+
+### 6. 보안 및 확장성 고려 사항
+
+---
+
+#### **1. 인증 및 인가**
+
+- **개선 사항**
+    - **JWT 서명 알고리즘 명시**
+      ```markdown
+      - JWT 서명 알고리즘으로 HMAC SHA256을 사용하여 토큰 무결성 보장
+      ```
+    - **RBAC 구현 예시 추가**
+      ```markdown
+      - 관리자 전용 API는 `@PreAuthorize("hasRole('ADMIN')")` 애노테이션으로 접근 제한
+      ```
+
+---
+
+#### **2. JWT 토큰 관리**
+
+- **개선 사항**
+    - **Access Token 유효 기간 구체화**
+      ```markdown
+      - Access Token 유효 기간: 30분
+      - Refresh Token 유효 기간: 7일
+      ```
+    - **로그아웃 시 Access Token 처리**
+      ```markdown
+      - 로그아웃 시 Access Token의 남은 유효 시간을 Redis에 저장하여 강제 만료 처리
+      ```
+
+---
+
+#### **3. 데이터 암호화**
+
+- **개선 사항**
+    - **암호화 대상 필드 명시**
+      ```markdown
+      - 사용자 이메일: AES-256 암호화 적용
+      - 프로필 정보: RSA를 이용한 암호화
+      ```
+    - **HTTPS 추가 설명**
+      ```markdown
+      - TLS 1.3 프로토콜 적용 및 Let's Encrypt 인증서 사용
+      ```
+
+---
+
+#### **4. XSS 방지**
+
+- **개선 사항**
+    - **입력값 검증 예시**
+      ```markdown
+      - 사용자 입력값에 대해 정규식(`^[a-zA-Z0-9가-힣 ]*$`)으로 특수문자 필터링
+      ```
+    - **CSP 정책 명시**
+      ```markdown
+      - `Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted-cdn.com`
+      ```
+
+---
+
+#### **5. 캐시 계층**
+
+- **개선 사항**
+    - **TTL 구체화**
+      ```markdown
+      - 인기 문구 목록: 1시간
+      - AI 추천 결과: 24시간
+      ```
+    - **캐시 전략 명시**
+      ```markdown
+      - Cache-Aside 전략 적용: 캐시 미스 시 DB 조회 후 결과 캐싱
+      ```
+
+---
+
+#### **6. 비동기 처리**
+
+- **개선 사항**
+    - **메시지 큐 선택 이유**
+      ```markdown
+      - **RabbitMQ** 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수
+      ```
+    - **재시도 정책 추가**
+      ```markdown
+      - 작업 실패 시 최대 3회 재시도, 지수 백오프(Exponential Backoff) 적용
+      ```
+
+---
+
+### 7. 트러블슈팅
+
+ex)
+
+#### 1. AI 모델 통합 지연
+
+- **문제 상황**: KoBART 모델 로딩 시간이 길어 API 응답 지연
+- **해결 방안**: 모델 초기화를 비동기로 처리하고, 추론 시 GPU 가속 활용
 
 ---
 
@@ -822,12 +948,12 @@ src/
 - **개선 사항**
     - **Aggregate Root 명시**
       ```markdown
-      - `User`와 `Quote`는 각각 Aggregate Root로, 하위 엔티티(예: `Comment`, `Like`)를 관리  
-      ```  
+      - `User`와 `Quote`는 각각 Aggregate Root로, 하위 엔티티(예: `Comment`, `Like`)를 관리
+      ```
     - **도메인 이벤트 예시**
       ```markdown
-      - `QuoteCreatedEvent`: 문구 생성 시 이벤트 발행, 비동기 처리로 알림 전송  
-      ```  
+      - `QuoteCreatedEvent`: 문구 생성 시 이벤트 발행, 비동기 처리로 알림 전송
+      ```
 
 ---
 
@@ -836,14 +962,14 @@ src/
 - **개선 사항**
     - **인바운드 포트 예시**
       ```markdown
-      - `UserServicePort`: 사용자 관련 비즈니스 로직 인터페이스  
-      - `QuoteServicePort`: 문구 관련 비즈니스 로직 인터페이스  
-      ```  
+      - `UserServicePort`: 사용자 관련 비즈니스 로직 인터페이스
+      - `QuoteServicePort`: 문구 관련 비즈니스 로직 인터페이스
+      ```
     - **아웃바운드 포트 예시**
       ```markdown
-      - `UserRepositoryPort`: 사용자 데이터 조회 및 저장 인터페이스  
-      - `QuoteRepositoryPort`: 문구 데이터 조회 및 저장 인터페이스  
-      ```  
+      - `UserRepositoryPort`: 사용자 데이터 조회 및 저장 인터페이스
+      - `QuoteRepositoryPort`: 문구 데이터 조회 및 저장 인터페이스
+      ```
 
 ---
 
@@ -852,14 +978,14 @@ src/
 - **개선 사항**
     - **인바운드 어댑터 예시**
       ```markdown
-      - `UserController`: 사용자 관련 REST API 컨트롤러  
-      - `QuoteController`: 문구 관련 REST API 컨트롤러  
-      ```  
+      - `UserController`: 사용자 관련 REST API 컨트롤러
+      - `QuoteController`: 문구 관련 REST API 컨트롤러
+      ```
     - **아웃바운드 어댑터 예시 추가**
       ```markdown
-      - `JpaUserRepository`: JPA를 이용한 사용자 데이터 저장소 구현  
-      - `JpaQuoteRepository`: JPA를 이용한 문구 데이터 저장소 구현  
-      ```  
+      - `JpaUserRepository`: JPA를 이용한 사용자 데이터 저장소 구현
+      - `JpaQuoteRepository`: JPA를 이용한 문구 데이터 저장소 구현
+      ```
 
 ---
 
@@ -868,14 +994,14 @@ src/
 - **개선 사항**
     - **유틸리티 클래스 예시**
       ```markdown
-      - `DateUtils`: 날짜 변환 및 계산 유틸리티  
-      - `EncryptionUtils`: AES-256 암호화 유틸리티  
-      ```  
+      - `DateUtils`: 날짜 변환 및 계산 유틸리티
+      - `EncryptionUtils`: AES-256 암호화 유틸리티
+      ```
     - **예외 처리 예시**
       ```markdown
-      - `GlobalExceptionHandler`: 전역 예외 처리 클래스  
-      - `CustomException`: 사용자 정의 예외 클래스  
-      ```  
+      - `GlobalExceptionHandler`: 전역 예외 처리 클래스
+      - `CustomException`: 사용자 정의 예외 클래스
+      ```
 
 ---
 
@@ -884,13 +1010,13 @@ src/
 - **개선 사항**
     - **테스트 범위 명시**
       ```markdown
-      - 도메인 계층 테스트: 비즈니스 로직 검증  
-      - 어댑터 계층 테스트: API 및 외부 연동 검증  
-      ```  
+      - 도메인 계층 테스트: 비즈니스 로직 검증
+      - 어댑터 계층 테스트: API 및 외부 연동 검증
+      ```
     - **테스트 도구 예시**
       ```markdown
-      - JUnit 5: 단위 테스트  
-      - Mockito: 모의 객체 생성  
+      - JUnit 5: 단위 테스트
+      - Mockito: 모의 객체 생성
       ```
 
 ---
