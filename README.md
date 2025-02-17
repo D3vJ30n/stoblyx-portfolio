@@ -906,7 +906,7 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 - **개선 사항**
     - **메시지 큐 선택 이유**
       ```markdown
-      - **RabbitMQ** 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수
+      - RabbitMQ 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수
       ```
     - **재시도 정책 추가**
       ```markdown
