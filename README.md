@@ -914,7 +914,7 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 
 ex)
 
-#### 1. AI 모델 통합 지연
+#### 1. AI 모델 통합 지연(URL)
 
 - **문제 상황**: KoBART 모델 로딩 시간이 길어 API 응답 지연
 - **해결 방안**: 모델 초기화를 비동기로 처리하고, 추론 시 GPU 가속 활용
