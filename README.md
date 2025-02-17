@@ -819,11 +819,6 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 ./gradlew test --tests "com.stoblyx.api.QuoteControllerTest"
 ```
 
-#### API 문서 확인
-
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- API 문서: `http://localhost:8080/v3/api-docs`
-
 ### 9. 보안 및 확장성 고려 사항
 
 ---
