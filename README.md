@@ -43,8 +43,8 @@
 - Security: JWT, Spring Security
 - AI Integration
     - 텍스트 요약: KoBART (한국어 최적화 오픈소스 모델)
-    - 영상 생성: Pika Labs (AI 기반 숏폼 영상 생성, 실시간 생성 X)
-    - 음성 변환: Google Cloud TTS (텍스트 음성 변환, 실시간 생성 X)
+    - 영상 생성: Pika Labs (AI 기반 숏폼 영상 생성)
+    - 음성 변환: Google Cloud TTS (텍스트 음성 변환)
 - Deployment: Koyeb
 
 **아키텍처:** 헥사고날 아키텍처 (Hexagonal Architecture / Ports and Adapters)
