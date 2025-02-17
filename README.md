@@ -43,8 +43,8 @@
 - Security: JWT, Spring Security
 - AI Integration
     - 텍스트 요약: KoBART (한국어 최적화 오픈소스 모델)
-    - 영상 생성: Pika Labs (AI 기반 숏폼 영상 생성, 실시간 생성 X)
-    - 음성 변환: Google Cloud TTS (텍스트 음성 변환, 실시간 생성 X)
+    - 영상 생성: Pika Labs (AI 기반 숏폼 영상 생성)
+    - 음성 변환: Google Cloud TTS (텍스트 음성 변환)
 - Deployment: Koyeb
 
 **아키텍처:** 헥사고날 아키텍처 (Hexagonal Architecture / Ports and Adapters)
@@ -819,11 +819,6 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 ./gradlew test --tests "com.stoblyx.api.QuoteControllerTest"
 ```
 
-#### API 문서 확인
-
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- API 문서: `http://localhost:8080/v3/api-docs`
-
 ### 9. 보안 및 확장성 고려 사항
 
 ---
@@ -906,7 +901,7 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 - **개선 사항**
     - **메시지 큐 선택 이유**
       ```markdown
-      - **RabbitMQ** 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수
+      - RabbitMQ 채택 이유: Lightweight하고 Spring AMQP와의 호환성 우수
       ```
     - **재시도 정책 추가**
       ```markdown
@@ -919,7 +914,7 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 
 ex)
 
-#### 1. AI 모델 통합 지연
+#### 1. AI 모델 통합 지연(URL)
 
 - **문제 상황**: KoBART 모델 로딩 시간이 길어 API 응답 지연
 - **해결 방안**: 모델 초기화를 비동기로 처리하고, 추론 시 GPU 가속 활용
@@ -1166,3 +1161,4 @@ ex) `https://stoblyx.koyeb.app`
 
 © 2025 Stoblyx.  
 이 프로젝트는 [CC BY-NC-ND 4.0 라이선스](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko)에 따라 보호됩니다.
+

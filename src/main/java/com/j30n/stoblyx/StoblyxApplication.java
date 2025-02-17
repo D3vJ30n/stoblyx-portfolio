@@ -1,13 +1,11 @@
-package com.j30n.stoblyxsumportfolio;
+package com.j30n.stoblyx;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class StoblyxPortfolioApplication {
-
+public class StoblyxApplication {
     public static void main(String[] args) {
-        SpringApplication.run(StoblyxPortfolioApplication.class, args);
+        SpringApplication.run(StoblyxApplication.class, args);
     }
-
-}
+} 
