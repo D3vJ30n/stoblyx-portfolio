@@ -16,10 +16,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: AI Code Reviewer
-        uses: D3vJ30n/ai-code-reviewer@main  # 너의 깃허브 아이디를 적용
+        uses: D3vJ30n/ai-code-reviewer@main
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}  # GitHub Secrets에서 설정한 값 사용
-          OPENAI_API_MODEL: "gpt-3.5-turbo"  # 필요에 따라 변경 가능
-          LANGUAGE: Korean
-          exclude: "**/*.json, **/*.md"  # 필요에 따라 제외할 파일 패턴 지정 가능
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_MODEL: "gpt-3.5-turbo"
+          exclude: "**/*.json, **/*.md"
+          prompt: |
+            코드 리뷰를 한국어로 작성해 주세요.
+            코드 스타일, 성능, 보안, 유지보수성을 고려하여 피드백을 제공하세요.
