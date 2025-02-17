@@ -44,6 +44,11 @@ logs/
 .DS_Store
 Thumbs.db
 
+### Environment Variables ###
+.env
+.env.*
+!.env.example
+
 ### Application Properties ###
 src/main/resources/application-*.yml
 !src/main/resources/application.yml

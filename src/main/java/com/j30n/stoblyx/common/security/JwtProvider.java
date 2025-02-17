@@ -34,14 +34,14 @@ public class JwtProvider {
                 .compact();
     }
 
-    public Long getUserIdFromToken(String token) {
+    public String getUserIdentifierFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
 
-        return Long.parseLong(claims.getSubject());
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {

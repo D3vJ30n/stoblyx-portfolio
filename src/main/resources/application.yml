@@ -1,34 +1,56 @@
-# This is a dummy change to trigger GitHub Actions
-
 spring:
   application:
     name: stoblyx-portfolio
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.219.101:3306/stoblyx_db?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 6188
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:stoblyx_db}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${JPA_DDL_AUTO:update}
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    show-sql: ${SHOW_SQL:true}
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: guest
-    password: guest
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
 jwt:
-  secret: 5468576D5A7134743777217A25432A462D4A614E645267556B58703272357538
-  token-validity-in-seconds: 86400 # 24시간
+  # JWT 시크릿 키 (환경 변수에서 가져옴, 기본값은 개발 환경용)
+  secret: ${JWT_SECRET:5468576D5A7134743777217A25432A462D4A614E645267556B58703272357538}
+  # JWT 토큰 만료 시간 (초 단위)
+  token-validity-in-seconds: ${JWT_EXPIRATION:86400} # 기본값 24시간
+
+# 프로파일별 설정
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+---
+spring:
+  config:
+    activate:
+      on-profile: development
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
