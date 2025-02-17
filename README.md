@@ -1166,3 +1166,4 @@ ex) `https://stoblyx.koyeb.app`
 
 © 2025 Stoblyx.  
 이 프로젝트는 [CC BY-NC-ND 4.0 라이선스](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko)에 따라 보호됩니다.
+

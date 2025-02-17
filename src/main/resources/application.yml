@@ -1,3 +1,5 @@
+# This is a dummy change to trigger GitHub Actions
+
 spring:
   application:
     name: stoblyx-portfolio
