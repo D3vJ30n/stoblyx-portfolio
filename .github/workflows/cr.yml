@@ -1,4 +1,4 @@
-name: Code Review From ChatGPT
+name: Code Review
 
 permissions:
   contents: read
@@ -6,7 +6,7 @@ permissions:
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [ opened, synchronize ]
 
 jobs:
   code-review:
