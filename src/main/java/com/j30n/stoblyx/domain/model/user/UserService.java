@@ -1,4 +1,4 @@
-package com.j30n.stoblyx.domain.user;
+package com.j30n.stoblyx.domain.model.user;
 
 import com.j30n.stoblyx.port.in.UserUseCase;
 import com.j30n.stoblyx.port.out.UserPort;
@@ -22,11 +22,11 @@ public class UserService implements UserUseCase {
         }
 
         User user = User.builder()
-                .email(email)
-                .password(passwordEncoder.encode(password))
-                .name(name)
-                .role(User.Role.USER)
-                .build();
+            .email(email)
+            .password(passwordEncoder.encode(password))
+            .name(name)
+            .role(User.Role.USER)
+            .build();
 
         return userPort.save(user);
     }
@@ -34,13 +34,13 @@ public class UserService implements UserUseCase {
     @Override
     public User findUserById(Long id) {
         return userPort.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+            .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
     }
 
     @Override
     public User findUserByEmail(String email) {
         return userPort.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
+            .orElseThrow(() -> new IllegalArgumentException("User not found with email: " + email));
     }
 
     @Override
