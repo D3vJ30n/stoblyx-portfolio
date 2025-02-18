@@ -22,7 +22,7 @@ import org.hibernate.annotations.Comment;
 @Setter
 @NoArgsConstructor
 public class UserJpaEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Comment("사용자 고유 식별자")
@@ -46,27 +46,6 @@ public class UserJpaEntity {
     private Role role;
 
     /**
-     * 사용자 권한을 정의하는 열거형
-     */
-    public enum Role {
-        USER,   // 일반 사용자
-        ADMIN   // 관리자
-    }
-
-    /**
-     * 도메인 엔티티로 변환
-     */
-    public User toDomainEntity() {
-        return User.builder()
-                .id(this.id)
-                .email(this.email)
-                .password(this.password)
-                .name(this.name)
-                .role(User.Role.valueOf(this.role.name()))
-                .build();
-    }
-
-    /**
      * 도메인 엔티티로부터 JPA 엔티티 생성
      */
     public static UserJpaEntity fromDomainEntity(User user) {
@@ -77,5 +56,26 @@ public class UserJpaEntity {
         entity.setName(user.getName());
         entity.setRole(Role.valueOf(user.getRole().name()));
         return entity;
+    }
+
+    /**
+     * 도메인 엔티티로 변환
+     */
+    public User toDomainEntity() {
+        return User.builder()
+            .id(this.id)
+            .email(this.email)
+            .password(this.password)
+            .name(this.name)
+            .role(User.Role.valueOf(this.role.name()))
+            .build();
+    }
+
+    /**
+     * 사용자 권한을 정의하는 열거형
+     */
+    public enum Role {
+        USER,   // 일반 사용자
+        ADMIN   // 관리자
     }
 } 

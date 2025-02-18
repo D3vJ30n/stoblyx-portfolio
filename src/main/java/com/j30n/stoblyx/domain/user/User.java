@@ -1,54 +1,120 @@
 package com.j30n.stoblyx.domain.user;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-
+import com.j30n.stoblyx.domain.model.like.Like;
+import com.j30n.stoblyx.domain.model.quote.Quote;
+import com.j30n.stoblyx.domain.model.savedquote.SavedQuote;
+import com.j30n.stoblyx.domain.model.userinterest.UserInterest;
+import com.j30n.stoblyx.domain.model.userreward.UserReward;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Comment;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 사용자 도메인 엔티티
  * 불변 객체로 구현되어 있으며, 모든 필드는 final로 선언됩니다.
  */
+@Entity
+@Table(
+    name = "users",
+    indexes = {
+        @Index(name = "idx_user_email", columnList = "email", unique = true)
+    }
+)
 @Getter
-@ToString(exclude = "password") // 보안을 위해 password 필드는 toString에서 제외
-@EqualsAndHashCode
-public class User {
-    @NotNull(message = "ID는 null일 수 없습니다")
-    private final Long id;
+@NoArgsConstructor(access = PROTECTED)
+public class User extends BaseEntity {
 
-    @NotBlank(message = "이메일은 필수입니다")
-    @Email(message = "올바른 이메일 형식이어야 합니다")
-    @Size(max = 100, message = "이메일은 100자를 초과할 수 없습니다")
-    private final String email;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Comment("사용자 고유 식별자")
+    private Long id;
 
-    @NotBlank(message = "비밀번호는 필수입니다")
-    @Size(min = 8, max = 100, message = "비밀번호는 8자 이상 100자 이하여야 합니다")
-    private final String password;
+    @NotBlank
+    @Email
+    @Size(max = 100)
+    @Column(nullable = false, unique = true)
+    @Comment("사용자 이메일")
+    private String email;
 
-    @NotBlank(message = "이름은 필수입니다")
-    @Size(max = 50, message = "이름은 50자를 초과할 수 없습니다")
-    private final String name;
+    @NotBlank
+    @Size(min = 8, max = 100)
+    @Column(nullable = false)
+    @Comment("암호화된 비밀번호")
+    private String password;
 
-    @NotNull(message = "역할은 필수입니다")
-    private final Role role;
+    @NotBlank
+    @Size(max = 50)
+    @Column(nullable = false)
+    @Comment("사용자 이름")
+    private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Comment("사용자 권한")
+    private Role role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Quote> quotes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<SavedQuote> savedQuotes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserInterest userInterest;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<UserReward> rewards = new ArrayList<>();
+
+    // Builder pattern for immutable object creation
     @Builder
-    public User(
-            @NotNull Long id,
-            @NotBlank @Email String email,
-            @NotBlank String password,
-            @NotBlank String name,
-            @NotNull Role role) {
-        this.id = id;
+    private User(String email, String password, String name, Role role) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.role = role;
+    }
+
+    // Business methods
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
+    public void updateName(String newName) {
+        this.name = newName;
+    }
+
+    public void addQuote(Quote quote) {
+        this.quotes.add(quote);
+        quote.setUser(this);
+    }
+
+    public void addComment(Comment comment) {
+        this.comments.add(comment);
+        comment.setUser(this);
+    }
+
+    public void addLike(Like like) {
+        this.likes.add(like);
+        like.setUser(this);
+    }
+
+    public void saveQuote(SavedQuote savedQuote) {
+        this.savedQuotes.add(savedQuote);
+        savedQuote.setUser(this);
     }
 
     /**

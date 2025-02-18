@@ -25,7 +25,7 @@ public class UserMapper {
         jpaEntity.setEmail(user.getEmail());
         jpaEntity.setPassword(user.getPassword());
         jpaEntity.setName(user.getName());
-        
+
         // Enum 변환 시 안전하게 처리
         try {
             jpaEntity.setRole(UserJpaEntity.Role.valueOf(user.getRole().name()));
@@ -33,7 +33,7 @@ public class UserMapper {
             // 기본값으로 USER 설정
             jpaEntity.setRole(UserJpaEntity.Role.USER);
         }
-        
+
         return jpaEntity;
     }
 
@@ -49,12 +49,12 @@ public class UserMapper {
         }
 
         return User.builder()
-                .id(jpaEntity.getId())
-                .email(jpaEntity.getEmail())
-                .password(jpaEntity.getPassword())
-                .name(jpaEntity.getName())
-                .role(mapJpaRoleToDomainRole(jpaEntity.getRole()))
-                .build();
+            .id(jpaEntity.getId())
+            .email(jpaEntity.getEmail())
+            .password(jpaEntity.getPassword())
+            .name(jpaEntity.getName())
+            .role(mapJpaRoleToDomainRole(jpaEntity.getRole()))
+            .build();
     }
 
     /**

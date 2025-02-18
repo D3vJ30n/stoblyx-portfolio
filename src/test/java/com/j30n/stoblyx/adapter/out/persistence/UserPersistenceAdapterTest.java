@@ -38,12 +38,12 @@ class UserPersistenceAdapterTest {
     @BeforeEach
     void setUp() {
         testUser = User.builder()
-                .id(1L)
-                .email("test@example.com")
-                .password("password123")
-                .name("Test User")
-                .role(User.Role.USER)
-                .build();
+            .id(1L)
+            .email("test@example.com")
+            .password("password123")
+            .name("Test User")
+            .role(User.Role.USER)
+            .build();
 
         testUserJpaEntity = new UserJpaEntity();
         testUserJpaEntity.setId(1L);
@@ -74,8 +74,8 @@ class UserPersistenceAdapterTest {
     @DisplayName("사용자 저장 - null 입력 시 예외 발생")
     void save_NullUser_ThrowsException() {
         assertThatThrownBy(() -> userPersistenceAdapter.save(null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User cannot be null");
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("User cannot be null");
     }
 
     @Test
@@ -84,11 +84,11 @@ class UserPersistenceAdapterTest {
         // given
         when(userMapper.toJpaEntity(testUser)).thenReturn(testUserJpaEntity);
         when(userRepository.save(any(UserJpaEntity.class)))
-                .thenThrow(new DataIntegrityViolationException("Duplicate email"));
+            .thenThrow(new DataIntegrityViolationException("Duplicate email"));
 
         // then
         assertThatThrownBy(() -> userPersistenceAdapter.save(testUser))
-                .isInstanceOf(DataIntegrityViolationException.class);
+            .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -124,7 +124,7 @@ class UserPersistenceAdapterTest {
     void findByEmail_ExistingEmail_ReturnsUser() {
         // given
         given(userRepository.findByEmail("test@example.com"))
-                .willReturn(Optional.of(testUserJpaEntity));
+            .willReturn(Optional.of(testUserJpaEntity));
         given(userMapper.toDomainEntity(testUserJpaEntity)).willReturn(testUser);
 
         // when
@@ -140,7 +140,7 @@ class UserPersistenceAdapterTest {
     void findByEmail_NonExistingEmail_ReturnsEmpty() {
         // given
         given(userRepository.findByEmail("nonexistent@example.com"))
-                .willReturn(Optional.empty());
+            .willReturn(Optional.empty());
 
         // when
         Optional<User> foundUser = userPersistenceAdapter.findByEmail("nonexistent@example.com");

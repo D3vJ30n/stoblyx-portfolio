@@ -23,14 +23,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             if (!userId.matches("\\d+")) {
                 throw new UsernameNotFoundException("Invalid user ID format");
             }
-            
+
             Long userIdLong = Long.parseLong(userId);
             User user = userUseCase.findUserById(userIdLong);
-            
+
             if (user == null) {
                 throw new UsernameNotFoundException("User not found with id: " + userId);
             }
-            
+
             return new org.springframework.security.core.userdetails.User(
                 user.getId().toString(),
                 user.getPassword(),

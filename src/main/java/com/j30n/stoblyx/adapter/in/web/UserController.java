@@ -61,7 +61,7 @@ public class UserController {
         try {
             User user = userUseCase.findUserByEmail(request.email());
             userUseCase.validateUser(request.email(), request.password());
-            
+
             String token = jwtProvider.createToken(user.getId());
             return ResponseEntity.ok(ApiResponse.success("Login successful", new LoginResponse(token)));
         } catch (IllegalArgumentException e) {
@@ -111,4 +111,4 @@ record ApiResponse<T>(String status, String message, T data) {
     static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>("error", message, null);
     }
-} 
+}

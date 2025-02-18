@@ -27,7 +27,7 @@ public class UserPersistenceAdapter implements UserPort {
      *
      * @param user 저장할 사용자 정보
      * @return 저장된 사용자 정보
-     * @throws IllegalArgumentException 사용자 정보가 null인 경우
+     * @throws IllegalArgumentException        사용자 정보가 null인 경우
      * @throws DataIntegrityViolationException 이메일 중복 등 데이터 무결성 위반 시
      */
     @Override
@@ -65,11 +65,11 @@ public class UserPersistenceAdapter implements UserPort {
 
         log.debug("Finding user by ID: {}", id);
         return userRepository.findById(id)
-                .map(entity -> {
-                    User user = userMapper.toDomainEntity(entity);
-                    log.debug("Found user: {}", user.getEmail());
-                    return user;
-                });
+            .map(entity -> {
+                User user = userMapper.toDomainEntity(entity);
+                log.debug("Found user: {}", user.getEmail());
+                return user;
+            });
     }
 
     /**
@@ -87,11 +87,11 @@ public class UserPersistenceAdapter implements UserPort {
 
         log.debug("Finding user by email: {}", email);
         return userRepository.findByEmail(email)
-                .map(entity -> {
-                    User user = userMapper.toDomainEntity(entity);
-                    log.debug("Found user with ID: {}", user.getId());
-                    return user;
-                });
+            .map(entity -> {
+                User user = userMapper.toDomainEntity(entity);
+                log.debug("Found user with ID: {}", user.getId());
+                return user;
+            });
     }
 
     /**
