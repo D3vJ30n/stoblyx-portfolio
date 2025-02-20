@@ -1,5 +1,7 @@
 package com.j30n.stoblyx.domain.model.userreward;
 
+import com.j30n.stoblyx.domain.base.BaseEntity;
+import com.j30n.stoblyx.domain.model.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -8,6 +10,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(

@@ -1,7 +1,7 @@
 package com.j30n.stoblyx.domain.model.user;
 
-import com.j30n.stoblyx.port.in.UserUseCase;
-import com.j30n.stoblyx.port.out.UserPort;
+import com.j30n.stoblyx.application.usecase.user.port.UserUseCase;
+import com.j30n.stoblyx.domain.port.out.user.UserPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

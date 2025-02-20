@@ -2,79 +2,77 @@ package com.j30n.stoblyx.domain.model.book;
 
 import com.j30n.stoblyx.domain.model.quote.Quote;
 import com.j30n.stoblyx.domain.model.summary.Summary;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
-@Entity
-@Table(
-    name = "books",
-    indexes = {
-        @Index(name = "idx_book_title", columnList = "title"),
-        @Index(name = "idx_book_author", columnList = "author")
-    }
-)
 @Getter
-@NoArgsConstructor(access = PROTECTED)
-public class Book extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Comment("책 고유 식별자")
-    private Long id;
-
-    @NotBlank
-    @Size(max = 255)
-    @Column(nullable = false)
-    @Comment("책 제목")
-    private String title;
-
-    @NotBlank
-    @Size(max = 100)
-    @Column(nullable = false)
-    @Comment("저자")
-    private String author;
-
-    @Size(max = 100)
-    @Column
-    @Comment("책 장르")
-    private String genre;
-
-    @Column
-    @Comment("출판일")
-    private LocalDate publishedAt;
-
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+public class Book {
+    private final BookId id;
     private final List<Quote> quotes = new ArrayList<>();
-
-    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    private Title title;
+    private Author author;
+    private Genre genre;
+    private PublishedDate publishedAt;
     private Summary summary;
 
-    // Builder pattern for immutable object creation
-    @Builder
-    private Book(String title, String author, String genre, LocalDate publishedAt) {
-        this.title = title;
-        this.author = author;
+    private Book(BookId id, Title title, Author author, Genre genre, PublishedDate publishedAt) {
+        this.id = id;
+        this.title = Objects.requireNonNull(title, "제목은 null일 수 없습니다");
+        this.author = Objects.requireNonNull(author, "저자는 null일 수 없습니다");
         this.genre = genre;
-        this.publishedAt = publishedAt;
+        this.publishedAt = Objects.requireNonNull(publishedAt, "출판일은 null일 수 없습니다");
     }
 
-    // Business methods
+    public static Book create(Title title, Author author, Genre genre, PublishedDate publishedAt) {
+        return new Book(null, title, author, genre, publishedAt);
+    }
+
+    public static Book withId(BookId id, Title title, Author author, Genre genre, PublishedDate publishedAt) {
+        return new Book(id, title, author, genre, publishedAt);
+    }
+
     public void addQuote(Quote quote) {
-        this.quotes.add(quote);
-        quote.setBook(this);
+        Objects.requireNonNull(quote, "인용구는 null일 수 없습니다");
+        quotes.add(quote);
     }
 
     public void setSummary(Summary summary) {
-        this.summary = summary;
-        summary.setBook(this);
+        this.summary = Objects.requireNonNull(summary, "요약은 null일 수 없습니다");
     }
-} 
+
+    public List<Quote> getQuotes() {
+        return Collections.unmodifiableList(quotes);
+    }
+
+    public void updateTitle(Title title) {
+        this.title = Objects.requireNonNull(title, "제목은 null일 수 없습니다");
+    }
+
+    public void updateAuthor(Author author) {
+        this.author = Objects.requireNonNull(author, "저자는 null일 수 없습니다");
+    }
+
+    public void updateGenre(Genre genre) {
+        this.genre = genre;
+    }
+
+    public void updatePublishedAt(PublishedDate publishedAt) {
+        this.publishedAt = Objects.requireNonNull(publishedAt, "출판일은 null일 수 없습니다");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Book book)) return false;
+        return Objects.equals(id, book.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+}

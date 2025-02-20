@@ -1,5 +1,6 @@
-package com.j30n.stoblyx.adapter.out.persistence;
+package com.j30n.stoblyx.adapter.out.persistence.entity;
 
+import com.j30n.stoblyx.domain.base.BaseTimeEntity;
 import com.j30n.stoblyx.domain.model.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,8 +9,12 @@ import lombok.Setter;
 import org.hibernate.annotations.Comment;
 
 /**
- * 사용자 정보를 저장하는 JPA 엔티티
- * users 테이블과 매핑됩니다.
+ * 사용자 정보를 저장하는 JPA 엔티티 클래스입니다.
+ * users 테이블과 매핑되며, 사용자의 기본 정보와 인증 관련 정보를 관리합니다.
+ *
+ * @see User 도메인 모델
+ * @see Role 사용자 권한
+ * @see BaseTimeEntity 기본 시간 정보
  */
 @Entity
 @Table(
@@ -21,7 +26,7 @@ import org.hibernate.annotations.Comment;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserJpaEntity {
+public class UserJpaEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,9 +51,17 @@ public class UserJpaEntity {
     private Role role;
 
     /**
-     * 도메인 엔티티로부터 JPA 엔티티 생성
+     * 도메인 엔티티로부터 JPA 엔티티를 생성합니다.
+     *
+     * @param user 변환할 도메인 엔티티
+     * @return 생성된 JPA 엔티티
+     * @throws IllegalArgumentException user가 null인 경우
      */
     public static UserJpaEntity fromDomainEntity(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User domain entity cannot be null");
+        }
+
         UserJpaEntity entity = new UserJpaEntity();
         entity.setId(user.getId());
         entity.setEmail(user.getEmail());
@@ -59,16 +72,18 @@ public class UserJpaEntity {
     }
 
     /**
-     * 도메인 엔티티로 변환
+     * JPA 엔티티를 도메인 엔티티로 변환합니다.
+     *
+     * @return 변환된 도메인 엔티티
      */
     public User toDomainEntity() {
         return User.builder()
-            .id(this.id)
-            .email(this.email)
-            .password(this.password)
-            .name(this.name)
-            .role(User.Role.valueOf(this.role.name()))
-            .build();
+                .id(this.id)
+                .email(this.email)
+                .password(this.password)
+                .name(this.name)
+                .role(User.Role.valueOf(this.role.name()))
+                .build();
     }
 
     /**

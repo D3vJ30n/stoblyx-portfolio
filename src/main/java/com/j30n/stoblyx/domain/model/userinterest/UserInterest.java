@@ -1,10 +1,14 @@
 package com.j30n.stoblyx.domain.model.userinterest;
 
+import com.j30n.stoblyx.domain.base.BaseEntity;
+import com.j30n.stoblyx.domain.model.user.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(
