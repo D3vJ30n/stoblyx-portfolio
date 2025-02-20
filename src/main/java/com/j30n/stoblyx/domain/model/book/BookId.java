@@ -1,10 +1,19 @@
 package com.j30n.stoblyx.domain.model.book;
 
-import java.util.Objects;
+import lombok.Value;
 
-// domain/model/book/BookId.java
-public record BookId(Long value) {
-    public BookId {
-        Objects.requireNonNull(value, "Book ID는 null일 수 없습니다");
+@Value
+public class BookId {
+    Long value;
+
+    public BookId(Long value) {
+        if (value == null || value <= 0) {
+            throw new IllegalArgumentException("Book ID must be a positive number");
+        }
+        this.value = value;
+    }
+
+    public Long value() {
+        return 0L;
     }
 }
