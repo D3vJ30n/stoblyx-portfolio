@@ -1,4 +1,4 @@
-package com.j30n.stoblyx.port.out;
+package com.j30n.stoblyx.domain.port.out.user;
 
 import com.j30n.stoblyx.domain.model.user.User;
 
