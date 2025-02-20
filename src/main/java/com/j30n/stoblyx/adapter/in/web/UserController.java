@@ -1,9 +1,10 @@
 package com.j30n.stoblyx.adapter.in.web;
 
+import com.j30n.stoblyx.application.usecase.user.port.FindUserUseCase;
+import com.j30n.stoblyx.application.usecase.user.port.LoginUserUseCase;
+import com.j30n.stoblyx.application.usecase.user.port.RegisterUserUseCase;
 import com.j30n.stoblyx.common.dto.ApiResponse;
 import com.j30n.stoblyx.common.security.JwtProvider;
-import com.j30n.stoblyx.domain.model.user.User;
-import com.j30n.stoblyx.port.in.UserUseCase;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -25,7 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Validated
 public class UserController {
-    private final UserUseCase userUseCase;
+    private final RegisterUserUseCase registerUserUseCase;
+    private final LoginUserUseCase loginUserUseCase;
+    private final FindUserUseCase findUserUseCase;
     private final JwtProvider jwtProvider;
 
     /**
@@ -36,20 +39,23 @@ public class UserController {
      * @throws IllegalArgumentException 이메일이 이미 존재하는 경우
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<User>> registerUser(@Valid @RequestBody RegisterUserRequest request) {
+    public ResponseEntity<ApiResponse<RegisterUserUseCase.RegisterUserResponse>> registerUser(
+        @Valid @RequestBody RegisterUserRequest request) {
         try {
-            User user = userUseCase.registerUser(
+            var command = new RegisterUserUseCase.RegisterUserCommand(
                 request.email(),
                 request.password(),
                 request.name()
             );
-            return ResponseEntity.ok(ApiResponse.success("User registered successfully", user));
+
+            var response = registerUserUseCase.register(command);
+            return ResponseEntity.ok(ApiResponse.success("사용자 등록이 완료되었습니다.", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                .body(ApiResponse.error("An error occurred during registration"));
+                .body(ApiResponse.error("사용자 등록 중 오류가 발생했습니다."));
         }
     }
 
@@ -61,48 +67,48 @@ public class UserController {
      * @throws IllegalArgumentException 이메일이나 비밀번호가 일치하지 않는 경우
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<LoginUserUseCase.LoginUserResponse>> login(
+        @Valid @RequestBody LoginRequest request) {
         try {
-            User user = userUseCase.findUserByEmail(request.email());
-            userUseCase.validateUser(request.email(), request.password());
+            var command = new LoginUserUseCase.LoginUserCommand(
+                request.email(),
+                request.password()
+            );
 
-            String token = jwtProvider.createToken(user.getId());
-            return ResponseEntity.ok(ApiResponse.success("Login successful", new LoginResponse(token)));
+            var response = loginUserUseCase.login(command);
+            return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", response));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
-                .body(ApiResponse.error("An error occurred during login"));
+                .body(ApiResponse.error("로그인 중 오류가 발생했습니다."));
         }
     }
 
     // Request/Response Records with validation
     record RegisterUserRequest(
-        @NotBlank(message = "Email is required")
-        @Email(message = "Invalid email format")
+        @NotBlank(message = "이메일은 필수입니다")
+        @Email(message = "올바른 이메일 형식이어야 합니다")
         String email,
 
-        @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 100, message = "Password must be between 8 and 100 characters")
+        @NotBlank(message = "비밀번호는 필수입니다")
+        @Size(min = 8, max = 100, message = "비밀번호는 8자 이상 100자 이하여야 합니다")
         String password,
 
-        @NotBlank(message = "Name is required")
-        @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+        @NotBlank(message = "이름은 필수입니다")
+        @Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하여야 합니다")
         String name
     ) {
     }
 
     record LoginRequest(
-        @NotBlank(message = "Email is required")
-        @Email(message = "Invalid email format")
+        @NotBlank(message = "이메일은 필수입니다")
+        @Email(message = "올바른 이메일 형식이어야 합니다")
         String email,
 
-        @NotBlank(message = "Password is required")
+        @NotBlank(message = "비밀번호는 필수입니다")
         String password
     ) {
-    }
-
-    record LoginResponse(String token) {
     }
 } 

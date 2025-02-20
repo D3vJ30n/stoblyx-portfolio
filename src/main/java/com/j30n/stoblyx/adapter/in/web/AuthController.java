@@ -1,9 +1,9 @@
 package com.j30n.stoblyx.adapter.in.web;
 
+import com.j30n.stoblyx.application.usecase.user.port.LoginUserUseCase;
+import com.j30n.stoblyx.application.usecase.user.port.RegisterUserUseCase;
 import com.j30n.stoblyx.common.dto.ApiResponse;
 import com.j30n.stoblyx.common.security.JwtProvider;
-import com.j30n.stoblyx.domain.model.user.User;
-import com.j30n.stoblyx.port.in.UserUseCase;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -24,7 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserUseCase userUseCase;
+    private final RegisterUserUseCase registerUserUseCase;
+    private final LoginUserUseCase loginUserUseCase;
     private final JwtProvider jwtProvider;
 
     /**
@@ -37,21 +38,21 @@ public class AuthController {
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
         @Valid @RequestBody RegisterRequest request) {
         try {
-            User user = userUseCase.registerUser(
+            var command = new RegisterUserUseCase.RegisterUserCommand(
                 request.email(),
                 request.password(),
                 request.name()
             );
 
-            RegisterResponse response = new RegisterResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getName()
-            );
+            var response = registerUserUseCase.register(command);
 
             return ResponseEntity.ok(ApiResponse.success(
                 "회원가입이 완료되었습니다.",
-                response
+                new RegisterResponse(
+                    response.id(),
+                    response.email(),
+                    response.name()
+                )
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -69,18 +70,22 @@ public class AuthController {
      * @return JWT 토큰
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(
+    public ResponseEntity<ApiResponse<TokenResponse>> login(
         @Valid @RequestBody LoginRequest request) {
         try {
-            User user = userUseCase.findUserByEmail(request.email());
-            userUseCase.validateUser(request.email(), request.password());
+            var command = new LoginUserUseCase.LoginUserCommand(
+                request.email(),
+                request.password()
+            );
 
-            String token = jwtProvider.createToken(user.getId());
-            LoginResponse response = new LoginResponse(token);
+            var response = loginUserUseCase.login(command);
 
             return ResponseEntity.ok(ApiResponse.success(
                 "로그인이 완료되었습니다.",
-                response
+                new TokenResponse(
+                    response.accessToken(),
+                    response.refreshToken()
+                )
             ));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest()
@@ -88,6 +93,30 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                 .body(ApiResponse.error("로그인 처리 중 오류가 발생했습니다."));
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<TokenResponse>> refreshToken(
+        @Valid @RequestBody RefreshTokenRequest request) {
+        try {
+            if (!jwtProvider.validateToken(request.refreshToken()) ||
+                !jwtProvider.isRefreshToken(request.refreshToken())) {
+                return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("유효하지 않은 리프레시 토큰입니다."));
+            }
+
+            String userId = jwtProvider.getUserIdentifierFromToken(request.refreshToken());
+            String newAccessToken = jwtProvider.createAccessToken(Long.parseLong(userId));
+            String newRefreshToken = jwtProvider.createRefreshToken(Long.parseLong(userId));
+
+            return ResponseEntity.ok(ApiResponse.success(
+                "토큰이 갱신되었습니다.",
+                new TokenResponse(newAccessToken, newRefreshToken)
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                .body(ApiResponse.error("토큰 갱신 중 오류가 발생했습니다."));
         }
     }
 
@@ -124,8 +153,15 @@ public class AuthController {
     ) {
     }
 
-    record LoginResponse(
-        String token
+    record TokenResponse(
+        String accessToken,
+        String refreshToken
+    ) {
+    }
+
+    record RefreshTokenRequest(
+        @NotBlank(message = "리프레시 토큰은 필수입니다")
+        String refreshToken
     ) {
     }
 } 
