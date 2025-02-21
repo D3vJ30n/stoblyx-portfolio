@@ -1,6 +1,10 @@
 package com.j30n.stoblyx.adapter.out.persistence;
 
-import com.j30n.stoblyx.domain.user.User;
+import com.j30n.stoblyx.adapter.out.persistence.adapter.UserPersistenceAdapter;
+import com.j30n.stoblyx.adapter.out.persistence.entity.UserJpaEntity;
+import com.j30n.stoblyx.adapter.out.persistence.mapper.UserMapper;
+import com.j30n.stoblyx.adapter.out.persistence.repository.UserRepository;
+import com.j30n.stoblyx.domain.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

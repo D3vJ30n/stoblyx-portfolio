@@ -1,7 +1,10 @@
-package com.j30n.stoblyx.adapter.out.persistence;
+package com.j30n.stoblyx.adapter.out.persistence.adapter;
 
-import com.j30n.stoblyx.domain.user.User;
-import com.j30n.stoblyx.port.out.UserPort;
+import com.j30n.stoblyx.adapter.out.persistence.entity.UserJpaEntity;
+import com.j30n.stoblyx.adapter.out.persistence.mapper.UserMapper;
+import com.j30n.stoblyx.adapter.out.persistence.repository.UserRepository;
+import com.j30n.stoblyx.domain.model.user.User;
+import com.j30n.stoblyx.domain.port.out.user.UserPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -27,25 +30,31 @@ public class UserPersistenceAdapter implements UserPort {
      *
      * @param user 저장할 사용자 정보
      * @return 저장된 사용자 정보
-     * @throws IllegalArgumentException        사용자 정보가 null인 경우
+     * @throws IllegalArgumentException 사용자 정보가 null이거나 필수 필드가 누락된 경우
      * @throws DataIntegrityViolationException 이메일 중복 등 데이터 무결성 위반 시
      */
     @Override
     @Transactional
     public User save(User user) {
         if (user == null) {
-            log.error("Cannot save null user");
-            throw new IllegalArgumentException("User cannot be null");
+            log.error("사용자 정보가 null입니다");
+            throw new IllegalArgumentException("사용자 정보는 null일 수 없습니다");
         }
 
         try {
-            log.debug("Saving user with email: {}", user.getEmail());
-            UserJpaEntity savedEntity = userRepository.save(userMapper.toJpaEntity(user));
+            log.debug("사용자 저장 시도 - 이메일: {}", user.getEmail());
+            UserJpaEntity savedEntity = userRepository.save(
+                userMapper.toJpaEntity(user)
+            );
             User savedUser = userMapper.toDomainEntity(savedEntity);
-            log.info("Successfully saved user with ID: {}", savedUser.getId());
+            log.info("사용자 저장 완료 - ID: {}", savedUser.getId());
             return savedUser;
         } catch (DataIntegrityViolationException e) {
-            log.error("Failed to save user with email: {}. Error: {}", user.getEmail(), e.getMessage());
+            log.error(
+                "사용자 저장 실패 - 이메일: {}, 오류: {}", 
+                user.getEmail(), 
+                e.getMessage()
+            );
             throw e;
         }
     }
@@ -59,17 +68,17 @@ public class UserPersistenceAdapter implements UserPort {
     @Override
     public Optional<User> findById(Long id) {
         if (id == null) {
-            log.error("Cannot find user with null ID");
+            log.error("ID가 null인 사용자는 조회할 수 없습니다");
             return Optional.empty();
         }
 
-        log.debug("Finding user by ID: {}", id);
+        log.debug("사용자 조회 시도 - ID: {}", id);
         return userRepository.findById(id)
-            .map(entity -> {
-                User user = userMapper.toDomainEntity(entity);
-                log.debug("Found user: {}", user.getEmail());
-                return user;
-            });
+                           .map(entity -> {
+                               User user = userMapper.toDomainEntity(entity);
+                               log.debug("사용자 조회 완료 - 이메일: {}", user.getEmail());
+                               return user;
+                           });
     }
 
     /**
@@ -81,17 +90,17 @@ public class UserPersistenceAdapter implements UserPort {
     @Override
     public Optional<User> findByEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            log.error("Cannot find user with null or empty email");
+            log.error("이메일이 null이거나 비어있어 조회할 수 없습니다");
             return Optional.empty();
         }
 
-        log.debug("Finding user by email: {}", email);
+        log.debug("사용자 조회 시도 - 이메일: {}", email);
         return userRepository.findByEmail(email)
-            .map(entity -> {
-                User user = userMapper.toDomainEntity(entity);
-                log.debug("Found user with ID: {}", user.getId());
-                return user;
-            });
+                           .map(entity -> {
+                               User user = userMapper.toDomainEntity(entity);
+                               log.debug("사용자 조회 완료 - ID: {}", user.getId());
+                               return user;
+                           });
     }
 
     /**
@@ -103,13 +112,13 @@ public class UserPersistenceAdapter implements UserPort {
     @Override
     public boolean existsByEmail(String email) {
         if (email == null || email.trim().isEmpty()) {
-            log.error("Cannot check existence with null or empty email");
+            log.error("이메일이 null이거나 비어있어 확인할 수 없습니다");
             return false;
         }
 
-        log.debug("Checking email existence: {}", email);
+        log.debug("이메일 존재 여부 확인 - 이메일: {}", email);
         boolean exists = userRepository.existsByEmail(email);
-        log.debug("Email {} exists: {}", email, exists);
+        log.debug("이메일 {} 존재 여부: {}", email, exists);
         return exists;
     }
-} 
+}

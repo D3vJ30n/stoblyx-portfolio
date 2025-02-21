@@ -30,8 +30,10 @@ spring:
 jwt:
   # JWT 시크릿 키 (환경 변수에서 가져옴, 기본값은 개발 환경용)
   secret: ${JWT_SECRET:5468576D5A7134743777217A25432A462D4A614E645267556B58703272357538}
-  # JWT 토큰 만료 시간 (초 단위)
-  token-validity-in-seconds: ${JWT_EXPIRATION:86400} # 기본값 24시간
+  # 액세스 토큰 만료 시간 (초 단위, 기본값 30분)
+  access-token-validity-in-seconds: ${JWT_ACCESS_TOKEN_EXPIRATION:1800}
+  # 리프레시 토큰 만료 시간 (초 단위, 기본값 7일)
+  refresh-token-validity-in-seconds: ${JWT_REFRESH_TOKEN_EXPIRATION:604800}
 
 # 프로파일별 설정
 ---
