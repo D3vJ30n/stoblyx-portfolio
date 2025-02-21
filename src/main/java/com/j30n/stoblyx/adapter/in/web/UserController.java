@@ -67,8 +67,7 @@ public class UserController {
      * @throws IllegalArgumentException 이메일이나 비밀번호가 일치하지 않는 경우
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginUserUseCase.LoginUserResponse>> login(
-        @Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<?>> login(@Valid @RequestBody LoginRequest request) {
         try {
             var command = new LoginUserUseCase.LoginUserCommand(
                 request.email(),
@@ -111,4 +110,4 @@ public class UserController {
         String password
     ) {
     }
-} 
+}
