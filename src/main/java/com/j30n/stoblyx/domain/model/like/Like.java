@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -51,6 +52,10 @@ public class Like extends BaseEntity {
     @Comment("좋아요를 누른 사용자")
     private User user;
 
+    private boolean isActive;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+
     /**
      * 좋아요 객체 생성을 위한 빌더 패턴
      * 생성 후 불변성을 보장하기 위해 private으로 선언
@@ -59,6 +64,9 @@ public class Like extends BaseEntity {
     private Like(Quote quote, User user) {
         this.quote = Objects.requireNonNull(quote, "인용구는 null일 수 없습니다");
         this.user = Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
+        this.isActive = true;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = LocalDateTime.now();
     }
 
     /**
@@ -81,17 +89,69 @@ public class Like extends BaseEntity {
         this.user = Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
     }
 
+    /**
+     * ID 설정을 위한 메서드
+     */
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    /**
+     * 시간 정보 설정을 위한 메서드
+     */
+    public void setTimeInfo(LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.createdAt = Objects.requireNonNull(createdAt, "생성 시간은 null일 수 없습니다");
+        this.modifiedAt = Objects.requireNonNull(modifiedAt, "수정 시간은 null일 수 없습니다");
+    }
+
+    /**
+     * 좋아요를 생성하는 정적 팩토리 메서드
+     */
+    public static Like create(User user, Quote quote) {
+        Like like = new Like(user, quote);
+        quote.getLikes().add(like);
+        return like;
+    }
+
+    /**
+     * 좋아요 취소
+     */
+    public void cancel() {
+        this.isActive = false;
+        this.modifiedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 좋아요 활성화
+     */
+    public void activate() {
+        this.isActive = true;
+        this.modifiedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 작성자 확인
+     */
+    public boolean isAuthor(User user) {
+        return this.user.equals(user);
+    }
+
+    /**
+     * 활성화 여부 확인
+     */
+    public boolean isActive() {
+        return this.isActive;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Like like)) return false;
-        return Objects.equals(id, like.id) &&
-            Objects.equals(quote.getId(), like.quote.getId()) &&
-            Objects.equals(user.getId(), like.user.getId());
+        return Objects.equals(id, like.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, quote.getId(), user.getId());
+        return Objects.hash(id);
     }
 } 

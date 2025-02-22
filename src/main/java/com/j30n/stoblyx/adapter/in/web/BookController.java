@@ -1,22 +1,21 @@
 package com.j30n.stoblyx.adapter.in.web;
 
-import com.j30n.stoblyx.application.dto.book.BookResponse;
-import com.j30n.stoblyx.application.dto.book.RegisterBookCommand;
-import com.j30n.stoblyx.application.dto.book.UpdateBookCommand;
+import com.j30n.stoblyx.application.dto.book.BookDto;
 import com.j30n.stoblyx.common.dto.ApiResponse;
-import com.j30n.stoblyx.domain.model.book.BookId;
 import com.j30n.stoblyx.domain.port.in.book.DeleteBookUseCase;
 import com.j30n.stoblyx.domain.port.in.book.FindBookUseCase;
 import com.j30n.stoblyx.domain.port.in.book.RegisterBookUseCase;
 import com.j30n.stoblyx.domain.port.in.book.UpdateBookUseCase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController {
     private final RegisterBookUseCase registerBookUseCase;
@@ -25,9 +24,12 @@ public class BookController {
     private final DeleteBookUseCase deleteBookUseCase;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BookResponse>> registerBook(@RequestBody RegisterBookCommand command) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<BookDto.Responses.BookDetail>> registerBook(
+        @Valid @RequestBody BookDto.Commands.Create command
+    ) {
         try {
-            BookResponse response = registerBookUseCase.registerBook(command);
+            var response = registerBookUseCase.registerBook(command);
             return ResponseEntity.ok(ApiResponse.success("책이 성공적으로 등록되었습니다.", response));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -36,9 +38,10 @@ public class BookController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<BookResponse>> findBook(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<BookDto.Responses.BookDetail>> findBook(@PathVariable Long id) {
         try {
-            BookResponse response = findBookUseCase.findById(new BookId(id));
+            var query = new BookDto.Queries.FindById(id);
+            var response = findBookUseCase.findById(query);
             return ResponseEntity.ok(ApiResponse.success("책 조회에 성공했습니다.", response));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -47,9 +50,9 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BookResponse>>> findAllBooks() {
+    public ResponseEntity<ApiResponse<List<BookDto.Responses.BookSummary>>> findAllBooks() {
         try {
-            List<BookResponse> response = findBookUseCase.findAll();
+            var response = findBookUseCase.findAll();
             return ResponseEntity.ok(ApiResponse.success("책 목록 조회에 성공했습니다.", response));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
@@ -58,10 +61,14 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> updateBook(@PathVariable Long id, @RequestBody UpdateBookCommand command) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<BookDto.Responses.BookDetail>> updateBook(
+        @PathVariable Long id,
+        @Valid @RequestBody BookDto.Commands.Update command
+    ) {
         try {
-            updateBookUseCase.updateBook(command);
-            return ResponseEntity.ok(ApiResponse.success("책이 성공적으로 수정되었습니다.", null));
+            var response = updateBookUseCase.updateBook(command);
+            return ResponseEntity.ok(ApiResponse.success("책이 성공적으로 수정되었습니다.", response));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));
@@ -69,10 +76,14 @@ public class BookController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteBook(@PathVariable Long id) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> deleteBook(
+        @PathVariable Long id,
+        @Valid @RequestBody BookDto.Commands.Delete command
+    ) {
         try {
-            deleteBookUseCase.deleteBook(new BookId(id));
-            return ResponseEntity.ok(ApiResponse.success("책이 성공적으로 삭제되었습니다.", null));
+            deleteBookUseCase.deleteBook(command);
+            return ResponseEntity.ok(ApiResponse.success("책이 성공적으로 삭제되었습니다."));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(ApiResponse.error(e.getMessage()));

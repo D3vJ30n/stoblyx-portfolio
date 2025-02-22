@@ -1,97 +1,50 @@
 package com.j30n.stoblyx.common.dto;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 /**
- * API 응답을 위한 공통 포맷
- * 
+ * API 응답을 위한 공통 응답 객체
  * @param <T> 응답 데이터의 타입
  */
 @Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
-    
-    /**
-     * API 응답 상태
-     */
-    public enum Status {
-        SUCCESS, ERROR
-    }
-
-    private final Status status;
-    private final String message;
-    private final T data;
-    private final int code;
-
-    private ApiResponse(Status status, String message, T data, int code) {
-        this.status = status;
-        this.message = message;
-        this.data = data;
-        this.code = code;
-    }
+    private String result;    // SUCCESS or ERROR
+    private String message;   // 응답 메시지
+    private T data;          // 응답 데이터
+    private LocalDateTime timestamp; // 응답 시간
 
     /**
      * 성공 응답을 생성합니다.
-     *
-     * @param message 성공 메시지
-     * @param data 응답 데이터
-     * @param <T> 응답 데이터의 타입
-     * @return 성공 응답 객체
      */
     public static <T> ApiResponse<T> success(String message, T data) {
-        return new ApiResponse<>(Status.SUCCESS, message, data, 200);
+        return new ApiResponse<>("SUCCESS", message, data, LocalDateTime.now());
     }
 
     /**
-     * 성공 응답을 생성합니다. (상태 코드 지정)
-     *
-     * @param message 성공 메시지
-     * @param data 응답 데이터
-     * @param code HTTP 상태 코드
-     * @param <T> 응답 데이터의 타입
-     * @return 성공 응답 객체
+     * 성공 응답을 생성합니다. (데이터 없음)
      */
-    public static <T> ApiResponse<T> success(String message, T data, int code) {
-        return new ApiResponse<>(Status.SUCCESS, message, data, code);
+    public static ApiResponse<Void> success(String message) {
+        return new ApiResponse<>("SUCCESS", message, null, LocalDateTime.now());
     }
 
     /**
      * 에러 응답을 생성합니다.
-     *
-     * @param message 에러 메시지
-     * @param <T> 응답 데이터의 타입
-     * @return 에러 응답 객체
      */
     public static <T> ApiResponse<T> error(String message) {
-        return new ApiResponse<>(Status.ERROR, message, null, 400);
+        return new ApiResponse<>("ERROR", message, null, LocalDateTime.now());
     }
 
     /**
-     * 에러 응답을 생성합니다. (상태 코드 지정)
-     *
-     * @param message 에러 메시지
-     * @param code HTTP 상태 코드
-     * @param <T> 응답 데이터의 타입
-     * @return 에러 응답 객체
+     * 에러 응답을 생성합니다. (에러 데이터 포함)
      */
-    public static <T> ApiResponse<T> error(String message, int code) {
-        return new ApiResponse<>(Status.ERROR, message, null, code);
-    }
-
-    /**
-     * 현재 응답이 성공인지 확인합니다.
-     *
-     * @return 성공 여부
-     */
-    public boolean isSuccess() {
-        return status == Status.SUCCESS;
-    }
-
-    /**
-     * 현재 응답이 에러인지 확인합니다.
-     *
-     * @return 에러 여부
-     */
-    public boolean isError() {
-        return status == Status.ERROR;
+    public static <T> ApiResponse<T> error(String message, T errorData) {
+        return new ApiResponse<>("ERROR", message, errorData, LocalDateTime.now());
     }
 }

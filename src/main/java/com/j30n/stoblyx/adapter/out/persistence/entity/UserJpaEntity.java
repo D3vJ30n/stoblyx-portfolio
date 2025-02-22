@@ -78,12 +78,16 @@ public class UserJpaEntity extends BaseTimeEntity {
      */
     public User toDomainEntity() {
         return User.builder()
-                .id(this.id)
-                .email(this.email)
-                .password(this.password)
-                .name(this.name)
-                .role(User.Role.valueOf(this.role.name()))
-                .build();
+            .id(this.id)
+            .email(this.email)
+            .password(this.password)
+            .name(this.name)
+            .role(User.Role.valueOf(this.role.name()))
+            .build();
+    }
+
+    public boolean isEmpty() {
+        return false;
     }
 
     /**

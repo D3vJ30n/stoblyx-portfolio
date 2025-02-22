@@ -1,235 +1,164 @@
 package com.j30n.stoblyx.domain.model.quote;
 
 import com.j30n.stoblyx.domain.base.BaseEntity;
-import com.j30n.stoblyx.domain.model.book.Book;
+import com.j30n.stoblyx.domain.model.book.BookId;
 import com.j30n.stoblyx.domain.model.comment.Comment;
 import com.j30n.stoblyx.domain.model.like.Like;
-import com.j30n.stoblyx.domain.model.savedquote.SavedQuote;
 import com.j30n.stoblyx.domain.model.user.User;
-import com.j30n.stoblyx.domain.model.video.Video;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import static lombok.AccessLevel.PROTECTED;
-
 /**
- * 인용구 엔티티
- * JPA 스펙을 만족하기 위해 protected 기본 생성자가 필요하며,
- * 외부에서 new 키워드를 통한 직접 생성을 막기 위해 protected로 선언
+ * 인용구 도메인 모델
+ * 책에서 발췌한 인용구를 나타냅니다.
  */
-@Entity
-@Table(
-    name = "quotes",
-    indexes = {
-        @Index(name = "idx_quote_book_id", columnList = "book_id"),
-        @Index(name = "idx_quote_user_id", columnList = "user_id")
-    }
-)
 @Getter
-@NoArgsConstructor(access = PROTECTED)
 public class Quote extends BaseEntity {
-
-    @OneToMany(mappedBy = "quote", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @BatchSize(size = 100)
     private final List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "quote", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @BatchSize(size = 100)
     private final List<Like> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "quote", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    @BatchSize(size = 100)
-    private final List<SavedQuote> savedQuotes = new ArrayList<>();
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @org.hibernate.annotations.Comment("문구 고유 식별자")
-    private Long id;
-
-    @NotBlank
-    @Column(nullable = false)
-    @org.hibernate.annotations.Comment("문구 내용")
-    private String content;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
-    @org.hibernate.annotations.Comment("문구가 속한 책")
+    private final User user;
+    private final BookId bookId;
+    private QuoteId id;
+    private Content content;
+    private Page page;
+    private boolean isDeleted;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
     private Book book;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    @org.hibernate.annotations.Comment("문구를 등록한 사용자")
-    private User user;
-
-    @OneToOne(mappedBy = "quote", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
-    private Video video;
 
     /**
      * 인용구 객체 생성을 위한 빌더 패턴
      * 생성 후 불변성을 보장하기 위해 private으로 선언
      */
     @Builder
-    private Quote(String content, Book book, User user) {
-        this.content = Objects.requireNonNull(content, "인용구 내용은 null일 수 없습니다");
-        this.book = Objects.requireNonNull(book, "책은 null일 수 없습니다");
+    private Quote(User user, BookId bookId, Content content, Page page) {
         this.user = Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
+        this.bookId = Objects.requireNonNull(bookId, "책 ID는 null일 수 없습니다");
+        this.content = Objects.requireNonNull(content, "인용구 내용은 null일 수 없습니다");
+        this.page = Objects.requireNonNull(page, "페이지 정보는 null일 수 없습니다");
+        this.isDeleted = false;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = LocalDateTime.now();
     }
 
     /**
-     * 인용구 생성을 위한 정적 팩토리 메서드
-     * 양방향 연관관계 설정을 자동으로 처리
+     * ID로 인용구를 생성하는 정적 팩토리 메서드
      */
-    public static Quote createQuote(String content, Book book, User user) {
+    public static Quote withId(Long id) {
         Quote quote = Quote.builder()
-            .content(content)
-            .book(book)
-            .user(user)
+            .user(User.withId(1L)) // 임시 사용자
+            .bookId(new BookId(1L)) // 임시 책 ID
+            .content(new Content("임시 내용"))
+            .page(new Page(1))
             .build();
-        book.getQuotes().add(quote);
-        user.getQuotes().add(quote);
+        quote.setId(new QuoteId(id));
         return quote;
     }
 
-    // Business methods
-
     /**
-     * 연관관계 편의 메서드 - 댓글 추가
+     * ID 설정을 위한 메서드
      */
-    public Comment addComment(String content, User user) {
-        Objects.requireNonNull(content, "댓글 내용은 null일 수 없습니다");
-        Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
-        Comment comment = Comment.builder()
-            .content(content)
-            .quote(this)
-            .user(user)
-            .build();
-        this.comments.add(comment);
-        user.getComments().add(comment);
-        return comment;
+    public void setId(QuoteId id) {
+        this.id = id;
     }
 
     /**
-     * 연관관계 편의 메서드 - 답글 추가
+     * 시간 정보 설정을 위한 메서드
      */
-    public Comment addReply(String content, User user, Comment parent) {
-        Objects.requireNonNull(content, "댓글 내용은 null일 수 없습니다");
-        Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
-        Objects.requireNonNull(parent, "부모 댓글은 null일 수 없습니다");
-        if (!this.comments.contains(parent)) {
-            throw new IllegalArgumentException("부모 댓글이 현재 인용구에 속하지 않습니다");
-        }
-        Comment reply = Comment.builder()
-            .content(content)
-            .quote(this)
-            .user(user)
-            .parent(parent)
-            .build();
-        this.comments.add(reply);
-        user.getComments().add(reply);
-        parent.getReplies().add(reply);
-        return reply;
+    public void setTimeInfo(LocalDateTime createdAt, LocalDateTime modifiedAt) {
+        this.createdAt = Objects.requireNonNull(createdAt, "생성 시간은 null일 수 없습니다");
+        this.modifiedAt = Objects.requireNonNull(modifiedAt, "수정 시간은 null일 수 없습니다");
     }
 
     /**
-     * 연관관계 편의 메서드 - 좋아요 추가
+     * 인용구 내용 수정
      */
-    public Like addLike(User user) {
-        Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
-        Like like = Like.builder()
-            .quote(this)
-            .user(user)
-            .build();
-        this.likes.add(like);
-        user.getLikes().add(like);
-        return like;
+    public void updateContent(Content content) {
+        validateNotDeleted();
+        this.content = Objects.requireNonNull(content, "인용구 내용은 null일 수 없습니다");
+        this.modifiedAt = LocalDateTime.now();
     }
 
     /**
-     * 연관관계 편의 메서드 - 저장된 인용구 추가
+     * 페이지 정보 수정
      */
-    public SavedQuote addSavedQuote(User user) {
-        Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
-        SavedQuote savedQuote = SavedQuote.builder()
-            .quote(this)
-            .user(user)
-            .build();
-        this.savedQuotes.add(savedQuote);
-        user.getSavedQuotes().add(savedQuote);
-        return savedQuote;
+    public void updatePage(Page page) {
+        validateNotDeleted();
+        this.page = Objects.requireNonNull(page, "페이지 정보는 null일 수 없습니다");
+        this.modifiedAt = LocalDateTime.now();
     }
 
     /**
-     * 연관관계 편의 메서드 - 동영상 추가
-     * 하나의 인용구에는 하나의 동영상만 연결될 수 있음
+     * 인용구 삭제
      */
-    public Video addVideo(String url, User user) {
-        Objects.requireNonNull(url, "동영상 URL은 null일 수 없습니다");
-        Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
-        if (this.video != null) {
-            throw new IllegalStateException("이미 동영상이 등록되어 있습니다");
-        }
-        Video video = Video.builder()
-            .url(url)
-            .quote(this)
-            .user(user)
-            .build();
-        this.video = video;
-        return video;
+    public void delete() {
+        this.isDeleted = true;
+        this.modifiedAt = LocalDateTime.now();
     }
 
     /**
-     * 연관관계 편의 메서드 - 컬렉션 조회
+     * 작성자 확인
+     */
+    public boolean isAuthor(User user) {
+        return this.user.equals(user);
+    }
+
+    /**
+     * 삭제 여부 확인
+     */
+    public boolean isDeleted() {
+        return this.isDeleted;
+    }
+
+    /**
+     * 댓글 목록 조회
      */
     public List<Comment> getComments() {
         return Collections.unmodifiableList(comments);
     }
 
+    /**
+     * 좋아요 목록 조회
+     */
     public List<Like> getLikes() {
         return Collections.unmodifiableList(likes);
     }
 
-    public List<SavedQuote> getSavedQuotes() {
-        return Collections.unmodifiableList(savedQuotes);
-    }
-
-    // Update methods
-    public void updateContent(String content) {
-        this.content = Objects.requireNonNull(content, "인용구 내용은 null일 수 없습니다");
-    }
-
-    public void setUser(User user) {
-        this.user = Objects.requireNonNull(user, "사용자는 null일 수 없습니다");
-    }
-
-    public void setBook(Book book) {
-        this.book = Objects.requireNonNull(book, "책은 null일 수 없습니다");
-    }
-
-    public void setVideo(Video video) {
-        this.video = video;
+    /**
+     * 삭제된 인용구 검증
+     */
+    private void validateNotDeleted() {
+        if (isDeleted) {
+            throw new IllegalStateException("삭제된 인용구는 수정할 수 없습니다");
+        }
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Quote quote)) return false;
-        return Objects.equals(id, quote.id) &&
-            Objects.equals(content, quote.content) &&
-            Objects.equals(book.getId(), quote.book.getId()) &&
-            Objects.equals(user.getId(), quote.user.getId());
+        return Objects.equals(id, quote.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, content, book.getId(), user.getId());
+        return Objects.hash(id);
     }
-} 
+
+    public void setUser(User user) {
+    }
+
+    public void setBook(Book book) {
+        this.book = Objects.requireNonNull(book, "책 정보는 null일 수 없습니다");
+    }
+
+    public Book getBook() {
+        return Objects.requireNonNull(book, "책 정보가 설정되지 않았습니다");
+    }
+}

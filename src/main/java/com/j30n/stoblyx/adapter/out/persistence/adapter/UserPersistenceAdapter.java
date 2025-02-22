@@ -4,7 +4,7 @@ import com.j30n.stoblyx.adapter.out.persistence.entity.UserJpaEntity;
 import com.j30n.stoblyx.adapter.out.persistence.mapper.UserMapper;
 import com.j30n.stoblyx.adapter.out.persistence.repository.UserRepository;
 import com.j30n.stoblyx.domain.model.user.User;
-import com.j30n.stoblyx.domain.port.out.user.UserPort;
+import com.j30n.stoblyx.port.out.UserPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -30,7 +30,7 @@ public class UserPersistenceAdapter implements UserPort {
      *
      * @param user 저장할 사용자 정보
      * @return 저장된 사용자 정보
-     * @throws IllegalArgumentException 사용자 정보가 null이거나 필수 필드가 누락된 경우
+     * @throws IllegalArgumentException        사용자 정보가 null이거나 필수 필드가 누락된 경우
      * @throws DataIntegrityViolationException 이메일 중복 등 데이터 무결성 위반 시
      */
     @Override
@@ -43,18 +43,19 @@ public class UserPersistenceAdapter implements UserPort {
 
         try {
             log.debug("사용자 저장 시도 - 이메일: {}", user.getEmail());
-            UserJpaEntity savedEntity = userRepository.save(
-                userMapper.toJpaEntity(user)
-            );
+            UserJpaEntity userJpaEntity = userMapper.toJpaEntity(user);
+
+            if (userJpaEntity == null) {
+                log.error("사용자 변환 중 오류가 발생했습니다");
+                throw new IllegalArgumentException("사용자 변환 중 오류가 발생했습니다");
+            }
+
+            UserJpaEntity savedEntity = userRepository.save(userJpaEntity);
             User savedUser = userMapper.toDomainEntity(savedEntity);
             log.info("사용자 저장 완료 - ID: {}", savedUser.getId());
             return savedUser;
         } catch (DataIntegrityViolationException e) {
-            log.error(
-                "사용자 저장 실패 - 이메일: {}, 오류: {}", 
-                user.getEmail(), 
-                e.getMessage()
-            );
+            log.error("사용자 저장 실패 - 이메일: {}, 오류: {}", user.getEmail(), e.getMessage());
             throw e;
         }
     }
@@ -74,11 +75,11 @@ public class UserPersistenceAdapter implements UserPort {
 
         log.debug("사용자 조회 시도 - ID: {}", id);
         return userRepository.findById(id)
-                           .map(entity -> {
-                               User user = userMapper.toDomainEntity(entity);
-                               log.debug("사용자 조회 완료 - 이메일: {}", user.getEmail());
-                               return user;
-                           });
+            .map(entity -> {
+                User user = userMapper.toDomainEntity(entity);
+                log.debug("사용자 조회 완료 - 이메일: {}", user.getEmail());
+                return user;
+            });
     }
 
     /**
@@ -96,11 +97,11 @@ public class UserPersistenceAdapter implements UserPort {
 
         log.debug("사용자 조회 시도 - 이메일: {}", email);
         return userRepository.findByEmail(email)
-                           .map(entity -> {
-                               User user = userMapper.toDomainEntity(entity);
-                               log.debug("사용자 조회 완료 - ID: {}", user.getId());
-                               return user;
-                           });
+            .map(entity -> {
+                User user = userMapper.toDomainEntity(entity);
+                log.debug("사용자 조회 완료 - ID: {}", user.getId());
+                return user;
+            });
     }
 
     /**

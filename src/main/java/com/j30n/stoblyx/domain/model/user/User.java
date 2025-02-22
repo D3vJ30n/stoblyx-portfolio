@@ -38,44 +38,55 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<Quote> quotes = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<Comment> comments = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<Like> likes = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<SavedQuote> savedQuotes = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private final List<UserReward> rewards = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @org.hibernate.annotations.Comment("사용자 고유 식별자")
     private Long id;
+
     @NotBlank
     @Email
     @Size(max = 100)
     @Column(nullable = false, unique = true)
     @org.hibernate.annotations.Comment("사용자 이메일")
     private String email;
+
     @NotBlank
     @Size(min = 8, max = 100)
     @Column(nullable = false)
     @org.hibernate.annotations.Comment("암호화된 비밀번호")
     private String password;
+
     @NotBlank
     @Size(max = 50)
     @Column(nullable = false)
     @org.hibernate.annotations.Comment("사용자 이름")
     private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @org.hibernate.annotations.Comment("사용자 권한")
     private Role role;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserInterest userInterest;
 
     // Builder pattern for immutable object creation
     @Builder
-    private User(String email, String password, String name, Role role) {
+    private User(Long id, String email, String password, String name, Role role) {
+        this.id = id;  // id 필드 추가
         this.email = Objects.requireNonNull(email, "이메일은 null일 수 없습니다");
         this.password = Objects.requireNonNull(password, "비밀번호는 null일 수 없습니다");
         this.name = Objects.requireNonNull(name, "이름은 null일 수 없습니다");
@@ -104,6 +115,10 @@ public class User extends BaseEntity {
             .name(name)
             .role(Role.ADMIN)
             .build();
+    }
+
+    public static User withId(Long userId) {
+        return null;
     }
 
     // Business methods
