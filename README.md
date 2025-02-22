@@ -65,11 +65,13 @@
 ### 2. Why Stoblyx?
 
 1. **문제 인식**
+
     - MZ세대의 독서 감소 현상
     - 숏폼 콘텐츠 선호도 증가
     - 의미있는 문장들이 잊혀지는 현실
 
 2. **해결 방안**
+
     - 책 속 문장들을 현대적으로 재해석
     - AI 기술로 새로운 가치 창출
     - 게이미피케이션으로 참여 유도
@@ -167,17 +169,20 @@
 #### 아키텍처 특징
 
 1. **모놀리식 아키텍처**
+
     - 단일 애플리케이션으로 구성
     - 향후 마이크로서비스 전환 고려한 설계(현실적으로 X)
     - 명확한 컴포넌트 분리
 
 2. **헥사고날 아키텍처 적용**
+
     - 도메인 중심 설계
     - 포트와 어댑터 패턴 활용
     - 외부 시스템과의 결합도 최소화
 
    ```markdown
    핵심 계층
+
    - Domain Layer: 비즈니스 로직
    - Application Layer: 유스케이스
    - Adapter Layer: 외부 시스템 연동
@@ -186,16 +191,19 @@
 #### 주요 컴포넌트
 
 1. **사용자 관리**
+
     - 회원가입/로그인
     - JWT 기반 인증
     - 권한 관리
 
 2. **게시글 관리**
+
     - 문구 CRUD
     - 검색 기능
     - 권한 처리
 
 3. **AI 서비스 연동**
+
     - 외부 AI API 통합
     - 비동기 처리
     - 결과 캐싱
@@ -912,12 +920,69 @@ docker run -d --name stoblyx -p 8080:8080 stoblyx:latest
 
 ### 10. 트러블슈팅
 
-ex)
+#### 1. JPA 엔티티 매핑 문제
 
-#### 1. AI 모델 통합 지연(URL)
+- **문제 상황**: 도메인 분리 과정에서 엔티티 간 연관관계 매핑 오류 발생
+- **원인**
+    - 순환 참조 발생
+    - FetchType.EAGER로 인한 N+1 문제
+- **해결 방안**
+    - FetchType.LAZY로 변경
+    - @EntityGraph 적용하여 필요한 연관관계만 조회
+    - DTO 프로젝션 활용하여 필요한 데이터만 조회
 
-- **문제 상황**: KoBART 모델 로딩 시간이 길어 API 응답 지연
-- **해결 방안**: 모델 초기화를 비동기로 처리하고, 추론 시 GPU 가속 활용
+#### 2. 타입 파라미터 바인딩 오류
+
+- **문제 상황**: UserRepository의 JpaRepository 타입 파라미터 추론 실패
+- **원인**
+    - 제네릭 타입 파라미터 명시적 지정 누락
+    - 잘못된 타입 파라미터 사용
+- **해결 방안**
+    - JpaRepository<UserJpaEntity, Long> 명시적 타입 지정
+    - 엔티티와 ID 타입 정확히 매핑
+
+#### 3. 로깅 메서드 호출 오류
+
+- **문제 상황**: ID 필드 로깅 시 value() 메서드 호출 오류
+- **원인**
+    - ID 클래스의 메서드 시그니처 변경
+    - 잘못된 메서드 참조
+- **해결 방안**
+    - value() 대신 getClass() 메서드 사용
+    - 로깅 메시지 포맷 통일화
+
+#### 4. 헥사고날 아키텍처 도메인 분리
+
+- **문제 상황**: 도메인 간 강한 결합도로 인한 분리 어려움
+- **원인**
+    - 도메인 로직이 여러 계층에 분산
+    - 명확하지 않은 도메인 경계
+- **해결 방안**
+    - 도메인별 독립적인 패키지 구조 생성
+    - 포트와 어댑터를 통한 의존성 역전
+    - 명확한 도메인 모델 정의
+
+#### 5. 트랜잭션 관리
+
+- **문제 상황**: 여러 도메인 서비스 간 트랜잭션 동기화 문제
+- **원인**
+    - 트랜잭션 범위 설정 미흡
+    - 중첩 트랜잭션 처리 부재
+- **해결 방안**
+    - @Transactional 적절한 위치에 적용
+    - TransactionTemplate 활용
+    - 트랜잭션 전파 설정 최적화
+
+#### 6. 예외 처리 표준화
+
+- **문제 상황**: 각 도메인별 상이한 예외 처리 방식
+- **원인**
+    - 일관되지 않은 예외 처리 정책
+    - 예외 변환 로직 부재
+- **해결 방안**
+    - GlobalExceptionHandler 구현
+    - 도메인별 커스텀 예외 정의
+    - 일관된 예외 처리 패턴 적용
 
 ---
 
@@ -926,52 +991,20 @@ ex)
 #### 헥사고날 아키텍처 (Hexagonal Architecture / Ports and Adapters)
 
 ```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/
-│   │       └── stoblyx/
-│   │           ├── domain/                   # 도메인 계층 - 비즈니스 로직을 담당
-│   │           │   ├── model/                # 도메인 모델 - 핵심 엔티티 및 값 객체 정의
-│   │           │   │   ├── quote/            # 문구(Quote) 관련 도메인 모델
-│   │           │   │   ├── user/             # 사용자(User) 관련 도메인 모델
-│   │           │   │   ├── userinterest/     # 사용자 관심사 관련 도메인 모델 추가
-│   │           │   │   ├── ranking/          # 사용자 랭킹 관련 도메인 모델 추가
-│   │           │   │   ├── reward/           # 사용자 보상 관련 도메인 모델 추가
-│   │           │   ├── port/                 # 포트 인터페이스 - 애플리케이션과 외부 시스템 간의 경계를 정의
-│   │           │   │   ├── in/               # 인바운드 포트 - 클라이언트 요청을 처리하는 인터페이스 (API, 이벤트 등)
-│   │           │   │   └── out/              # 아웃바운드 포트 - 데이터베이스, 외부 API와 상호작용하는 인터페이스
-│   │           │   └── service/              # 도메인 서비스 - 도메인 간의 복잡한 비즈니스 로직 처리
-│   │           │       ├── UserRankingService.java    # 랭킹 서비스 추가
-│   │           │       ├── UserRewardService.java     # 보상 서비스 추가
-│   │           │       ├── AITextSummaryService.java  # AI 요약 서비스 추가
-│   │           ├── adapter/                 # 어댑터 계층 - 포트 인터페이스를 구현하여 실제 데이터 흐름을 처리
-│   │           │   ├── in/                  # 인바운드 어댑터 - 클라이언트에서 들어오는 요청을 처리
-│   │           │   │   ├── web/             # REST API 컨트롤러 - HTTP 요청을 처리하는 어댑터
-│   │           │   │   └── event/           # 이벤트 핸들러 - 메시지 큐, 비동기 이벤트를 처리
-│   │           │   │       ├── AITextSummaryEventListener.java  # 비동기 AI 요약 이벤트 리스너 추가
-│   │           │   └── out/                  # 아웃바운드 어댑터 - 외부 시스템과 연동하는 구현체
-│   │           │       ├── persistence/      # 데이터베이스 연동 (JPA Repository, DAO 등)
-│   │           │       │   ├── UserInterestRepository.java  # 관심사 저장소 추가
-│   │           │       │   ├── RankingRepository.java       # 랭킹 저장소 추가
-│   │           │       │   ├── UserRewardRepository.java    # 보상 저장소 추가
-│   │           │       ├── external/         # 외부 API 연동 (예: 무료 AI 요약 API, 도서 정보 API 등)
-│   │           │       │   ├── AITextSummaryClient.java    # AI 요약 서비스 클라이언트 추가
-│   │           └── common/                   # 공통 모듈 - 전역적으로 사용되는 유틸리티 및 설정
-│   │               ├── config/               # 설정 관련 클래스 (예: Spring Security, JWT 설정 등)
-│   │               ├── exception/            # 예외 처리 관련 클래스 (예: 글로벌 예외 핸들러)
-│   │               └── util/                 # 공통적으로 사용되는 유틸리티 클래스 (예: 암호화, 날짜 변환)
-│   └── resources/                            # 설정 및 정적 리소스 파일
-│       ├── application.yml                   # 기본 환경 설정 파일
-│       ├── application-local.yml             # 로컬 개발 환경용 설정 파일
-│       └── application-prod.yml              # 운영 환경용 설정 파일
-└── test/                                     # 테스트 코드 디렉터리
-    └── java/
-        └── com/
-            └── stoblyx/
-                ├── domain/                   # 도메인 계층 테스트 (비즈니스 로직 검증)
-                ├── application/              # 애플리케이션 계층 테스트 (유스케이스 검증)
-                ├── adapter/                  # 어댑터 계층 테스트 (API 및 외부 연동 테스트)
+stoblyx-portfolio/
+├── src/
+│   ├── main/
+│   │   ├── java/com/j30n/stoblyx/
+│   │   │   ├── adapter/           # 외부 시스템과의 통신을 담당
+│   │   │   ├── application/       # 비즈니스 로직 구현
+│   │   │   ├── common/           # 공통 유틸리티 및 설정
+│   │   │   ├── domain/           # 핵심 비즈니스 도메인
+│   │   │   ├── port/             # 포트 인터페이스 정의
+│   │   │   └── StoblyxApplication.java  # 메인 애플리케이션
+│   │   └── resources/            # 설정 파일 및 정적 리소스
+├── build.gradle                  # 프로젝트 빌드 설정
+├── .env                         # 환경 변수 설정
+└── README.md                    # 프로젝트 문서
 
 ```
 
@@ -981,79 +1014,84 @@ src/
 
 #### **1. 도메인 계층 (Domain Layer)**
 
-- **개선 사항**
-    - **Aggregate Root 명시**
-      ```markdown
-      - `User`와 `Quote`는 각각 Aggregate Root로, 하위 엔티티(예: `Comment`, `Like`)를 관리
-      ```
-    - **도메인 이벤트 예시**
-      ```markdown
-      - `QuoteCreatedEvent`: 문구 생성 시 이벤트 발행, 비동기 처리로 알림 전송
-      ```
+- **도메인 모델 (Domain Model)**
+  ```markdown
+  - 각 도메인별 핵심 엔티티 정의 (Book, Comment, Like, Quote 등)
+  - Value Object와 집계 루트(Aggregate Root) 구현
+  - 도메인 이벤트 정의 (예: QuoteCreatedEvent, LikeAddedEvent)
+  ```
+- **도메인 서비스 (Domain Service)**
+  ```markdown
+  - 도메인별 핵심 비즈니스 로직 구현
+  - 도메인 규칙과 정책 적용
+  - 여러 엔티티 간의 상호작용 처리
+  ```
 
 ---
 
-#### **2. 포트 인터페이스 (Port Interface)**
+#### **2. 포트 계층 (Port Layer)**
 
-- **개선 사항**
-    - **인바운드 포트 예시**
-      ```markdown
-      - `UserServicePort`: 사용자 관련 비즈니스 로직 인터페이스
-      - `QuoteServicePort`: 문구 관련 비즈니스 로직 인터페이스
-      ```
-    - **아웃바운드 포트 예시**
-      ```markdown
-      - `UserRepositoryPort`: 사용자 데이터 조회 및 저장 인터페이스
-      - `QuoteRepositoryPort`: 문구 데이터 조회 및 저장 인터페이스
-      ```
-
----
-
-#### **3. 어댑터 구현 (Adapter Implementation)**
-
-- **개선 사항**
-    - **인바운드 어댑터 예시**
-      ```markdown
-      - `UserController`: 사용자 관련 REST API 컨트롤러
-      - `QuoteController`: 문구 관련 REST API 컨트롤러
-      ```
-    - **아웃바운드 어댑터 예시 추가**
-      ```markdown
-      - `JpaUserRepository`: JPA를 이용한 사용자 데이터 저장소 구현
-      - `JpaQuoteRepository`: JPA를 이용한 문구 데이터 저장소 구현
-      ```
+- **인바운드 포트 (Inbound Ports)**
+  ```markdown
+  - UseCase 인터페이스 정의 (예: QuoteUseCase, UserUseCase)
+  - 애플리케이션이 제공하는 기능 명세
+  - Command와 Query 인터페이스 분리
+  ```
+- **아웃바운드 포트 (Outbound Ports)**
+  ```markdown
+  - Repository 인터페이스 정의
+  - 외부 시스템 연동 인터페이스
+  - 영속성 작업 명세
+  ```
 
 ---
 
-#### **4. 공통 모듈 (Common Module)**
+#### **3. 어댑터 계층 (Adapter Layer)**
 
-- **개선 사항**
-    - **유틸리티 클래스 예시**
-      ```markdown
-      - `DateUtils`: 날짜 변환 및 계산 유틸리티
-      - `EncryptionUtils`: AES-256 암호화 유틸리티
-      ```
-    - **예외 처리 예시**
-      ```markdown
-      - `GlobalExceptionHandler`: 전역 예외 처리 클래스
-      - `CustomException`: 사용자 정의 예외 클래스
-      ```
+- **인바운드 어댑터 (Inbound Adapters)**
+  ```markdown
+  - REST API 컨트롤러 구현
+  - 요청/응답 DTO 정의
+  - 입력 유효성 검증
+  ```
+- **아웃바운드 어댑터 (Outbound Adapters)**
+  ```markdown
+  - JPA 기반 Repository 구현
+  - 외부 API 클라이언트 구현
+  - 영속성 매핑 및 변환 로직
+  ```
 
 ---
 
-#### **5. 테스트 계층 (Test Layer)**
+#### **4. 애플리케이션 계층 (Application Layer)**
 
-- **개선 사항**
-    - **테스트 범위 명시**
-      ```markdown
-      - 도메인 계층 테스트: 비즈니스 로직 검증
-      - 어댑터 계층 테스트: API 및 외부 연동 검증
-      ```
-    - **테스트 도구 예시**
-      ```markdown
-      - JUnit 5: 단위 테스트
-      - Mockito: 모의 객체 생성
-      ```
+```markdown
+- 유스케이스 구현 (도메인 서비스 오케스트레이션)
+- 트랜잭션 관리
+- 도메인 이벤트 처리
+```
+
+---
+
+#### **5. 공통 모듈 (Common Module)**
+
+```markdown
+- 글로벌 예외 처리 (GlobalExceptionHandler)
+- 공통 응답 객체 (ApiResponse)
+- 유틸리티 클래스
+- 보안 설정 및 인증/인가 처리
+```
+
+---
+
+#### **6. 설정 (Configuration)**
+
+```markdown
+- 스프링 부트 설정
+- JPA 및 데이터베이스 설정
+- 보안 및 로깅 설정
+- 캐시 설정
+```
 
 ---
 
@@ -1161,4 +1199,3 @@ ex) `https://stoblyx.koyeb.app`
 
 © 2025 Stoblyx.  
 이 프로젝트는 [CC BY-NC-ND 4.0 라이선스](https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko)에 따라 보호됩니다.
-
