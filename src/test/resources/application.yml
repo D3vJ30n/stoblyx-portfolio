@@ -1,0 +1,5 @@
+spring:
+  profiles:
+    default: test
+  config:
+    use-legacy-processing: true

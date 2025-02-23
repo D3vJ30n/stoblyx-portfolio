@@ -1,0 +1,129 @@
+= Stoblyx API 문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 4
+:sectlinks:
+:operation-curl-request-title: Example request
+:operation-http-response-title: Example response
+
+[[overview]]
+== 개요
+
+Stoblyx API는 문구 공유 플랫폼의 RESTful API입니다.
+
+[[overview-http-verbs]]
+=== HTTP 동사
+
+본 API에서 사용하는 HTTP 동사(verbs)는 가능한한 REST 규약을 따릅니다.
+
+[cols="20,80"]
+|===
+| 동사 | 용례
+
+| `GET`
+| 리소스를 조회할 때 사용
+
+| `POST`
+| 새 리소스를 생성할 때 사용
+
+| `PUT`
+| 기존 리소스를 수정할 때 사용
+
+| `DELETE`
+| 기존 리소스를 삭제할 때 사용
+|===
+
+[[overview-http-status-codes]]
+=== HTTP 상태 코드
+
+본 API에서 사용하는 HTTP 상태 코드는 가능한한 REST 규약을 따릅니다.
+
+[cols="20,80"]
+|===
+| 상태 코드 | 용례
+
+| `200 OK`
+| 요청을 성공적으로 처리함
+
+| `201 Created`
+| 새 리소스를 성공적으로 생성함
+
+| `204 No Content`
+| 기존 리소스를 성공적으로 삭제함
+
+| `400 Bad Request`
+| 잘못된 요청을 보낸 경우
+
+| `401 Unauthorized`
+| 인증되지 않은 사용자가 보호된 리소스에 접근하는 경우
+
+| `403 Forbidden`
+| 인증된 사용자가 권한이 없는 리소스에 접근하는 경우
+
+| `404 Not Found`
+| 요청한 리소스가 존재하지 않는 경우
+
+| `500 Internal Server Error`
+| 서버에 오류가 발생한 경우
+|===
+
+[[resources]]
+== API 리소스
+
+[[resources-comments]]
+=== 댓글 API
+
+[[resources-comments-create]]
+==== 댓글 작성
+
+operation::create-comment[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[resources-comments-get]]
+==== 댓글 조회
+
+operation::get-comment[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-comments-list-by-quote]]
+==== 문구별 댓글 목록 조회
+
+operation::get-comments-by-quote[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-comments-list-by-user]]
+==== 사용자별 댓글 목록 조회
+
+operation::get-comments-by-user[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-comments-update]]
+==== 댓글 수정
+
+operation::update-comment[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[resources-comments-delete]]
+==== 댓글 삭제
+
+operation::delete-comment[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-likes]]
+=== 좋아요 API
+
+[[resources-likes-like]]
+==== 문구 좋아요
+
+operation::like-quote[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-likes-unlike]]
+==== 문구 좋아요 취소
+
+operation::unlike-quote[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-likes-status]]
+==== 문구 좋아요 상태 확인
+
+operation::check-like-status[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-likes-list]]
+==== 좋아요한 문구 목록 조회
+
+operation::get-liked-quotes[snippets='http-request,http-response,response-fields']

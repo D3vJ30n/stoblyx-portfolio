@@ -1,27 +1,53 @@
 spring:
+  profiles:
+    active: development
   application:
-    name: stoblyx-portfolio
+    name: stoblyx
+
+  # Redis와 RabbitMQ 자동 설정 비활성화
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:stoblyx_db}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    url: jdbc:mysql://${DB_HOST:192.168.219.101}:${DB_PORT:3306}/${DB_NAME:stoblyx_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:6188}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 30000
+      connection-timeout: 20000
+      validation-timeout: 5000
+      max-lifetime: 1200000
+      auto-commit: true
 
   jpa:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
     properties:
       hibernate:
         format_sql: true
-    show-sql: ${SHOW_SQL:true}
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        connection:
+          characterEncoding: utf8
+          charSet: UTF-8
+          useUnicode: true
 
   data:
     redis:
+      enabled: ${REDIS_ENABLED:false}
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
 
   rabbitmq:
+    enabled: ${RABBITMQ_ENABLED:false}
     host: ${RABBITMQ_HOST:localhost}
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME:guest}
@@ -29,7 +55,7 @@ spring:
 
 jwt:
   # JWT 시크릿 키 (환경 변수에서 가져옴, 기본값은 개발 환경용)
-  secret: ${JWT_SECRET:5468576D5A7134743777217A25432A462D4A614E645267556B58703272357538}
+  secret: ${JWT_SECRET:dev_jwt_secret_key_do_not_use_in_production} # 개발 환경용 기본값 추가
   # 액세스 토큰 만료 시간 (초 단위, 기본값 30분)
   access-token-validity-in-seconds: ${JWT_ACCESS_TOKEN_EXPIRATION:1800}
   # 리프레시 토큰 만료 시간 (초 단위, 기본값 7일)
@@ -56,3 +82,17 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
