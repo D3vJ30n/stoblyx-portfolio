@@ -1,12 +1,13 @@
 package com.j30n.stoblyx.application.service.auth;
 
-import com.j30n.stoblyx.adapter.web.dto.auth.LoginRequest;
-import com.j30n.stoblyx.adapter.web.dto.auth.SignUpRequest;
-import com.j30n.stoblyx.adapter.web.dto.auth.TokenResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.auth.LoginRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.auth.SignUpRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.auth.TokenResponse;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import com.j30n.stoblyx.infrastructure.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
@@ -30,22 +32,32 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void signUp(SignUpRequest request) {
+        log.debug("회원가입 시도 - username: {}, email: {}", request.username(), request.email());
+        
         if (userRepository.existsByUsername(request.username())) {
+            log.debug("회원가입 실패 - 이미 존재하는 username: {}", request.username());
             throw new IllegalArgumentException("이미 사용 중인 아이디입니다.");
         }
 
         if (userRepository.existsByEmail(request.email())) {
+            log.debug("회원가입 실패 - 이미 존재하는 email: {}", request.email());
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
-        User user = User.builder()
-            .username(request.username())
-            .password(passwordEncoder.encode(request.password()))
-            .nickname(request.nickname())
-            .email(request.email())
-            .build();
+        try {
+            User user = User.builder()
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .nickname(request.nickname())
+                .email(request.email())
+                .build();
 
-        userRepository.save(user);
+            userRepository.save(user);
+            log.debug("회원가입 성공 - username: {}", request.username());
+        } catch (Exception e) {
+            log.error("회원가입 처리 중 오류 발생", e);
+            throw new RuntimeException("회원가입 처리 중 오류가 발생했습니다.", e);
+        }
     }
 
     @Override

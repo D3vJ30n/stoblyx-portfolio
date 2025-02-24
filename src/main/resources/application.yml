@@ -4,18 +4,16 @@ spring:
   application:
     name: stoblyx
 
-  # Redis와 RabbitMQ 자동 설정 비활성화
+  # RabbitMQ 자동 설정 비활성화
   autoconfigure:
     exclude:
-      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
-      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
       - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:192.168.219.101}:${DB_PORT:3306}/${DB_NAME:stoblyx_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:root}
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:stoblyx_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:stoblyx_user}
     password: ${DB_PASSWORD:6188}
     hikari:
       maximum-pool-size: 5
@@ -27,13 +25,14 @@ spring:
       auto-commit: true
 
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}
     show-sql: ${SHOW_SQL:true}
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         connection:
           characterEncoding: utf8
           charSet: UTF-8
@@ -41,7 +40,7 @@ spring:
 
   data:
     redis:
-      enabled: ${REDIS_ENABLED:false}
+      enabled: false
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
@@ -96,3 +95,17 @@ management:
   endpoint:
     health:
       show-details: always
+
+kobart:
+  api:
+    url: http://localhost:5000 # Flask 서버 URL
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    com.j30n.stoblyx: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: TRACE

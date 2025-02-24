@@ -1,7 +1,7 @@
 package com.j30n.stoblyx.application.service.book;
 
-import com.j30n.stoblyx.adapter.web.dto.book.BookCreateRequest;
-import com.j30n.stoblyx.adapter.web.dto.book.BookResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.book.BookCreateRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.book.BookResponse;
 import com.j30n.stoblyx.domain.model.Book;
 import com.j30n.stoblyx.domain.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +20,14 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public BookResponse createBook(BookCreateRequest request) {
         Book book = Book.builder()
-                .title(request.title())
-                .author(request.author())
-                .isbn(request.isbn())
-                .description(request.description())
-                .publisher(request.publisher())
-                .publishDate(request.publishDate())
-                .genres(request.genres())
-                .build();
+            .title(request.title())
+            .author(request.author())
+            .isbn(request.isbn())
+            .description(request.description())
+            .publisher(request.publisher())
+            .publishDate(request.publishDate())
+            .genres(request.genres())
+            .build();
 
         return BookResponse.from(bookRepository.save(book));
     }
@@ -43,10 +43,10 @@ public class BookServiceImpl implements BookService {
     public Page<BookResponse> getBooks(String searchKeyword, Pageable pageable) {
         if (searchKeyword == null || searchKeyword.trim().isEmpty()) {
             return bookRepository.findByDeletedFalse(pageable)
-                    .map(BookResponse::from);
+                .map(BookResponse::from);
         }
         return bookRepository.findByTitleOrAuthorContainingIgnoreCase(searchKeyword.trim(), pageable)
-                .map(BookResponse::from);
+            .map(BookResponse::from);
     }
 
     @Override
@@ -55,13 +55,13 @@ public class BookServiceImpl implements BookService {
         Book book = findBookById(id);
 
         book.update(
-                request.title(),
-                request.author(),
-                request.isbn(),
-                request.description(),
-                request.publisher(),
-                request.publishDate(),
-                request.genres()
+            request.title(),
+            request.author(),
+            request.isbn(),
+            request.description(),
+            request.publisher(),
+            request.publishDate(),
+            request.genres()
         );
 
         return BookResponse.from(book);
@@ -76,6 +76,6 @@ public class BookServiceImpl implements BookService {
 
     private Book findBookById(Long id) {
         return bookRepository.findByIdAndDeletedFalse(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책입니다. id: " + id));
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 책입니다. id: " + id));
     }
 } 

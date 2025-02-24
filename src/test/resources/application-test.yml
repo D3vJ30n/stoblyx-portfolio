@@ -27,20 +27,19 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
         use_sql_comments: true
 
   sql:
     init:
-      mode: always
-      platform: h2
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
-      encoding: UTF-8
+      mode: never
 
   data:
     redis:
       enabled: false
+      host: localhost
+      port: 6379
+      password:
+      database: 0
 
   security:
     oauth2:
@@ -49,11 +48,18 @@ spring:
           github:
             client-id: test-client-id
             client-secret: test-client-secret
+    user:
+      name: test
+      password: test
 
 jwt:
   secret: test_jwt_secret_key_for_testing_purposes_only
-  access-token-validity-in-seconds: 1800
-  refresh-token-validity-in-seconds: 604800
+  access-token-validity-in-seconds: 3600
+  refresh-token-validity-in-seconds: 86400
+
+kobart:
+  api:
+    url: http://localhost:5000
 
 server:
   port: 0

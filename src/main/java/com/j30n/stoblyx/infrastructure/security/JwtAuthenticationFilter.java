@@ -13,13 +13,40 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final List<String> PUBLIC_PATHS = Arrays.asList(
+        "/auth/signup",
+        "/auth/login",
+        "/auth/refresh",
+        "/auth/logout"
+    );
+
     private final JwtTokenProvider tokenProvider;
     private final RedisTemplate<String, String> redisTemplate;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        
+        log.debug("Request URI: {}, Context Path: {}", path, contextPath);
+        
+        // contextPath를 제거한 실제 경로 추출
+        String actualPath = path;
+        if (!contextPath.isEmpty() && path.startsWith(contextPath)) {
+            actualPath = path.substring(contextPath.length());
+        }
+        
+        // PUBLIC_PATHS 중 하나라도 일치하면 필터링하지 않음
+        return PUBLIC_PATHS.stream()
+            .anyMatch(actualPath::endsWith);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

@@ -62,12 +62,12 @@ public class User extends BaseEntity {
     private List<SavedQuotes> savedQuotes = new ArrayList<>();
 
     @Builder
-    public User(String username, String password, String nickname, String email) {
+    public User(String username, String password, String nickname, String email, UserRole role) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
-        this.role = UserRole.USER;
+        this.role = (role != null) ? role : UserRole.USER;
     }
 
     public void updateProfile(String nickname, String email) {

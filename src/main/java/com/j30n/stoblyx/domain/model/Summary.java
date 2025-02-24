@@ -2,7 +2,6 @@ package com.j30n.stoblyx.domain.model;
 
 import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,35 +17,38 @@ public class Summary extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    private String chapter;
-
-    @Column(nullable = false)
-    private Integer startPage;
-
-    @Column(nullable = false)
-    private Integer endPage;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String content;
+
+    @Column(length = 100)
+    private String chapter;
+
+    @Column(length = 50)
+    private String page;
+
+    private boolean deleted = false;
+
     @Builder
-    public Summary(String content, String chapter, Integer startPage, Integer endPage, Book book) {
+    public Summary(Book book, String content, String chapter, String page) {
+        this.book = book;
         this.content = content;
         this.chapter = chapter;
-        this.startPage = startPage;
-        this.endPage = endPage;
-        this.book = book;
+        this.page = page;
     }
 
-    public void update(String content, String chapter, Integer startPage, Integer endPage) {
-        this.content = content;
-        this.chapter = chapter;
-        this.startPage = startPage;
-        this.endPage = endPage;
+    public void update(String content, String chapter, String page) {
+        this.content = content != null ? content : this.content;
+        this.chapter = chapter != null ? chapter : this.chapter;
+        this.page = page != null ? page : this.page;
+        updateModifiedAt();
+    }
+
+    public void delete() {
+        this.deleted = true;
+        updateModifiedAt();
     }
 } 

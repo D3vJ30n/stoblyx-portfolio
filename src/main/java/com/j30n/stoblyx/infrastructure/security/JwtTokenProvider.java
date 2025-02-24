@@ -18,61 +18,57 @@ import java.util.Date;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final UserDetailsService userDetailsService;
     private final long accessTokenValidityInMilliseconds;
     private final long refreshTokenValidityInMilliseconds;
+    private final UserDetailsService userDetailsService;
 
     public JwtTokenProvider(
         @Value("${jwt.secret}") String secretKey,
         @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
+        @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
         UserDetailsService userDetailsService
     ) {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
+        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
         this.userDetailsService = userDetailsService;
-        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000; // 초를 밀리초로 변환
-        this.refreshTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000 * 24 * 7; // 7일
     }
 
     public String createAccessToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + accessTokenValidityInMilliseconds);
-
-        return Jwts.builder()
-            .setSubject(userPrincipal.getUsername())
-            .claim("userId", userPrincipal.getId())
-            .setIssuedAt(now)
-            .setExpiration(validity)
-            .signWith(key)
-            .compact();
+        return createToken(userPrincipal.getUsername(), userPrincipal.getId(), accessTokenValidityInMilliseconds);
     }
 
     public String createRefreshToken(String username) {
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + refreshTokenValidityInMilliseconds);
+        return createToken(username, null, refreshTokenValidityInMilliseconds);
+    }
 
-        return Jwts.builder()
-            .setSubject(username)
+    private String createToken(String subject, Long userId, long validityInMilliseconds) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+        JwtBuilder builder = Jwts.builder()
+            .setSubject(subject)
             .setIssuedAt(now)
             .setExpiration(validity)
-            .signWith(key)
-            .compact();
+            .signWith(key);
+
+        if (userId != null) {
+            builder.claim("userId", userId);
+        }
+
+        return builder.compact();
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
-
+        Claims claims = extractClaims(token);
         UserDetails userDetails = userDetailsService.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            extractClaims(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             log.info("Invalid JWT token: {}", e.getMessage());
@@ -81,12 +77,15 @@ public class JwtTokenProvider {
     }
 
     public String getUsername(String token) {
+        return extractClaims(token).getSubject();
+    }
+
+    private Claims extractClaims(String token) {
         return Jwts.parserBuilder()
             .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
-            .getBody()
-            .getSubject();
+            .getBody();
     }
 
     public long getAccessTokenValidityInMilliseconds() {

@@ -5,9 +5,12 @@ import com.j30n.stoblyx.StoblyxApplication;
 import com.j30n.stoblyx.config.RestDocsConfig;
 import com.j30n.stoblyx.config.TestRedisConfig;
 import com.j30n.stoblyx.config.TestSecurityConfig;
+import com.j30n.stoblyx.config.TestDataConfig;
+import com.j30n.stoblyx.config.TestKoBartConfig;
 import com.j30n.stoblyx.domain.model.Comment;
 import com.j30n.stoblyx.domain.model.Quote;
 import com.j30n.stoblyx.domain.model.User;
+import com.j30n.stoblyx.domain.model.UserRole;
 import com.j30n.stoblyx.domain.repository.CommentRepository;
 import com.j30n.stoblyx.domain.repository.QuoteRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
@@ -23,6 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,15 +42,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest(classes = {
-    StoblyxApplication.class,
-    TestSecurityConfig.class,
-    TestRedisConfig.class
-})
+@SpringBootTest(
+    classes = {
+        StoblyxApplication.class,
+        TestSecurityConfig.class,
+        TestRedisConfig.class,
+        TestDataConfig.class,
+        TestKoBartConfig.class
+    }
+)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
 @Import(RestDocsConfig.class)
 @ActiveProfiles("test")
+@TestPropertySource(
+    properties = {
+        "spring.main.allow-bean-definition-overriding=true",
+        "spring.data.redis.enabled=false",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration," +
+            "org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration," +
+            "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
+        "kobart.api.url=http://localhost:5000"
+    },
+    locations = "classpath:application-test.yml"
+)
 @Transactional
 class CommentControllerTest {
 
@@ -67,6 +87,7 @@ class CommentControllerTest {
 
     private User testUser;
     private Quote testQuote;
+    private static long testCounter = 0;
 
     @BeforeEach
     void setUp() {
@@ -77,13 +98,15 @@ class CommentControllerTest {
         quoteRepository.deleteAll();
         userRepository.deleteAll();
 
-        // 테스트 사용자 생성
+        // 테스트 사용자 생성 (고유한 이메일 사용)
         testUser = User.builder()
-            .username("testUser")
-            .email("test@example.com")
+            .username("testUser" + testCounter)
+            .email("test" + testCounter + "@example.com")
             .password("password")
-            .nickname("테스트 사용자")
+            .nickname("테스트 사용자" + testCounter)
+            .role(UserRole.USER)
             .build();
+        testCounter++;
         userRepository.save(testUser);
         log.debug("테스트 사용자 생성 완료: {}", testUser);
 
@@ -381,7 +404,20 @@ class CommentControllerTest {
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
-            .andExpect(status().isNoContent());
+            .andExpect(status().isNoContent())
+            .andDo(document("delete-comment",
+                preprocessRequest(prettyPrint()),
+                preprocessResponse(prettyPrint()),
+                pathParameters(
+                    parameterWithName("commentId").description("삭제할 댓글 ID")
+                )
+            ));
+
+        // 삭제 확인
+        mockMvc.perform(get("/api/v1/comments/{commentId}", comment.getId())
+                .with(user(UserPrincipal.create(testUser)))
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
 
         log.debug("댓글 삭제 테스트 종료");
     }

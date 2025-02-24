@@ -25,37 +25,35 @@ public class UserInterest extends BaseEntity {
     private User user;
 
     @ElementCollection
-    @CollectionTable(name = "user_favorite_genres", joinColumns = @JoinColumn(name = "user_interest_id"))
+    @CollectionTable(
+        name = "user_interest_genres",
+        joinColumns = @JoinColumn(name = "user_interest_id")
+    )
     @Column(name = "genre")
-    private List<String> favoriteGenres = new ArrayList<>();
+    private List<String> genres = new ArrayList<>();
 
     @ElementCollection
-    @CollectionTable(name = "user_favorite_authors", joinColumns = @JoinColumn(name = "user_interest_id"))
-    @Column(name = "author")
-    private List<String> favoriteAuthors = new ArrayList<>();
-
-    @ElementCollection
-    @CollectionTable(name = "user_favorite_topics", joinColumns = @JoinColumn(name = "user_interest_id"))
+    @CollectionTable(
+        name = "user_interest_topics",
+        joinColumns = @JoinColumn(name = "user_interest_id")
+    )
     @Column(name = "topic")
-    private List<String> favoriteTopics = new ArrayList<>();
+    private List<String> topics = new ArrayList<>();
+
+    @Column(length = 500)
+    private String bio;
 
     @Builder
-    public UserInterest(User user) {
+    public UserInterest(User user, List<String> genres, List<String> topics, String bio) {
         this.user = user;
+        this.genres = genres != null ? genres : new ArrayList<>();
+        this.topics = topics != null ? topics : new ArrayList<>();
+        this.bio = bio;
     }
 
-    public void updateFavoriteGenres(List<String> genres) {
-        this.favoriteGenres.clear();
-        this.favoriteGenres.addAll(genres);
-    }
-
-    public void updateFavoriteAuthors(List<String> authors) {
-        this.favoriteAuthors.clear();
-        this.favoriteAuthors.addAll(authors);
-    }
-
-    public void updateFavoriteTopics(List<String> topics) {
-        this.favoriteTopics.clear();
-        this.favoriteTopics.addAll(topics);
+    public void update(List<String> genres, List<String> topics, String bio) {
+        this.genres = genres != null ? genres : this.genres;
+        this.topics = topics != null ? topics : this.topics;
+        this.bio = bio != null ? bio : this.bio;
     }
 } 

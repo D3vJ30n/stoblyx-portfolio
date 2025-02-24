@@ -1,8 +1,8 @@
 package com.j30n.stoblyx.application.service.comment;
 
-import com.j30n.stoblyx.adapter.web.dto.comment.CommentCreateRequest;
-import com.j30n.stoblyx.adapter.web.dto.comment.CommentResponse;
-import com.j30n.stoblyx.adapter.web.dto.comment.CommentUpdateRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentCreateRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentUpdateRequest;
 import com.j30n.stoblyx.domain.model.Comment;
 import com.j30n.stoblyx.domain.model.Quote;
 import com.j30n.stoblyx.domain.model.User;

@@ -11,7 +11,7 @@
 [[overview]]
 == 개요
 
-Stoblyx API는 문구 공유 플랫폼의 RESTful API입니다.
+Stoblyx API는 AI 기반 독서 요약 숏폼 플랫폼의 RESTful API입니다.
 
 [[overview-http-verbs]]
 === HTTP 동사
@@ -72,6 +72,75 @@ Stoblyx API는 문구 공유 플랫폼의 RESTful API입니다.
 [[resources]]
 == API 리소스
 
+[[resources-auth]]
+=== 인증 API
+
+[[resources-auth-signup]]
+==== 회원가입
+
+operation::auth-signup[snippets='http-request,request-fields,http-response,response-fields']
+
+[[resources-auth-login]]
+==== 로그인
+
+operation::auth-login[snippets='http-request,request-fields,http-response,response-fields']
+
+[[resources-auth-refresh]]
+==== 토큰 갱신
+
+operation::auth-refresh[snippets='http-request,http-response,response-fields']
+
+[[resources-auth-logout]]
+==== 로그아웃
+
+operation::auth-logout[snippets='http-request,http-response']
+
+[[resources-quotes]]
+=== 문구 API
+
+[[resources-quotes-create]]
+==== 문구 등록
+
+operation::create-quote[snippets='http-request,request-fields,http-response,response-fields']
+
+[[resources-quotes-get]]
+==== 문구 조회
+
+operation::get-quote[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-quotes-list]]
+==== 문구 목록 조회
+
+operation::get-quotes[snippets='http-request,query-parameters,http-response,response-fields']
+
+[[resources-quotes-update]]
+==== 문구 수정
+
+operation::update-quote[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[resources-quotes-delete]]
+==== 문구 삭제
+
+operation::delete-quote[snippets='http-request,path-parameters,http-response']
+
+[[resources-users]]
+=== 사용자 API
+
+[[resources-users-profile]]
+==== 프로필 조회
+
+operation::get-profile[snippets='http-request,http-response,response-fields']
+
+[[resources-users-update]]
+==== 프로필 수정
+
+operation::update-profile[snippets='http-request,request-fields,http-response,response-fields']
+
+[[resources-users-interests]]
+==== 관심사 설정
+
+operation::update-interests[snippets='http-request,request-fields,http-response,response-fields']
+
 [[resources-comments]]
 === 댓글 API
 
@@ -127,3 +196,34 @@ operation::check-like-status[snippets='http-request,path-parameters,http-respons
 ==== 좋아요한 문구 목록 조회
 
 operation::get-liked-quotes[snippets='http-request,http-response,response-fields']
+
+[[resources-videos]]
+=== AI 영상 API
+
+[[resources-videos-generate]]
+==== 영상 생성 요청
+
+operation::generate-video[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+
+[[resources-videos-status]]
+==== 영상 생성 상태 조회
+
+operation::get-video-status[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-saved-quotes]]
+=== 저장된 문구 API
+
+[[resources-saved-quotes-save]]
+==== 문구 저장
+
+operation::save-quote[snippets='http-request,path-parameters,http-response,response-fields']
+
+[[resources-saved-quotes-list]]
+==== 저장된 문구 목록 조회
+
+operation::get-saved-quotes[snippets='http-request,http-response,response-fields']
+
+[[resources-saved-quotes-remove]]
+==== 저장된 문구 삭제
+
+operation::remove-saved-quote[snippets='http-request,path-parameters,http-response']

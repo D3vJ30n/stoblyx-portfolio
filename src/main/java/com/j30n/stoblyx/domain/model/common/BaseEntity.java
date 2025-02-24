@@ -20,12 +20,16 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    private LocalDateTime updatedAt;
+    private LocalDateTime modifiedAt;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
 
     public void delete() {
         this.isDeleted = true;
+    }
+
+    protected void updateModifiedAt() {
+        this.modifiedAt = LocalDateTime.now();
     }
 } 

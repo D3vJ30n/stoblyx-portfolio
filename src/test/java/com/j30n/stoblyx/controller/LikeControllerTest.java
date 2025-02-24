@@ -41,10 +41,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@SpringBootTest(classes = {StoblyxApplication.class, TestRedisConfig.class, TestSecurityConfig.class})
+@SpringBootTest(
+    classes = {
+        StoblyxApplication.class,
+        TestRedisConfig.class,
+        TestSecurityConfig.class
+    },
+    properties = {
+        "spring.main.allow-bean-definition-overriding=true",
+        "spring.data.redis.enabled=false",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration"
+    }
+)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-@Import(RestDocsConfig.class)
+@Import({RestDocsConfig.class, TestRedisConfig.class})
 @ActiveProfiles("test")
 @Transactional
 class LikeControllerTest {
