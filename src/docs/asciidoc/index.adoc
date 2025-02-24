@@ -75,25 +75,237 @@ Stoblyx API는 AI 기반 독서 요약 숏폼 플랫폼의 RESTful API입니다.
 [[resources-auth]]
 === 인증 API
 
+모든 인증 관련 엔드포인트는 `/auth`로 시작합니다.
+
 [[resources-auth-signup]]
 ==== 회원가입
 
-operation::auth-signup[snippets='http-request,request-fields,http-response,response-fields']
+`POST /auth/signup`
+
+회원가입을 처리합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/auth/signup
+Content-Type: application/json
+
+{
+    "username": "tester123",
+    "email": "test@example.com",
+    "password": "Test1234!",
+    "nickname": "테스터"
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "회원가입이 완료되었습니다.",
+  "data": null
+}
+----
 
 [[resources-auth-login]]
 ==== 로그인
 
-operation::auth-login[snippets='http-request,request-fields,http-response,response-fields']
+`POST /auth/login`
+
+사용자 로그인을 처리하고 JWT 토큰을 발급합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "로그인이 완료되었습니다.",
+  "data": {
+    "accessToken": "eyJhbGciOiJ...",
+    "refreshToken": "eyJhbGciOiJ..."
+  }
+}
+----
 
 [[resources-auth-refresh]]
 ==== 토큰 갱신
 
-operation::auth-refresh[snippets='http-request,http-response,response-fields']
+`POST /auth/refresh`
+
+Refresh Token을 사용하여 새로운 Access Token을 발급받습니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/auth/refresh
+Authorization: Bearer {refresh_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "토큰이 갱신되었습니다.",
+  "data": {
+    "accessToken": "eyJhbGciOiJ...",
+    "refreshToken": "eyJhbGciOiJ..."
+  }
+}
+----
 
 [[resources-auth-logout]]
 ==== 로그아웃
 
-operation::auth-logout[snippets='http-request,http-response']
+`POST /auth/logout`
+
+사용자 로그아웃을 처리합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/auth/logout
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "로그아웃이 완료되었습니다.",
+  "data": null
+}
+----
+
+[[resources-books]]
+=== 도서 API
+
+도서 관련 엔드포인트는 `/books`로 시작합니다.
+
+[[resources-books-create]]
+==== 도서 등록
+
+`POST /books`
+
+새로운 도서를 등록합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/books
+Content-Type: application/json
+
+{
+  "title": "클린 코드",
+  "author": "로버트 C. 마틴",
+  "isbn": "9788966260959",
+  "description": "애자일 소프트웨어 장인 정신"
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "책이 성공적으로 등록되었습니다.",
+  "data": {
+    "id": 1,
+    "title": "클린 코드",
+    "author": "로버트 C. 마틴",
+    "isbn": "9788966260959",
+    "description": "애자일 소프트웨어 장인 정신"
+  }
+}
+----
+
+[[resources-books-get]]
+==== 도서 조회
+
+`GET /books/{id}`
+
+ID로 도서를 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "책 정보를 성공적으로 조회했습니다.",
+  "data": {
+    "id": 1,
+    "title": "클린 코드",
+    "author": "로버트 C. 마틴",
+    "isbn": "9788966260959",
+    "description": "애자일 소프트웨어 장인 정신"
+  }
+}
+----
+
+[[resources-books-list]]
+==== 도서 목록 조회
+
+`GET /books?searchKeyword={keyword}&page={page}&size={size}`
+
+도서 목록을 검색어와 함께 페이징하여 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "책 목록을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "클린 코드",
+        "author": "로버트 C. 마틴",
+        "isbn": "9788966260959"
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-quotes]]
 === 문구 API
@@ -101,27 +313,215 @@ operation::auth-logout[snippets='http-request,http-response']
 [[resources-quotes-create]]
 ==== 문구 등록
 
-operation::create-quote[snippets='http-request,request-fields,http-response,response-fields']
+`POST /quotes`
+
+새로운 문구를 등록합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/quotes
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "bookId": 1,
+  "content": "코드는 잘 쓰여질수록 덜 복잡해 보인다.",
+  "page": 34
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구가 성공적으로 생성되었습니다.",
+  "data": {
+    "id": 1,
+    "content": "코드는 잘 쓰여질수록 덜 복잡해 보인다.",
+    "page": 34,
+    "bookId": 1,
+    "authorId": 1,
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-quotes-get]]
 ==== 문구 조회
 
-operation::get-quote[snippets='http-request,path-parameters,http-response,response-fields']
+`GET /quotes/{id}`
+
+ID로 문구를 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구 정보를 성공적으로 조회했습니다.",
+  "data": {
+    "id": 1,
+    "content": "코드는 잘 쓰여질수록 덜 복잡해 보인다.",
+    "page": 34,
+    "bookId": 1,
+    "authorId": 1,
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-quotes-list]]
 ==== 문구 목록 조회
 
-operation::get-quotes[snippets='http-request,query-parameters,http-response,response-fields']
+`GET /quotes?searchKeyword={keyword}&page={page}&size={size}`
+
+문구 목록을 검색어와 함께 페이징하여 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구 목록을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "content": "코드는 잘 쓰여질수록 덜 복잡해 보인다.",
+        "page": 34,
+        "bookId": 1,
+        "authorId": 1
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-quotes-update]]
 ==== 문구 수정
 
-operation::update-quote[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+`PUT /quotes/{id}`
+
+문구를 수정합니다.
+
+===== 요청 예시
+[source,http]
+----
+PUT http://localhost:8080/quotes/1
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "content": "코드는 잘 쓰여질수록 덜 복잡해 보인다.",
+  "page": 34
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구가 성공적으로 수정되었습니다.",
+  "data": {
+    "id": 1,
+    "content": "코드는 잘 쓰여질수록 덜 복잡해 보인다.",
+    "page": 34,
+    "bookId": 1,
+    "authorId": 1,
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-quotes-delete]]
 ==== 문구 삭제
 
-operation::delete-quote[snippets='http-request,path-parameters,http-response']
+`DELETE /quotes/{id}`
+
+문구를 삭제합니다.
+
+===== 요청 예시
+[source,http]
+----
+DELETE http://localhost:8080/quotes/1
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구가 성공적으로 삭제되었습니다.",
+  "data": null
+}
+----
+
+[[resources-summaries]]
+=== 요약 API
+
+요약 관련 엔드포인트는 `/books/{bookId}/summaries`로 시작합니다.
+
+[[resources-summaries-create]]
+==== 요약 생성
+
+`POST /books/{bookId}/summaries`
+
+새로운 책 요약을 생성합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/books/1/summaries
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "content": "클린 코드는 읽기 쉽고 이해하기 쉬운 코드를 작성하는 방법을 설명합니다.",
+  "chapter": 1
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "책 요약이 성공적으로 생성되었습니다.",
+  "data": {
+    "id": 1,
+    "content": "클린 코드는 읽기 쉽고 이해하기 쉬운 코드를 작성하는 방법을 설명합니다.",
+    "chapter": 1,
+    "bookId": 1,
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-users]]
 === 사용자 API
@@ -129,17 +529,107 @@ operation::delete-quote[snippets='http-request,path-parameters,http-response']
 [[resources-users-profile]]
 ==== 프로필 조회
 
-operation::get-profile[snippets='http-request,http-response,response-fields']
+`GET /users/me`
+
+현재 로그인한 사용자의 프로필을 조회합니다.
+
+===== 요청 예시
+[source,http]
+----
+GET http://localhost:8080/users/me
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "사용자 프로필을 성공적으로 조회했습니다.",
+  "data": {
+    "id": 1,
+    "username": "tester123",
+    "email": "test@example.com",
+    "nickname": "테스터",
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-users-update]]
 ==== 프로필 수정
 
-operation::update-profile[snippets='http-request,request-fields,http-response,response-fields']
+`PUT /users/me`
+
+현재 로그인한 사용자의 프로필을 수정합니다.
+
+===== 요청 예시
+[source,http]
+----
+PUT http://localhost:8080/users/me
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "nickname": "새로운 닉네임"
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "사용자 프로필이 성공적으로 수정되었습니다.",
+  "data": {
+    "id": 1,
+    "username": "tester123",
+    "email": "test@example.com",
+    "nickname": "새로운 닉네임",
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-users-interests]]
 ==== 관심사 설정
 
-operation::update-interests[snippets='http-request,request-fields,http-response,response-fields']
+`PUT /users/me/interests`
+
+현재 로그인한 사용자의 관심사를 설정합니다.
+
+===== 요청 예시
+[source,http]
+----
+PUT http://localhost:8080/users/me/interests
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "interests": ["프로그래밍", "독서"]
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "사용자 관심사가 성공적으로 설정되었습니다.",
+  "data": {
+    "interests": ["프로그래밍", "독서"]
+  }
+}
+----
 
 [[resources-comments]]
 === 댓글 API
@@ -147,68 +637,383 @@ operation::update-interests[snippets='http-request,request-fields,http-response,
 [[resources-comments-create]]
 ==== 댓글 작성
 
-operation::create-comment[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+`POST /comments/quotes/{quoteId}`
+
+특정 문구에 새로운 댓글을 작성합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/comments/quotes/1
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "content": "정말 인상 깊은 문구네요."
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "댓글이 성공적으로 등록되었습니다.",
+  "data": {
+    "id": 1,
+    "content": "정말 인상 깊은 문구네요.",
+    "authorId": 1,
+    "authorName": "테스터",
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-comments-get]]
 ==== 댓글 조회
 
-operation::get-comment[snippets='http-request,path-parameters,http-response,response-fields']
+`GET /comments/quotes/{quoteId}`
+
+특정 문구에 대한 댓글을 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구에 대한 댓글을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "content": "정말 인상 깊은 문구네요.",
+        "authorId": 1,
+        "authorName": "테스터",
+        "createdAt": "2025-02-23T10:30:00Z"
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-comments-list-by-quote]]
 ==== 문구별 댓글 목록 조회
 
-operation::get-comments-by-quote[snippets='http-request,path-parameters,http-response,response-fields']
+`GET /comments/quotes/{quoteId}`
+
+특정 문구에 대한 댓글 목록을 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구에 대한 댓글 목록을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "content": "정말 인상 깊은 문구네요.",
+        "authorId": 1,
+        "authorName": "테스터",
+        "createdAt": "2025-02-23T10:30:00Z"
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-comments-list-by-user]]
 ==== 사용자별 댓글 목록 조회
 
-operation::get-comments-by-user[snippets='http-request,path-parameters,http-response,response-fields']
+`GET /comments/users/{userId}`
+
+특정 사용자가 작성한 댓글 목록을 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "사용자가 작성한 댓글 목록을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "content": "정말 인상 깊은 문구네요.",
+        "quoteId": 1,
+        "createdAt": "2025-02-23T10:30:00Z"
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-comments-update]]
 ==== 댓글 수정
 
-operation::update-comment[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+`PUT /comments/quotes/{quoteId}`
+
+특정 문구에 대한 댓글을 수정합니다.
+
+===== 요청 예시
+[source,http]
+----
+PUT http://localhost:8080/comments/quotes/1
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "content": "수정된 댓글 내용"
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "댓글이 성공적으로 수정되었습니다.",
+  "data": {
+    "id": 1,
+    "content": "수정된 댓글 내용",
+    "authorId": 1,
+    "authorName": "테스터",
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-comments-delete]]
 ==== 댓글 삭제
 
-operation::delete-comment[snippets='http-request,path-parameters,http-response,response-fields']
+`DELETE /comments/quotes/{quoteId}`
+
+특정 문구에 대한 댓글을 삭제합니다.
+
+===== 요청 예시
+[source,http]
+----
+DELETE http://localhost:8080/comments/quotes/1
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "댓글이 성공적으로 삭제되었습니다.",
+  "data": null
+}
+----
 
 [[resources-likes]]
 === 좋아요 API
 
-[[resources-likes-like]]
-==== 문구 좋아요
+[[resources-likes-create]]
+==== 좋아요 등록
 
-operation::like-quote[snippets='http-request,path-parameters,http-response,response-fields']
+`POST /likes/quotes/{quoteId}`
+
+특정 문구에 좋아요를 표시합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/likes/quotes/1
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구 좋아요가 완료되었습니다.",
+  "data": true
+}
+----
 
 [[resources-likes-unlike]]
 ==== 문구 좋아요 취소
 
-operation::unlike-quote[snippets='http-request,path-parameters,http-response,response-fields']
+`DELETE /likes/quotes/{quoteId}`
+
+특정 문구에 대한 좋아요를 취소합니다.
+
+===== 요청 예시
+[source,http]
+----
+DELETE http://localhost:8080/likes/quotes/1
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구 좋아요가 취소되었습니다.",
+  "data": false
+}
+----
 
 [[resources-likes-status]]
 ==== 문구 좋아요 상태 확인
 
-operation::check-like-status[snippets='http-request,path-parameters,http-response,response-fields']
+`GET /likes/quotes/{quoteId}`
+
+특정 문구에 대한 좋아요 상태를 확인합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구 좋아요 상태를 성공적으로 조회했습니다.",
+  "data": true
+}
+----
 
 [[resources-likes-list]]
 ==== 좋아요한 문구 목록 조회
 
-operation::get-liked-quotes[snippets='http-request,http-response,response-fields']
+`GET /likes/quotes`
+
+현재 로그인한 사용자가 좋아요한 문구 목록을 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "좋아요한 문구 목록을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "quoteId": 1,
+        "likedAt": "2025-02-23T10:30:00Z"
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-videos]]
-=== AI 영상 API
+=== 비디오 API
 
-[[resources-videos-generate]]
-==== 영상 생성 요청
+[[resources-videos-create]]
+==== 비디오 생성
 
-operation::generate-video[snippets='http-request,path-parameters,request-fields,http-response,response-fields']
+`POST /videos`
+
+문구를 기반으로 AI 비디오를 생성합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/videos
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "quoteId": 1,
+  "style": "minimalist",
+  "bgmType": "calm"
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "비디오가 성공적으로 생성되었습니다.",
+  "data": {
+    "id": 1,
+    "quoteId": 1,
+    "status": "PROCESSING",
+    "url": null,
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-videos-status]]
 ==== 영상 생성 상태 조회
 
-operation::get-video-status[snippets='http-request,path-parameters,http-response,response-fields']
+`GET /videos/{id}`
+
+ID로 영상 생성 상태를 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "영상 생성 상태를 성공적으로 조회했습니다.",
+  "data": {
+    "id": 1,
+    "status": "PROCESSING",
+    "url": null,
+    "createdAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-saved-quotes]]
 === 저장된 문구 API
@@ -216,14 +1021,94 @@ operation::get-video-status[snippets='http-request,path-parameters,http-response
 [[resources-saved-quotes-save]]
 ==== 문구 저장
 
-operation::save-quote[snippets='http-request,path-parameters,http-response,response-fields']
+`POST /saved-quotes`
+
+문구를 저장합니다.
+
+===== 요청 예시
+[source,http]
+----
+POST http://localhost:8080/saved-quotes
+Content-Type: application/json
+Authorization: Bearer {access_token}
+
+{
+  "quoteId": 1
+}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "문구가 성공적으로 저장되었습니다.",
+  "data": {
+    "id": 1,
+    "quoteId": 1,
+    "savedAt": "2025-02-23T10:30:00Z"
+  }
+}
+----
 
 [[resources-saved-quotes-list]]
 ==== 저장된 문구 목록 조회
 
-operation::get-saved-quotes[snippets='http-request,http-response,response-fields']
+`GET /saved-quotes`
+
+저장된 문구 목록을 조회합니다.
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "저장된 문구 목록을 성공적으로 조회했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "quoteId": 1,
+        "savedAt": "2025-02-23T10:30:00Z"
+      }
+    ],
+    "totalElements": 1,
+    "totalPages": 1,
+    "size": 10,
+    "number": 0
+  }
+}
+----
 
 [[resources-saved-quotes-remove]]
 ==== 저장된 문구 삭제
 
-operation::remove-saved-quote[snippets='http-request,path-parameters,http-response']
+`DELETE /saved-quotes/{id}`
+
+저장된 문구를 삭제합니다.
+
+===== 요청 예시
+[source,http]
+----
+DELETE http://localhost:8080/saved-quotes/1
+Authorization: Bearer {access_token}
+----
+
+===== 응답 예시
+[source,http]
+----
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "result": "SUCCESS",
+  "message": "저장된 문구가 성공적으로 삭제되었습니다.",
+  "data": null
+}
+----

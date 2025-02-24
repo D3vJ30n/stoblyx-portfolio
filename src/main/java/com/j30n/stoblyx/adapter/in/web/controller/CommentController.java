@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * 인증된 사용자만 댓글 작성, 수정, 삭제가 가능합니다.
  */
 @RestController
-@RequestMapping("/api/v1/comments")
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
 

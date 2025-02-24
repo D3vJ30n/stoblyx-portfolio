@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * JWT 토큰 기반의 인증을 사용하며, Access Token과 Refresh Token을 관리합니다.
  */
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthController {
 

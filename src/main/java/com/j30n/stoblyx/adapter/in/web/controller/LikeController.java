@@ -19,7 +19,7 @@ import java.util.List;
  * 인증된 사용자만 좋아요 생성, 취소가 가능합니다.
  */
 @RestController
-@RequestMapping("/api/v1/likes")
+@RequestMapping("/likes")
 @RequiredArgsConstructor
 public class LikeController {
 

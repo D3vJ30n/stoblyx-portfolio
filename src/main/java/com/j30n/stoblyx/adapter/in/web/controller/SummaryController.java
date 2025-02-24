@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/books/{bookId}/summaries")
+@RequestMapping("/books/{bookId}/summaries")
 @RequiredArgsConstructor
 public class SummaryController {
 

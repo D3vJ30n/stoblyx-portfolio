@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * 책의 등록, 조회, 수정, 삭제 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/v1/books")
+@RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
 

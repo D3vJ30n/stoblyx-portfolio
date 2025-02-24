@@ -21,10 +21,11 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
-        "/auth/signup",
-        "/auth/login",
-        "/auth/refresh",
-        "/auth/logout"
+        "/api/v1/auth/signup",
+        "/api/v1/auth/login",
+        "/api/v1/auth/refresh",
+        "/api/v1/auth/logout",
+        "/api/v1/actuator"
     );
 
     private final JwtTokenProvider tokenProvider;

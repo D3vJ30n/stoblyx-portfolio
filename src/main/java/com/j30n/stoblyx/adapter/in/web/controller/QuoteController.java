@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
  * 모든 엔드포인트는 API 버전 v1을 사용합니다.
  */
 @RestController
-@RequestMapping("/api/v1/quotes")
+@RequestMapping("/quotes")
 @RequiredArgsConstructor
 public class QuoteController {
 

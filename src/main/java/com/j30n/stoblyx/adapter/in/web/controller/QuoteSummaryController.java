@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * KoBART를 이용한 문구 요약 기능을 제공합니다.
  */
 @RestController
-@RequestMapping("/api/v1/quotes")
+@RequestMapping("/quotes")
 @RequiredArgsConstructor
 public class QuoteSummaryController {
 

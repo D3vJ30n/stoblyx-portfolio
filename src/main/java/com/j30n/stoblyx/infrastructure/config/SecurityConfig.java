@@ -85,43 +85,37 @@ public class SecurityConfig {
         return source;
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-        HttpSecurity http,
-        JwtTokenProvider tokenProvider,
-        AuthenticationProvider authenticationProvider
-    ) throws Exception {
-        // 1. 기본 보안 설정
-        http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider);
-
-        // 2. H2 콘솔 설정 (테스트 환경)
-        if (isTestProfile()) {
-            http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
-        }
-
-        // 3. URL 기반 보안 설정
-        http.authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/v1/auth/**").permitAll()  // 인증 관련 엔드포인트는 모두 허용
-            .requestMatchers("/actuator/**").permitAll()
-            .requestMatchers("/error").permitAll()
-            .requestMatchers("/favicon.ico").permitAll()
-            .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-            .requestMatchers("/h2-console/**").permitAll()
+@Bean
+public SecurityFilterChain securityFilterChain(
+    HttpSecurity http,
+    JwtTokenProvider tokenProvider,
+    AuthenticationProvider authenticationProvider
+) throws Exception {
+    return http
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(AbstractHttpConfigurer::disable)
+        .sessionManagement(session -> session
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers(
+                "/auth/**",           // /api/v1 제거
+                "/actuator/**",       // /api/v1 제거
+                "/error",
+                "/favicon.ico",
+                "/css/**",
+                "/js/**",
+                "/images/**",
+                "/h2-console/**",
+                "/swagger-ui/**",
+                "/v3/api-docs/**"
+            ).permitAll()
             .anyRequest().authenticated()
-        );
-
-        // 4. JWT 필터 설정 (인증 필터 이전에 실행)
-        JwtAuthenticationFilter jwtFilter = new JwtAuthenticationFilter(tokenProvider, redisTemplate);
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
+        )
+        .authenticationProvider(authenticationProvider)
+        .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+        .build();
+}
 
     private boolean isTestProfile() {
         for (String profile : environment.getActiveProfiles()) {
