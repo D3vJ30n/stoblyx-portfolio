@@ -39,7 +39,7 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<?>> signUp(@Valid @RequestBody SignUpRequest request) {
         authService.signUp(request);
-        return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "회원가입이 완료되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
     }
 
     /**
@@ -52,7 +52,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
         TokenResponse tokenResponse = authService.login(request);
-        return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "로그인이 완료되었습니다.", tokenResponse));
+        return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", tokenResponse));
     }
 
     /**
@@ -66,7 +66,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<TokenResponse>> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
         String refreshToken = tokenExtractor.extractToken(bearerToken);
         TokenResponse tokenResponse = authService.refreshToken(refreshToken);
-        return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "토큰이 갱신되었습니다.", tokenResponse));
+        return ResponseEntity.ok(ApiResponse.success("토큰이 갱신되었습니다.", tokenResponse));
     }
 
     /**
@@ -80,6 +80,6 @@ public class AuthController {
     public ResponseEntity<ApiResponse<?>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
         String accessToken = tokenExtractor.extractToken(bearerToken);
         authService.logout(accessToken);
-        return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "로그아웃이 완료되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("로그아웃이 완료되었습니다."));
     }
 }

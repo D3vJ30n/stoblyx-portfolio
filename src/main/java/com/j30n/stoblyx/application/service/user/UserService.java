@@ -2,9 +2,53 @@ package com.j30n.stoblyx.application.service.user;
 
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserProfileResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserUpdateRequest;
+import com.j30n.stoblyx.application.port.in.user.UserUseCase;
+import com.j30n.stoblyx.application.port.out.user.UserPort;
+import com.j30n.stoblyx.domain.model.User;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface UserService {
-    UserProfileResponse getCurrentUser(Long userId);
-    UserProfileResponse updateUser(Long userId, UserUpdateRequest request);
-    void deleteUser(Long userId);
-} 
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class UserService implements UserUseCase {
+
+    private final UserPort userPort;
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileResponse getCurrentUser(Long userId) {
+        log.debug("사용자 프로필 조회: userId={}", userId);
+        User user = userPort.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return UserProfileResponse.from(user);
+    }
+
+    @Override
+    @Transactional
+    public UserProfileResponse updateUser(Long userId, UserUpdateRequest request) {
+        log.debug("사용자 프로필 수정: userId={}, request={}", userId, request);
+        User user = userPort.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        // 이메일 중복 체크
+        if (!user.getEmail().equals(request.email()) && 
+            userPort.existsByEmail(request.email())) {
+            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
+        }
+
+        user.updateProfile(request.nickname(), request.email(), null);
+        return UserProfileResponse.from(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long userId) {
+        log.debug("사용자 계정 삭제: userId={}", userId);
+        User user = userPort.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        user.delete();
+    }
+}

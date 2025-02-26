@@ -40,8 +40,12 @@
 - **Database:** MySQL 8.0.41
 - **Cache:** Redis 7.0.15
 - **Security:** JWT, Spring Security
-- **AI Integration:** KoBART (텍스트 요약), Pika Labs (AI 숏폼 영상 생성), Google Cloud TTS (음성 변환)
-- **Deployment:** Koyeb + GitHub Actions
+- **AI Integration:**
+  - KoBART (텍스트 요약)
+  - TTS (텍스트-음성 변환)
+  - BGM 선택 (감정에 따른 배경음악)
+  - Pexels API (이미지/비디오 검색)
+- **Deployment:** Koyeb + GitHub Actions + Docker
 - **모니터링:** Prometheus, Grafana
 
 ---
@@ -80,13 +84,13 @@
 
 ### 3. 게이미피케이션 & 랭킹 시스템
 
-| 랭크   | 조건                 |
-|------|--------------------|
-| 브론즈  | 기본 기능 사용 가능        |
-| 실버   | 인기 문구 TOP 10 확인 가능 |
-| 골드   | 100+ 좋아요 문구 저장 가능  |
+| 랭크     | 조건                       |
+| -------- | -------------------------- |
+| 브론즈   | 기본 기능 사용 가능        |
+| 실버     | 인기 문구 TOP 10 확인 가능 |
+| 골드     | 100+ 좋아요 문구 저장 가능 |
 | 플래티넘 | AI 추천 영상 제작 가능     |
-| 다이아  | 콘텐츠 트렌드 피드 노출      |
+| 다이아   | 콘텐츠 트렌드 피드 노출    |
 
 #### 랭킹 산정 공식
 
@@ -103,7 +107,12 @@
 
 ### 시스템 구성 및 계층 설명
 
-![architecture.png](src/docs/diagrams/architecture.png)
+<details>
+<summary>시스템 아키텍처 다이어그램</summary>
+<div align="center">
+  <img src="src/docs/diagrams/architecture.png" alt="시스템 아키텍처" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+</details>
 
 #### 설명
 
@@ -114,7 +123,12 @@
 
 ### 시스템 흐름도
 
-![flowchart.png](src/docs/diagrams/flowchart.png)
+<details>
+<summary>시스템 흐름 다이어그램</summary>
+<div align="center">
+  <img src="src/docs/diagrams/flowchart.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+</details>
 
 ---
 
@@ -144,30 +158,135 @@
 
 ### 주요 테이블 및 관계
 
-#### 테이블 개요
+<details>
+<summary>ERD (Entity Relationship Diagram)</summary>
+<div align="center">
+  <img src="src/docs/diagrams/erd.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+</details>
 
-![erd.png](src/docs/diagrams/erd.png)
+- **User (사용자)**
 
-- **User:** 사용자 정보 및 활동 관리
-- **UserInterest:** 사용자 관심사 저장 (1:1)
-- **Book:** 책 정보 저장 및 문구와 연결 (1:N)
-- **Quote:** 문구 정보 (사용자, 책과 연결) (N:1)
-- **Video:** 문구 기반 영상 정보 (1:1)
-- **Comment:** 문구 및 사용자 기반 댓글 관리 (N:1)
-- **Like:** 사용자의 문구 좋아요 관리 (N:1)
-- **SavedQuotes:** 사용자 문구 저장 관리 (N:1)
-- **Summary:** 책 요약 정보 (1:N)
+  - 기본 정보: id, username, password, nickname, email
+  - 권한 관리: role (USER, ADMIN)
+  - 계정 상태: createdAt, updatedAt, lastLoginAt, active
+  - 보안: failedLoginAttempts, accountLocked
+
+- **Book (도서)**
+
+  - 기본 정보: id, title, author, isbn, description
+  - 출판 정보: publisher, publishDate
+  - 분류: genres (List)
+  - 상태 관리: createdAt, updatedAt, deleted
+
+- **Quote (문구)**
+
+  - 기본 정보: id, content, page, chapter
+  - 연관 관계: userId, bookId
+  - 메타 데이터: memo, likeCount
+  - 상태 관리: createdAt, updatedAt, deleted
+
+- **Comment (댓글)**
+
+  - 기본 정보: id, content
+  - 연관 관계: userId, quoteId
+  - 상태 관리: createdAt, updatedAt, deleted
+
+- **Like (좋아요)**
+
+  - 기본 정보: id
+  - 연관 관계: userId, quoteId
+  - 상태 관리: createdAt
+
+- **SavedQuotes (저장된 문구)**
+
+  - 기본 정보: id, memo
+  - 연관 관계: userId, quoteId
+  - 상태 관리: createdAt, updatedAt
+
+- **UserInterest (사용자 관심사)**
+
+  - 기본 정보: id, interests (List)
+  - 연관 관계: userId
+  - 상태 관리: createdAt, updatedAt
+
+- **Summary (요약)**
+
+  - 기본 정보: id, content
+  - 연관 관계: bookId
+  - 상태 관리: createdAt, updatedAt
+
+- **ShortFormContent (숏폼 콘텐츠)**
+
+  - 기본 정보: id, title, content, mediaUrl
+  - 연관 관계: quoteId
+  - 메타 데이터: status, viewCount
+  - 상태 관리: createdAt, updatedAt
+
+- **ContentInteraction (콘텐츠 상호작용)**
+
+  - 기본 정보: id, type
+  - 연관 관계: userId, contentId
+  - 상태 관리: createdAt
+
+- **ContentComment (콘텐츠 댓글)**
+
+  - 기본 정보: id, content
+  - 연관 관계: userId, contentId
+  - 상태 관리: createdAt, updatedAt
+
+- **Post (게시물)**
+  - 기본 정보: id, title, content
+  - 연관 관계: userId
+  - 메타 데이터: viewCount, likeCount
+  - 상태 관리: createdAt, updatedAt, deleted
+
+### 열거형 (Enums)
+
+- **ContentStatus (콘텐츠 상태)**
+
+  - DRAFT: 임시저장
+  - PENDING: 검토중
+  - PUBLISHED: 발행됨
+  - REJECTED: 거부됨
+
+- **Role (역할)**
+
+  - USER: 일반 사용자
+  - ADMIN: 관리자
+
+- **UserRole (사용자 역할)**
+  - USER: 일반 사용자
+  - ADMIN: 관리자
 
 #### 관계 설명
 
-- **User ↔ Quote:** 사용자별 작성 문구 관리 (1:N)
-- **User ↔ UserInterest:** 사용자 관심사 저장 (1:1)
-- **Quote ↔ Video:** 문구별 영상 (1:1)
-- **Quote ↔ Comment:** 문구에 대한 댓글 (1:N)
-- **Quote ↔ Like:** 문구 좋아요 기록 (1:N)
-- **Quote ↔ SavedQuotes:** 문구 저장 관리 (1:N)
-- **Book ↔ Quote:** 책에 속한 문구 (1:N)
-- **Book ↔ Summary:** 책 요약 정보 (1:N)
+- **User 관련**
+
+  - User ↔ Quote: 사용자별 작성 문구 관리 (1:N)
+  - User ↔ Comment: 사용자별 작성 댓글 관리 (1:N)
+  - User ↔ Like: 사용자별 좋아요 관리 (1:N)
+  - User ↔ SavedQuotes: 사용자별 저장 문구 관리 (1:N)
+  - User ↔ UserInterest: 사용자별 관심사 관리 (1:1)
+  - User ↔ Post: 사용자별 게시물 관리 (1:N)
+  - User ↔ ContentInteraction: 사용자별 콘텐츠 상호작용 (1:N)
+  - User ↔ ContentComment: 사용자별 콘텐츠 댓글 (1:N)
+
+- **Book 관련**
+
+  - Book ↔ Quote: 책별 문구 관리 (1:N)
+  - Book ↔ Summary: 책별 요약 관리 (1:1)
+
+- **Quote 관련**
+
+  - Quote ↔ Comment: 문구별 댓글 관리 (1:N)
+  - Quote ↔ Like: 문구별 좋아요 관리 (1:N)
+  - Quote ↔ SavedQuotes: 문구별 저장 관리 (1:N)
+  - Quote ↔ ShortFormContent: 문구별 숏폼 콘텐츠 (1:N)
+
+- **ShortFormContent 관련**
+  - ShortFormContent ↔ ContentInteraction: 콘텐츠별 상호작용 (1:N)
+  - ShortFormContent ↔ ContentComment: 콘텐츠별 댓글 (1:N)
 
 ---
 
@@ -175,7 +294,6 @@
 
 ### 공통 사항
 
-- **Base URL:** `/api/v1`
 - **인증:** Bearer Token 방식 (JWT)
 - **권한 요구사항:** 일부 엔드포인트는 인증 필요 (표기됨)
 - **에러 코드 및 메시지 예시:**
@@ -191,11 +309,16 @@
 
 ### 시퀀스 다이어그램
 
-![sequence.png](src/docs/diagrams/sequence.png)
+<details>
+<summary>API 시퀀스 다이어그램</summary>
+<div align="center">
+  <img src="src/docs/diagrams/sequence.png" alt="시퀀스 다이어그램" width="800">
+</div>
+</details>
 
 ### AI 추천 영상 생성 API
 
-**엔드포인트:** `/api/v1/quotes/{id}/generate-video`  
+**엔드포인트:** `/quotes/{id}/generate-video`  
 **메서드:** POST  
 **권한:** 인증 필요
 
@@ -254,56 +377,82 @@ JWT_EXPIRATION=86400000  # 24시간
 
 #### 해결책
 
-```java
-
-@Async
-@Retryable(maxAttempts = 3, backoff = @Backoff(delay = 2000))
-public CompletableFuture<Video> generateVideoAsync(Quote quote) {
-    return aiService.generateVideo(quote)
-        .exceptionally(ex -> backupGenerator.createBasicVideo(quote));
-}
-```
-
-- **폴백 전략:** 기본 템플릿 영상 생성
-- **재시도 정책:** 최대 3회 재시도, 지수 백오프 적용
-
 ---
 
 ## 11. 프로젝트 구조
 
 헥사고날 아키텍처 (포트와 어댑터 아키텍처)
 
+```plaintext
+src/
+├── main/
+│   ├── java/com/j30n/stoblyx/
+│   │   ├── adapter/                 # 어댑터 계층
+│   │   │   ├── in/                  # 입력 어댑터
+│   │   │   │   └── web/             # 웹 관련 입력 어댑터
+│   │   │   │       ├── controller/  # REST 컨트롤러
+│   │   │   │       └── dto/         # 데이터 전송 객체
+│   │   │   └── out/                 # 출력 어댑터
+│   │   │       └── persistence/     # 영속성 관련 어댑터
+│   │   ├── application/             # 애플리케이션 계층
+│   │   │   ├── port/                # 포트 인터페이스
+│   │   │   │   ├── in/              # 입력 포트
+│   │   │   │   └── out/             # 출력 포트
+│   │   │   └── service/             # 서비스 구현체
+│   │   ├── common/                  # 공통 유틸리티
+│   │   │   ├── exception/           # 예외 클래스
+│   │   │   └── response/            # 응답 관련 클래스
+│   │   ├── config/                  # 설정 클래스
+│   │   ├── domain/                  # 도메인 계층
+│   │   │   ├── model/               # 도메인 모델
+│   │   │   └── repository/          # 리포지토리 인터페이스
+│   │   └── infrastructure/          # 인프라스트럭처 계층
+│   │       ├── annotation/          # 커스텀 어노테이션
+│   │       └── security/            # 보안 관련 클래스
+│   └── resources/                   # 리소스 파일
+│       ├── application.yml          # 애플리케이션 설정
+│       └── static/                  # 정적 리소스
+└── test/                            # 테스트 코드
+```
+
 ### **헥사고날 아키텍처를 선택한 이유**
 
 #### 1. **도메인 로직의 순수성 유지**
+
 - 도메인 로직이 외부 의존성으로부터 독립적으로 유지됩니다
 - 핵심 비즈니스 로직이 인프라스트럭처나 프레임워크에 의존하지 않습니다
 
 #### 2. **포트와 어댑터를 통한 유연한 확장**
+
 - 입력 포트(Inbound)와 출력 포트(Outbound)를 통해 시스템 간의 결합도를 낮춥니다
 - 새로운 기능이나 외부 시스템 추가가 기존 코드에 영향을 미치지 않습니다
 
 #### 3. **테스트 용이성**
+
 - 도메인 로직을 외부 의존성 없이 단위 테스트할 수 있습니다
 - 어댑터를 모킹하여 통합 테스트를 쉽게 구현할 수 있습니다
 
 #### 4. **기술 독립성**
+
 - 프레임워크나 데이터베이스 등 기술적 선택이 비즈니스 로직에 영향을 주지 않습니다
 - 인프라스트럭처 계층의 변경이 도메인 로직에 영향을 미치지 않습니다
 
 ### **아키텍처 구조**
 
 #### 1. **도메인 계층 (Domain Layer)**
+
 - 비즈니스 엔티티와 로직을 포함
 - 외부 의존성이 없는 순수한 도메인 모델
 - 도메인 이벤트와 예외 정의
 
 #### 2. **애플리케이션 계층 (Application Layer)**
+
 - 유스케이스 구현
 - 포트 인터페이스 정의 (입력/출력)
 - 도메인 객체의 라이프사이클 관리
 
 #### 3. **어댑터 계층 (Adapter Layer)**
+
 - 입력 어댑터 (Inbound)
   - REST API 컨트롤러
   - 메시지 컨슈머
@@ -312,6 +461,7 @@ public CompletableFuture<Video> generateVideoAsync(Quote quote) {
   - 외부 API 클라이언트
 
 #### 4. **인프라스트럭처 계층 (Infrastructure Layer)**
+
 - 기술적인 구현 제공
 - 보안 설정
 - 데이터베이스 설정
@@ -329,26 +479,30 @@ public CompletableFuture<Video> generateVideoAsync(Quote quote) {
 ### **스토블릭스 프로젝트에서의 적합성**
 
 #### 1. **다양한 외부 시스템 통합**
+
 - Redis를 이용한 토큰 관리와 캐싱
 - JWT 인증/인가 시스템
 - Spring Security 기반의 보안 시스템
-→ 어댑터 패턴을 통해 이러한 외부 시스템들과의 결합도를 낮추고 교체 용이성 확보
+  → 어댑터 패턴을 통해 이러한 외부 시스템들과의 결합도를 낮추고 교체 용이성 확보
 
 #### 2. **도메인 복잡성 관리**
+
 - 책, 인용구, 댓글, 좋아요 등 다양한 도메인 개념 존재
 - 각 도메인 간의 복잡한 상호작용 관리 필요
-→ 도메인 계층의 독립성을 통해 복잡한 비즈니스 로직을 명확하게 관리
+  → 도메인 계층의 독립성을 통해 복잡한 비즈니스 로직을 명확하게 관리
 
 #### 3. **테스트 시나리오**
+
 - 단위 테스트: 도메인 로직의 독립적 검증
 - 통합 테스트: 외부 시스템과의 연동 검증
-→ 계층 분리를 통해 각각의 테스트에 집중 가능
+  → 계층 분리를 통해 각각의 테스트에 집중 가능
 
 #### 4. **향후 확장성**
+
 - 소셜 로그인 추가
 - 외부 도서 API 연동
 - 검색 엔진 도입
-→ 새로운 어댑터 추가만으로 기능 확장 가능
+  → 새로운 어댑터 추가만으로 기능 확장 가능
 
 이러한 이유로 헥사고날 아키텍처를 선택하였습니다.
 
@@ -358,11 +512,11 @@ public CompletableFuture<Video> generateVideoAsync(Quote quote) {
 
 ### 캐시 및 데이터 처리
 
-| 전략           | 구현 방식                          | 적용 대상     |
-|--------------|--------------------------------|-----------|
-| Lazy Loading | `FetchType.LAZY` 설정            | 사용자-문구 관계 |
-| Cache-Aside  | Redis `@Cacheable` + TTL(1시간)  | 인기 문구 조회  |
-| Batch Insert | `hibernate.jdbc.batch_size=50` | 대량 댓글 입력  |
+| 전략         | 구현 방식                       | 적용 대상        |
+| ------------ | ------------------------------- | ---------------- |
+| Lazy Loading | `FetchType.LAZY` 설정           | 사용자-문구 관계 |
+| Cache-Aside  | Redis `@Cacheable` + TTL(1시간) | 인기 문구 조회   |
+| Batch Insert | `hibernate.jdbc.batch_size=50`  | 대량 댓글 입력   |
 
 ### 모니터링 도구 사용
 
@@ -376,17 +530,7 @@ public CompletableFuture<Video> generateVideoAsync(Quote quote) {
 
 ### 테스트 피라미드 및 커버리지 목표
 
-```plaintext
-        [E2E] 10%
-      /       \
-  [통합] 20%   \
-  /             \
-[단위] 70% ──────┘
-```
-
 - **목표:** 코드 커버리지 85% 이상
-- **부하 테스트:** Gatling으로 TPS 및 응답 시간 측정
-- **보안 취약점 테스트:** OWASP ZAP 적용
 
 ---
 
@@ -396,8 +540,7 @@ public CompletableFuture<Video> generateVideoAsync(Quote quote) {
 
 1. GitHub 리포지토리 연결
 2. Health Check: `/actuator/health` 및 Probe 설정
-3. 자동 스케일링: CPU 75% 초과 시 +2 인스턴스
-4. **롤백 전략:** 최신 안정 버전으로 즉시 롤백 지원
+3. **롤백 전략:** 최신 안정 버전으로 즉시 롤백 지원
 
 ---
 
@@ -411,6 +554,6 @@ public CompletableFuture<Video> generateVideoAsync(Quote quote) {
 
 ## 15. 라이선스
 
-이 프로젝트는 개인 포트폴리오 목적으로만 사용 가능하며, 상업적 이용은 금지됩니다.  
+이 프로젝트는 제 개인 포트폴리오 목적으로만 사용 가능하며, 모든 이용이 금지됩니다.  
 CC BY-NC-ND 4.0 라이선스 적용  
 © 2025 Stoblyx. All rights reserved.

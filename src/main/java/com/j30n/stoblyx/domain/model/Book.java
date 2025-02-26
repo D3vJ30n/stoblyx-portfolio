@@ -36,6 +36,8 @@ public class Book extends BaseTimeEntity {
 
     private LocalDate publishDate;
 
+    private String thumbnailUrl;
+
     @ElementCollection
     @CollectionTable(name = "book_genres", joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "genre")
@@ -50,27 +52,29 @@ public class Book extends BaseTimeEntity {
     private List<Summary> summaries = new ArrayList<>();
 
     @Builder
-    public Book(String title, String author, String isbn, String description, String publisher, LocalDate publishDate, List<String> genres) {
+    public Book(String title, String author, String isbn, String description, String publisher, LocalDate publishDate, String thumbnailUrl, List<String> genres) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.description = description;
         this.publisher = publisher;
         this.publishDate = publishDate;
+        this.thumbnailUrl = thumbnailUrl;
         if (genres != null) {
-            this.genres = genres;
+            this.genres = new ArrayList<>(genres);
         }
     }
 
-    public void update(String title, String author, String isbn, String description, String publisher, LocalDate publishDate, List<String> genres) {
+    public void update(String title, String author, String isbn, String description, String publisher, LocalDate publishDate, String thumbnailUrl, List<String> genres) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
         this.description = description;
         this.publisher = publisher;
         this.publishDate = publishDate;
+        this.thumbnailUrl = thumbnailUrl;
         if (genres != null) {
-            this.genres = genres;
+            this.genres = new ArrayList<>(genres);
         }
     }
 

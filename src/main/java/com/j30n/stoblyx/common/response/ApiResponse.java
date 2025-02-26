@@ -34,4 +34,36 @@ public class ApiResponse<T> {
      * 실패 시: null
      */
     private T data;
+
+    /**
+     * 성공 응답을 생성합니다.
+     *
+     * @param message 성공 메시지
+     * @param data 응답 데이터
+     * @return 성공 응답 객체
+     * @param <T> 응답 데이터의 타입
+     */
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>("SUCCESS", message, data);
+    }
+
+    /**
+     * 데이터가 없는 성공 응답을 생성합니다.
+     *
+     * @param message 성공 메시지
+     * @return 성공 응답 객체
+     */
+    public static <T> ApiResponse<T> success(String message) {
+        return new ApiResponse<>("SUCCESS", message, null);
+    }
+
+    /**
+     * 오류 응답을 생성합니다.
+     *
+     * @param message 오류 메시지
+     * @return 오류 응답 객체
+     */
+    public static <T> ApiResponse<T> error(String message) {
+        return new ApiResponse<>("ERROR", message, null);
+    }
 } 

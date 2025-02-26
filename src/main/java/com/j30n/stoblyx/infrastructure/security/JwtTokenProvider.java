@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 
+/**
+ * JWT 토큰 생성 및 검증을 담당하는 컴포넌트
+ */
 @Slf4j
 @Component
 public class JwtTokenProvider {
@@ -23,16 +26,16 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService;
 
     public JwtTokenProvider(
-        @Value("${jwt.secret}") String secretKey,
-        @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
-        @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
-        UserDetailsService userDetailsService
-    ) {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
-        this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
-        this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
-        this.userDetailsService = userDetailsService;
-    }
+            @Value("${jwt.secret}") String secretKey,
+            @Value("${jwt.access-token-validity-in-seconds}") long accessTokenValidityInSeconds,
+            @Value("${jwt.refresh-token-validity-in-seconds}") long refreshTokenValidityInSeconds,
+            UserDetailsService userDetailsService
+        ) {
+            this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+            this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
+            this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
+            this.userDetailsService = userDetailsService;
+        }
 
     public String createAccessToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -95,4 +98,10 @@ public class JwtTokenProvider {
     public long getRefreshTokenValidityInMilliseconds() {
         return refreshTokenValidityInMilliseconds;
     }
-} 
+
+    public long getRemainingValidityInSeconds(String token) {
+        Claims claims = extractClaims(token);
+        Date expiration = claims.getExpiration();
+        return (expiration.getTime() - System.currentTimeMillis()) / 1000;
+    }
+}

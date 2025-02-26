@@ -27,4 +27,6 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
 
     @Query("SELECT COUNT(l) FROM Like l WHERE l.quote.id = :quoteId AND l.deleted = false")
     long countByQuoteId(@Param("quoteId") Long quoteId);
+
+    boolean existsByUserIdAndQuoteId(Long userId, Long quoteId);
 }

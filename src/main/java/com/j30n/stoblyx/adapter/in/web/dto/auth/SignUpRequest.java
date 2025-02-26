@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.adapter.in.web.dto.auth;
 
+import com.j30n.stoblyx.adapter.in.web.validation.Password;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -10,7 +11,7 @@ public record SignUpRequest(
     String username,
 
     @NotBlank(message = "비밀번호는 필수입니다")
-    @Size(min = 8, max = 100, message = "비밀번호는 8자 이상 100자 이하여야 합니다")
+    @Password
     String password,
 
     @NotBlank(message = "닉네임은 필수입니다")
@@ -27,4 +28,4 @@ public record SignUpRequest(
         if (nickname != null) nickname = nickname.trim();
         if (email != null) email = email.trim().toLowerCase();
     }
-} 
+}

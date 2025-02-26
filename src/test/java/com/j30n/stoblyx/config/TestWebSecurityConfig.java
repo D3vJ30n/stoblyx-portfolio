@@ -16,7 +16,7 @@ public class TestWebSecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/auth/**", "/search/**").permitAll()  // search 엔드포인트 허용
                 .anyRequest().authenticated()
             );
         return http.build();

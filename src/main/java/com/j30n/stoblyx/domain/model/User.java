@@ -41,6 +41,9 @@ public class User extends BaseEntity {
     @Column(unique = true)
     private String email;
 
+    @Size(max = 255)
+    private String profileImageUrl;
+
     @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.USER;
 
@@ -62,17 +65,19 @@ public class User extends BaseEntity {
     private List<SavedQuotes> savedQuotes = new ArrayList<>();
 
     @Builder
-    public User(String username, String password, String nickname, String email, UserRole role) {
+    public User(String username, String password, String nickname, String email, UserRole role, String profileImageUrl) {
         this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
         this.role = (role != null) ? role : UserRole.USER;
+        this.profileImageUrl = profileImageUrl;
     }
 
-    public void updateProfile(String nickname, String email) {
+    public void updateProfile(String nickname, String email, String profileImageUrl) {
         this.nickname = nickname;
         this.email = email;
+        this.profileImageUrl = profileImageUrl;
     }
 
     public void updatePassword(String newPassword) {

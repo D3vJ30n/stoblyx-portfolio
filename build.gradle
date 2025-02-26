@@ -80,6 +80,8 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     testRuntimeOnly 'com.h2database:h2'
+
+    implementation 'net.sf.sociaal:freetts:1.2.2'
 }
 
 testing {
@@ -106,4 +108,11 @@ bootJar {
     from("${asciidoctor.outputDir}/html5") {
         into 'static/docs'
     }
+}
+
+tasks.withType(JavaExec) {
+    jvmArgs += [
+        '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED',
+        '--add-opens', 'java.base/java.io=ALL-UNNAMED'
+    ]
 }

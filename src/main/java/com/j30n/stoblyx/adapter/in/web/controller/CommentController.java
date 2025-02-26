@@ -32,19 +32,19 @@ public class CommentController {
      * 특정 문구에 새로운 댓글을 작성합니다.
      * 인증된 사용자만 댓글을 작성할 수 있습니다.
      *
-     * @param currentUser 현재 인증된 사용자
      * @param quoteId 댓글을 작성할 문구의 ID
      * @param request 댓글 생성 요청 DTO
+     * @param currentUser 현재 인증된 사용자
      * @return 생성된 댓글 정보
      * @throws IllegalArgumentException 문구가 존재하지 않는 경우
      */
     @PostMapping("/quotes/{quoteId}")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
-        @CurrentUser UserPrincipal currentUser,
         @PathVariable Long quoteId,
-        @Valid @RequestBody CommentCreateRequest request
+        @Valid @RequestBody CommentCreateRequest request,
+        @CurrentUser UserPrincipal currentUser
     ) {
-        CommentResponse response = commentService.createComment(currentUser.getId(), quoteId, request);
+        CommentResponse response = commentService.createComment(quoteId, request, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(new ApiResponse<>("SUCCESS", "댓글이 성공적으로 등록되었습니다.", response));
     }
@@ -102,24 +102,23 @@ public class CommentController {
     }
 
     /**
-     * 댓글을 수정합니다.
-     * 댓글 작성자만 수정할 수 있습니다.
+     * 특정 댓글을 수정합니다.
+     * 인증된 사용자만 자신의 댓글을 수정할 수 있습니다.
      *
+     * @param commentId 수정할 댓글의 ID
+     * @param request 댓글 수정 요청 DTO
      * @param currentUser 현재 인증된 사용자
-     * @param id 수정할 댓글의 ID
-     * @param request 수정할 댓글 정보
      * @return 수정된 댓글 정보
-     * @throws IllegalArgumentException 댓글이 존재하지 않거나 수정 권한이 없는 경우
+     * @throws IllegalArgumentException 댓글이 존재하지 않는 경우 또는 수정 권한이 없는 경우
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
-        @CurrentUser UserPrincipal currentUser,
-        @PathVariable Long id,
-        @Valid @RequestBody CommentUpdateRequest request
+        @PathVariable Long commentId,
+        @Valid @RequestBody CommentUpdateRequest request,
+        @CurrentUser UserPrincipal currentUser
     ) {
-        CommentResponse response = commentService.updateComment(currentUser.getId(), id, request);
-        return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "댓글이 성공적으로 수정되었습니다.", response));
+        CommentResponse response = commentService.updateComment(commentId, request, currentUser.getId());
+        return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "댓글이 성공적으로 수정되었습니다.", response));
     }
 
     /**

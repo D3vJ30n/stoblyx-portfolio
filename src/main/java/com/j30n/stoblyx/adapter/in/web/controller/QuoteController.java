@@ -2,6 +2,7 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.adapter.in.web.dto.quote.QuoteCreateRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.quote.QuoteResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.quote.QuoteUpdateRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.quote.SavedQuoteRequest;
 import com.j30n.stoblyx.application.service.quote.QuoteService;
 import com.j30n.stoblyx.common.response.ApiResponse;
@@ -48,14 +49,16 @@ public class QuoteController {
     /**
      * ID로 문구를 조회합니다.
      *
+     * @param currentUser 현재 인증된 사용자
      * @param id 조회할 문구의 ID
      * @return 조회된 문구 정보
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<QuoteResponse>> getQuote(
+        @CurrentUser UserPrincipal currentUser,
         @PathVariable Long id
     ) {
-        QuoteResponse response = quoteService.getQuote(id);
+        QuoteResponse response = quoteService.getQuote(id, currentUser.getId());
         return ResponseEntity.ok()
             .body(new ApiResponse<>("SUCCESS", "문구를 성공적으로 조회했습니다.", response));
     }
@@ -64,17 +67,15 @@ public class QuoteController {
      * 문구 목록을 필터링하여 페이징 조회합니다.
      *
      * @param userId 사용자 ID로 필터링 (선택)
-     * @param bookId 책 ID로 필터링 (선택)
      * @param pageable 페이징 정보 (기본값: page=0, size=10, sort=id,desc)
      * @return 페이징된 문구 목록
      */
     @GetMapping
     public ResponseEntity<ApiResponse<Page<QuoteResponse>>> getQuotes(
         @RequestParam(required = false) Long userId,
-        @RequestParam(required = false) Long bookId,
         @PageableDefault(size = 10, sort = "id") Pageable pageable
     ) {
-        Page<QuoteResponse> response = quoteService.getQuotes(userId, bookId, pageable);
+        Page<QuoteResponse> response = quoteService.getQuotes(userId, pageable);
         return ResponseEntity.ok()
             .body(new ApiResponse<>("SUCCESS", "문구 목록을 성공적으로 조회했습니다.", response));
     }
@@ -92,9 +93,9 @@ public class QuoteController {
     public ResponseEntity<ApiResponse<QuoteResponse>> updateQuote(
         @CurrentUser UserPrincipal currentUser,
         @PathVariable Long id,
-        @Valid @RequestBody QuoteCreateRequest request
+        @Valid @RequestBody QuoteUpdateRequest request
     ) {
-        QuoteResponse response = quoteService.updateQuote(currentUser.getId(), id, request);
+        QuoteResponse response = quoteService.updateQuote(id, currentUser.getId(), request);
         return ResponseEntity.ok()
             .body(new ApiResponse<>("SUCCESS", "문구가 성공적으로 수정되었습니다.", response));
     }

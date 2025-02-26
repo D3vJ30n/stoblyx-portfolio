@@ -25,6 +25,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import static org.springframework.http.HttpMethod.*;
+
 @Configuration
 @EnableWebSecurity
 @Profile("!test")
@@ -71,13 +73,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOriginPattern("*");  // 모든 Origin 허용
-        configuration.addAllowedMethod("*");         // 모든 HTTP 메서드 허용
-        configuration.addAllowedHeader("*");         // 모든 헤더 허용
-        configuration.setAllowCredentials(true);     // 인증 정보 허용
-        configuration.setMaxAge(3600L);             // preflight 캐시 시간
-
-        // Authorization 헤더 노출
+        configuration.addAllowedOriginPattern("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
         configuration.addExposedHeader("Authorization");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -85,37 +85,43 @@ public class SecurityConfig {
         return source;
     }
 
-@Bean
-public SecurityFilterChain securityFilterChain(
-    HttpSecurity http,
-    JwtTokenProvider tokenProvider,
-    AuthenticationProvider authenticationProvider
-) throws Exception {
-    return http
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(AbstractHttpConfigurer::disable)
-        .sessionManagement(session -> session
-            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers(
-                "/auth/**",           // /api/v1 제거
-                "/actuator/**",       // /api/v1 제거
-                "/error",
-                "/favicon.ico",
-                "/css/**",
-                "/js/**",
-                "/images/**",
-                "/h2-console/**",
-                "/swagger-ui/**",
-                "/v3/api-docs/**"
-            ).permitAll()
-            .anyRequest().authenticated()
-        )
-        .authenticationProvider(authenticationProvider)
-        .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
-        .build();
-}
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+        HttpSecurity http,
+        JwtTokenProvider tokenProvider,
+        AuthenticationProvider authenticationProvider
+    ) throws Exception {
+        return http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/auth/**",
+                    "/actuator/**",
+                    "/error",
+                    "/favicon.ico",
+                    "/css/**",
+                    "/js/**",
+                    "/images/**",
+                    "/h2-console/**",
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                    "/books/search",
+                    "/books/{id}"
+                ).permitAll()
+                .requestMatchers(GET, "/books").permitAll()
+                .requestMatchers(POST, "/books").hasRole("ADMIN")
+                .requestMatchers(PUT, "/books/**").hasRole("ADMIN")
+                .requestMatchers(DELETE, "/books/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .authenticationProvider(authenticationProvider)
+            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+            .build();
+    }
 
     private boolean isTestProfile() {
         for (String profile : environment.getActiveProfiles()) {
@@ -125,4 +131,4 @@ public SecurityFilterChain securityFilterChain(
         }
         return false;
     }
-} 
+}

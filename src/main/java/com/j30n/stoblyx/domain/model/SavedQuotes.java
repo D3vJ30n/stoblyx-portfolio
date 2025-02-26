@@ -32,6 +32,9 @@ public class SavedQuotes extends BaseEntity {
 
     private String note;
 
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
+
     @Builder
     public SavedQuotes(User user, Quote quote, String note) {
         this.user = user;
@@ -41,5 +44,13 @@ public class SavedQuotes extends BaseEntity {
 
     public void updateNote(String note) {
         this.note = note;
+    }
+
+    public void delete() {
+        this.isDeleted = true;
+    }
+
+    public void undelete() {
+        this.isDeleted = false;
     }
 } 

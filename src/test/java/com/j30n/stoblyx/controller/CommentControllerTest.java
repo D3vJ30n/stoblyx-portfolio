@@ -7,14 +7,18 @@ import com.j30n.stoblyx.config.TestRedisConfig;
 import com.j30n.stoblyx.config.TestSecurityConfig;
 import com.j30n.stoblyx.config.TestDataConfig;
 import com.j30n.stoblyx.config.TestKoBartConfig;
+import com.j30n.stoblyx.config.TestControllerAdvice;
+import com.j30n.stoblyx.domain.model.Book;
 import com.j30n.stoblyx.domain.model.Comment;
 import com.j30n.stoblyx.domain.model.Quote;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.model.UserRole;
+import com.j30n.stoblyx.domain.repository.BookRepository;
 import com.j30n.stoblyx.domain.repository.CommentRepository;
 import com.j30n.stoblyx.domain.repository.QuoteRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
-import com.j30n.stoblyx.dto.CommentRequestDto;
+import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentCreateRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentUpdateRequest;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +33,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -48,7 +55,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         TestSecurityConfig.class,
         TestRedisConfig.class,
         TestDataConfig.class,
-        TestKoBartConfig.class
+        TestKoBartConfig.class,
+        TestControllerAdvice.class
     }
 )
 @AutoConfigureMockMvc
@@ -58,14 +66,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(
     properties = {
         "spring.main.allow-bean-definition-overriding=true",
-        "spring.data.redis.enabled=false",
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration," +
-            "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration," +
-            "org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration," +
+        "spring.data.redis.enabled=true",
+        "spring.data.redis.host=localhost",
+        "spring.data.redis.port=6379",
+        "spring.data.redis.password=",
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration," +
             "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
-        "kobart.api.url=http://localhost:5000"
-    },
-    locations = "classpath:application-test.yml"
+        "kobart.api.url=http://localhost:5000",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.jpa.show-sql=true",
+        "spring.jpa.properties.hibernate.format_sql=true",
+        "spring.datasource.url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+        "spring.datasource.driver-class-name=org.h2.Driver",
+        "spring.datasource.username=sa",
+        "spring.datasource.password="
+    }
 )
 @Transactional
 class CommentControllerTest {
@@ -85,6 +100,9 @@ class CommentControllerTest {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private BookRepository bookRepository;
+
     private User testUser;
     private Quote testQuote;
     private static long testCounter = 0;
@@ -97,6 +115,7 @@ class CommentControllerTest {
         commentRepository.deleteAll();
         quoteRepository.deleteAll();
         userRepository.deleteAll();
+        bookRepository.deleteAll();
 
         // 테스트 사용자 생성 (고유한 이메일 사용)
         testUser = User.builder()
@@ -110,10 +129,24 @@ class CommentControllerTest {
         userRepository.save(testUser);
         log.debug("테스트 사용자 생성 완료: {}", testUser);
 
+        // 테스트 책 생성
+        Book testBook = Book.builder()
+            .title("테스트 책" + testCounter)
+            .author("테스트 작가" + testCounter)
+            .isbn("979-11-" + String.format("%05d", testCounter + 2000) + "-11-5")
+            .description("테스트 설명입니다.")
+            .publisher("테스트 출판사")
+            .publishDate(LocalDate.now())
+            .genres(List.of("소설", "에세이"))
+            .build();
+        bookRepository.save(testBook);
+
         // 테스트 문구 생성
         testQuote = Quote.builder()
             .content("테스트 문구입니다.")
             .user(testUser)
+            .book(testBook)
+            .page(42) // page 필드 추가
             .build();
         quoteRepository.save(testQuote);
         log.debug("테스트 문구 생성 완료: {}", testQuote);
@@ -126,11 +159,11 @@ class CommentControllerTest {
         log.debug("댓글 작성 테스트 시작");
 
         // given
-        CommentRequestDto requestDto = new CommentRequestDto("테스트 댓글입니다.");
+        CommentCreateRequest requestDto = new CommentCreateRequest("테스트 댓글입니다.");
         log.debug("댓글 작성 요청 데이터: {}", requestDto);
 
         // when & then
-        mockMvc.perform(post("/api/v1/comments/quotes/{quoteId}", testQuote.getId())
+        mockMvc.perform(post("/comments/quotes/{quoteId}", testQuote.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)))
@@ -177,7 +210,7 @@ class CommentControllerTest {
         log.debug("테스트 댓글 생성 완료: {}", comment);
 
         // when & then
-        mockMvc.perform(get("/api/v1/comments/{commentId}", comment.getId())
+        mockMvc.perform(get("/comments/{commentId}", comment.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
@@ -220,7 +253,7 @@ class CommentControllerTest {
         log.debug("테스트 댓글 생성 완료: {}", comment);
 
         // when & then
-        mockMvc.perform(get("/api/v1/comments/quotes/{quoteId}", testQuote.getId())
+        mockMvc.perform(get("/comments/quotes/{quoteId}", testQuote.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
@@ -285,7 +318,7 @@ class CommentControllerTest {
         log.debug("테스트 댓글 생성 완료: {}", comment);
 
         // when & then
-        mockMvc.perform(get("/api/v1/comments/users/{userId}", testUser.getId())
+        mockMvc.perform(get("/comments/users/{userId}", testUser.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
@@ -349,11 +382,11 @@ class CommentControllerTest {
         commentRepository.save(comment);
         log.debug("테스트 댓글 생성 완료: {}", comment);
 
-        CommentRequestDto requestDto = new CommentRequestDto("수정된 댓글입니다.");
+        CommentUpdateRequest requestDto = new CommentUpdateRequest("수정된 댓글입니다.");
         log.debug("댓글 수정 요청 데이터: {}", requestDto);
 
         // when & then
-        mockMvc.perform(put("/api/v1/comments/{commentId}", comment.getId())
+        mockMvc.perform(put("/comments/{commentId}", comment.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(requestDto)))
@@ -400,7 +433,7 @@ class CommentControllerTest {
         log.debug("테스트 댓글 생성 완료: {}", comment);
 
         // when & then
-        mockMvc.perform(delete("/api/v1/comments/{commentId}", comment.getId())
+        mockMvc.perform(delete("/comments/{commentId}", comment.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON))
             .andDo(print())
@@ -414,7 +447,7 @@ class CommentControllerTest {
             ));
 
         // 삭제 확인
-        mockMvc.perform(get("/api/v1/comments/{commentId}", comment.getId())
+        mockMvc.perform(get("/comments/{commentId}", comment.getId())
                 .with(user(UserPrincipal.create(testUser)))
                 .contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());

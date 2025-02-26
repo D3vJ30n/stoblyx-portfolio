@@ -7,16 +7,16 @@ public record UserInterestResponse(
     Long id,
     Long userId,
     List<String> genres,
-    List<String> topics,
-    String bio
+    List<String> authors,
+    List<String> keywords
 ) {
     public static UserInterestResponse from(UserInterest userInterest) {
         return new UserInterestResponse(
             userInterest.getId(),
             userInterest.getUser().getId(),
             userInterest.getGenres(),
-            userInterest.getTopics(),
-            userInterest.getBio()
+            userInterest.getAuthors(),
+            userInterest.getKeywords()
         );
     }
-} 
+}
