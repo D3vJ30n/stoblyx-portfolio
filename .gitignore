@@ -55,3 +55,8 @@ src/main/resources/application.yml
 
 ### Cursor AI Project Rules ###
 .cursor/
+
+venv/
+venv_kobart/
+venv_kospeech/
+KoSpeech/
