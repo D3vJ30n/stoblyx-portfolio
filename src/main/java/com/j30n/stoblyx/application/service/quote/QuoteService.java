@@ -11,7 +11,7 @@ import com.j30n.stoblyx.domain.model.Quote;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.repository.BookRepository;
 import com.j30n.stoblyx.domain.repository.LikeRepository;
-import com.j30n.stoblyx.domain.repository.SavedQuotesRepository;
+import com.j30n.stoblyx.domain.repository.SavedQuoteRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class QuoteService implements QuoteUseCase {
 
+    private static final String QUOTE_NOT_FOUND_MESSAGE = "Quote not found with id: ";
+
     private final QuotePort quotePort;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
     private final LikeRepository likeRepository;
-    private final SavedQuotesRepository savedQuotesRepository;
+    private final SavedQuoteRepository savedQuoteRepository;
 
     @Override
     @Transactional
@@ -54,9 +56,9 @@ public class QuoteService implements QuoteUseCase {
     @Transactional(readOnly = true)
     public QuoteResponse getQuote(Long quoteId, Long userId) {
         Quote quote = quotePort.findQuoteById(quoteId)
-            .orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + quoteId));
+            .orElseThrow(() -> new EntityNotFoundException(QUOTE_NOT_FOUND_MESSAGE + quoteId));
         boolean isLiked = likeRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
-        boolean isSaved = savedQuotesRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
+        boolean isSaved = savedQuoteRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
         return QuoteResponse.from(quote, isLiked, isSaved);
     }
 
@@ -66,7 +68,7 @@ public class QuoteService implements QuoteUseCase {
         return quotePort.findByUserId(userId, pageable)
             .map(quote -> {
                 boolean isLiked = likeRepository.findByUserIdAndQuoteId(userId, quote.getId()).isPresent();
-                boolean isSaved = savedQuotesRepository.findByUserIdAndQuoteId(userId, quote.getId()).isPresent();
+                boolean isSaved = savedQuoteRepository.findByUserIdAndQuoteId(userId, quote.getId()).isPresent();
                 return QuoteResponse.from(quote, isLiked, isSaved);
             });
     }
@@ -76,7 +78,7 @@ public class QuoteService implements QuoteUseCase {
     public QuoteResponse updateQuote(Long quoteId, Long userId, QuoteUpdateRequest request) {
         validateQuoteOwner(quoteId, userId);
         Quote quote = quotePort.findQuoteById(quoteId)
-            .orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + quoteId));
+            .orElseThrow(() -> new EntityNotFoundException(QUOTE_NOT_FOUND_MESSAGE + quoteId));
         quote.update(
             request.content(),
             request.memo(),
@@ -84,7 +86,7 @@ public class QuoteService implements QuoteUseCase {
         );
         Quote updatedQuote = quotePort.save(quote);
         boolean isLiked = likeRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
-        boolean isSaved = savedQuotesRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
+        boolean isSaved = savedQuoteRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
         return QuoteResponse.from(updatedQuote, isLiked, isSaved);
     }
 
@@ -93,7 +95,7 @@ public class QuoteService implements QuoteUseCase {
     public void deleteQuote(Long quoteId, Long userId) {
         validateQuoteOwner(quoteId, userId);
         Quote quote = quotePort.findQuoteById(quoteId)
-            .orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + quoteId));
+            .orElseThrow(() -> new EntityNotFoundException(QUOTE_NOT_FOUND_MESSAGE + quoteId));
         quotePort.delete(quote);
     }
 
@@ -101,7 +103,7 @@ public class QuoteService implements QuoteUseCase {
     @Transactional
     public QuoteResponse saveQuote(Long userId, Long quoteId, SavedQuoteRequest request) {
         Quote quote = quotePort.findQuoteById(quoteId)
-            .orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + quoteId));
+            .orElseThrow(() -> new EntityNotFoundException(QUOTE_NOT_FOUND_MESSAGE + quoteId));
         quotePort.saveQuoteToUser(userId, quoteId, request.note());
         boolean isLiked = likeRepository.findByUserIdAndQuoteId(userId, quoteId).isPresent();
         return QuoteResponse.from(quote, isLiked, true);
@@ -110,8 +112,9 @@ public class QuoteService implements QuoteUseCase {
     @Override
     @Transactional
     public void unsaveQuote(Long userId, Long quoteId) {
-        Quote quote = quotePort.findQuoteById(quoteId)
-            .orElseThrow(() -> new EntityNotFoundException("Quote not found with id: " + quoteId));
+        quotePort.findQuoteById(quoteId)
+            .orElseThrow(() -> new EntityNotFoundException(QUOTE_NOT_FOUND_MESSAGE + quoteId));
+        
         quotePort.unsaveQuoteFromUser(userId, quoteId);
     }
 

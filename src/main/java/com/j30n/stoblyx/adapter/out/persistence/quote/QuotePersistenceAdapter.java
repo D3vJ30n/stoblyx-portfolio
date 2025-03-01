@@ -2,10 +2,10 @@ package com.j30n.stoblyx.adapter.out.persistence.quote;
 
 import com.j30n.stoblyx.application.port.out.quote.QuotePort;
 import com.j30n.stoblyx.domain.model.Quote;
-import com.j30n.stoblyx.domain.model.SavedQuotes;
+import com.j30n.stoblyx.domain.model.SavedQuote;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.repository.QuoteRepository;
-import com.j30n.stoblyx.domain.repository.SavedQuotesRepository;
+import com.j30n.stoblyx.domain.repository.SavedQuoteRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,7 +20,7 @@ public class QuotePersistenceAdapter implements QuotePort {
 
     private final QuoteRepository quoteRepository;
     private final UserRepository userRepository;
-    private final SavedQuotesRepository savedQuotesRepository;
+    private final SavedQuoteRepository savedQuoteRepository;
 
     @Override
     public Quote save(Quote quote) {
@@ -55,37 +55,38 @@ public class QuotePersistenceAdapter implements QuotePort {
         Quote quote = findQuoteById(quoteId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 인용구입니다. id: " + quoteId));
 
-        savedQuotesRepository.findByUserIdAndQuoteId(userId, quoteId)
+        savedQuoteRepository.findByUserIdAndQuoteId(userId, quoteId)
             .ifPresentOrElse(
                 savedQuote -> {
                     if (savedQuote.isDeleted()) {
-                        savedQuote.undelete();
+                        savedQuote.restore();
                         savedQuote.updateNote(note);
-                        savedQuotesRepository.save(savedQuote);
+                        savedQuoteRepository.save(savedQuote);
                     }
                 },
                 () -> {
-                    SavedQuotes savedQuote = SavedQuotes.builder()
+                    SavedQuote savedQuote = SavedQuote.builder()
                         .user(user)
                         .quote(quote)
                         .note(note)
                         .build();
-                    savedQuotesRepository.save(savedQuote);
+                    savedQuoteRepository.save(savedQuote);
                 }
             );
     }
 
     @Override
     public void unsaveQuoteFromUser(Long userId, Long quoteId) {
-        savedQuotesRepository.findByUserIdAndQuoteId(userId, quoteId)
+        savedQuoteRepository.findByUserIdAndQuoteId(userId, quoteId)
             .ifPresent(savedQuote -> {
                 savedQuote.delete();
-                savedQuotesRepository.save(savedQuote);
+                savedQuoteRepository.save(savedQuote);
             });
     }
 
     @Override
     public Page<Quote> findSavedQuotesByUserId(Long userId, Pageable pageable) {
-        return savedQuotesRepository.findQuotesByUserId(userId, pageable);
+        return savedQuoteRepository.findByUserId(userId, pageable)
+            .map(SavedQuote::getQuote);
     }
 }

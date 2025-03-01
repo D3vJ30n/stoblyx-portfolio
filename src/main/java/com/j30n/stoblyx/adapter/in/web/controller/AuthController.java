@@ -38,6 +38,7 @@ public class AuthController {
      */
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<?>> signUp(@Valid @RequestBody SignUpRequest request) {
+        log.info("회원가입 요청: {}", request.email());
         authService.signUp(request);
         return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
     }

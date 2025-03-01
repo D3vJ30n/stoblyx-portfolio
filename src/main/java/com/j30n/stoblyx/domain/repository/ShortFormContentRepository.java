@@ -33,7 +33,7 @@ public interface ShortFormContentRepository extends JpaRepository<ShortFormConte
 
     @Query("SELECT c FROM ShortFormContent c " +
            "WHERE c.deleted = false " +
-           "AND (c.book.id IN (SELECT b.id FROM Book b WHERE b.user.id = :userId) " +
+           "AND (c.book.id IN (SELECT q.book.id FROM Quote q WHERE q.user.id = :userId) " +
            "OR c.quote.user.id = :userId) " +
            "ORDER BY c.createdAt DESC")
     Page<ShortFormContent> findRecommendedContents(@Param("userId") Long userId, Pageable pageable);

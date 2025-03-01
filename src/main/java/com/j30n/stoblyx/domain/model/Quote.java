@@ -1,8 +1,7 @@
 package com.j30n.stoblyx.domain.model;
 
-import com.j30n.stoblyx.domain.model.common.BaseTimeEntity;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,11 +10,14 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 책에서 사용자가 발췌한 인용구를 저장하는 엔티티
+ */
 @Entity
 @Table(name = "quotes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Quote extends BaseTimeEntity {
+public class Quote extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,17 +46,11 @@ public class Quote extends BaseTimeEntity {
     @Column(name = "save_count")
     private Integer saveCount = 0;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted = false;
-
     @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "quote", cascade = CascadeType.ALL)
-    private List<SavedQuotes> savedQuotes = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
+    
+    @OneToOne(mappedBy = "quote", cascade = CascadeType.ALL, orphanRemoval = true)
+    private QuoteSummary summary;
 
     @Builder
     public Quote(User user, Book book, String content, String memo, Integer page) {
@@ -65,37 +61,65 @@ public class Quote extends BaseTimeEntity {
         this.page = page;
     }
 
+    /**
+     * 인용구 내용을 업데이트합니다.
+     */
     public void update(String content, String memo, Integer page) {
         this.content = content;
         this.memo = memo;
         this.page = page;
     }
 
-    public void delete() {
-        this.isDeleted = true;
+    /**
+     * 좋아요 수를 업데이트합니다.
+     */
+    public void updateLikeCount(Integer delta) {
+        this.likeCount += delta;
     }
 
-    public boolean isOwner(Long userId) {
-        return this.user.getId().equals(userId);
+    /**
+     * 저장 수를 업데이트합니다.
+     */
+    public void updateSaveCount(Integer delta) {
+        this.saveCount += delta;
     }
 
+    /**
+     * 좋아요 수를 증가시킵니다.
+     */
     public void incrementLikeCount() {
-        this.likeCount++;
+        this.likeCount = this.likeCount + 1;
     }
 
+    /**
+     * 좋아요 수를 감소시킵니다.
+     */
     public void decrementLikeCount() {
         if (this.likeCount > 0) {
-            this.likeCount--;
+            this.likeCount = this.likeCount - 1;
         }
     }
 
+    /**
+     * 저장 수를 증가시킵니다.
+     */
     public void incrementSaveCount() {
-        this.saveCount++;
+        this.saveCount = this.saveCount + 1;
     }
 
+    /**
+     * 저장 수를 감소시킵니다.
+     */
     public void decrementSaveCount() {
         if (this.saveCount > 0) {
-            this.saveCount--;
+            this.saveCount = this.saveCount - 1;
         }
+    }
+
+    /**
+     * 메모를 업데이트합니다.
+     */
+    public void updateMemo(String memo) {
+        this.memo = memo;
     }
 } 

@@ -16,7 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class LikeService extends LikeUseCase {
+public class LikeService implements LikeUseCase {
 
     private final LikePort likePort;
     private final UserRepository userRepository;
@@ -25,8 +25,8 @@ public class LikeService extends LikeUseCase {
     @Override
     @Transactional
     public void likeQuote(Long userId, Long quoteId) {
-        User user = findUserById(userId);
-        Quote quote = findQuoteById(quoteId);
+        findUserById(userId);
+        findQuoteById(quoteId);
         likePort.save(userId, quoteId);
     }
 
@@ -38,7 +38,7 @@ public class LikeService extends LikeUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasLiked(Long userId, Long quoteId) {
+    public boolean isLiked(Long userId, Long quoteId) {
         return likePort.exists(userId, quoteId);
     }
 
@@ -58,6 +58,24 @@ public class LikeService extends LikeUseCase {
     @Transactional(readOnly = true)
     public Page<Long> getLikedQuoteIds(Long userId, Pageable pageable) {
         return likePort.findQuoteIdsByUserId(userId, pageable);
+    }
+
+    /**
+     * 사용자가 특정 문구에 좋아요를 했는지 확인합니다.
+     *
+     * @param userId 사용자 ID
+     * @param quoteId 문구 ID
+     * @return 좋아요 여부 (true: 좋아요 함, false: 좋아요 안함)
+     */
+    public boolean quoteLiked(Long userId, Long quoteId) {
+        // 사용자와 문구 존재 여부 확인
+        userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        quoteRepository.findById(quoteId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 문구입니다."));
+        
+        // 좋아요 여부 확인
+        return likePort.exists(userId, quoteId);
     }
 
     private User findUserById(Long id) {

@@ -23,6 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LikeController {
 
+    private static final String RESULT_SUCCESS = "SUCCESS";
+    private static final String RESULT_ERROR = "ERROR";
+
     private final LikeService likeService;
 
     /**
@@ -42,10 +45,10 @@ public class LikeController {
         try {
             likeService.likeQuote(currentUser.getId(), quoteId);
             return ResponseEntity.ok()
-                .body(new ApiResponse<>("SUCCESS", "문구 좋아요가 완료되었습니다.", true));
+                .body(new ApiResponse<>(RESULT_SUCCESS, "문구 좋아요가 완료되었습니다.", true));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", e.getMessage(), false));
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), false));
         }
     }
 
@@ -66,10 +69,10 @@ public class LikeController {
         try {
             likeService.unlikeQuote(currentUser.getId(), quoteId);
             return ResponseEntity.ok()
-                .body(new ApiResponse<>("SUCCESS", "문구 좋아요가 취소되었습니다.", false));
+                .body(new ApiResponse<>(RESULT_SUCCESS, "문구 좋아요가 취소되었습니다.", false));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), null));
         }
     }
 
@@ -82,17 +85,17 @@ public class LikeController {
      * @throws IllegalArgumentException 문구가 존재하지 않는 경우
      */
     @GetMapping("/quotes/{quoteId}/status")
-    public ResponseEntity<ApiResponse<Boolean>> hasLiked(
+    public ResponseEntity<ApiResponse<Boolean>> quoteLiked(
         @CurrentUser UserPrincipal currentUser,
         @PathVariable Long quoteId
     ) {
         try {
-            boolean hasLiked = likeService.hasLiked(currentUser.getId(), quoteId);
+            boolean hasLiked = likeService.isLiked(currentUser.getId(), quoteId);
             return ResponseEntity.ok()
-                .body(new ApiResponse<>("SUCCESS", "문구 좋아요 상태를 조회했습니다.", hasLiked));
+                .body(new ApiResponse<>(RESULT_SUCCESS, "문구 좋아요 상태를 조회했습니다.", hasLiked));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), null));
         }
     }
 
@@ -110,10 +113,10 @@ public class LikeController {
         try {
             long count = likeService.getLikeCount(quoteId);
             return ResponseEntity.ok()
-                .body(new ApiResponse<>("SUCCESS", "문구 좋아요 수를 조회했습니다.", count));
+                .body(new ApiResponse<>(RESULT_SUCCESS, "문구 좋아요 수를 조회했습니다.", count));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), null));
         }
     }
 
@@ -131,10 +134,10 @@ public class LikeController {
         try {
             List<Long> quoteIds = likeService.getLikedQuoteIds(currentUser.getId());
             return ResponseEntity.ok()
-                .body(new ApiResponse<>("SUCCESS", "좋아요한 문구 목록을 조회했습니다.", quoteIds));
+                .body(new ApiResponse<>(RESULT_SUCCESS, "좋아요한 문구 목록을 조회했습니다.", quoteIds));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), null));
         }
     }
 
@@ -154,10 +157,10 @@ public class LikeController {
         try {
             Page<Long> quoteIds = likeService.getLikedQuoteIds(userId, pageable);
             return ResponseEntity.ok()
-                .body(new ApiResponse<>("SUCCESS", "좋아요한 문구 목록을 조회했습니다.", quoteIds));
+                .body(new ApiResponse<>(RESULT_SUCCESS, "좋아요한 문구 목록을 조회했습니다.", quoteIds));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), null));
         }
     }
 }

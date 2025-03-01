@@ -1,6 +1,6 @@
 package com.j30n.stoblyx.domain.model;
 
-import com.j30n.stoblyx.domain.model.common.BaseTimeEntity;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AccessLevel;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment extends BaseTimeEntity {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +30,6 @@ public class Comment extends BaseTimeEntity {
     @JoinColumn(name = "quote_id")
     private Quote quote;
 
-    private boolean deleted = false;
-
     @Builder
     public Comment(String content, User user, Quote quote) {
         this.content = content;
@@ -41,10 +39,6 @@ public class Comment extends BaseTimeEntity {
 
     public void update(String content) {
         this.content = content;
-    }
-
-    public void delete() {
-        this.deleted = true;
     }
 
     public boolean isOwner(Long userId) {

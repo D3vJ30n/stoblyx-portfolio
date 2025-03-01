@@ -71,10 +71,10 @@
 
 ## 3. Stoblyx만의 차별점
 
-### 1. AI 기반 문구 → 숏폼 영상 변환
+### 1. AI 기반 문구 → 숏폼 슬라이드 이미지 변환
 
-- 키워드 기반 문구 추출 및 자동 영상 생성
-- 영상 요소: 책 표지, 문장, 배경 이미지, 자막, 감성 기반 BGM 적용
+- 키워드 기반 문구 추출 및 자동 슬라이드 이미지 생성
+- 이미지지 요소: 책 표지, 문장, 배경 이미지, 자막, 감성 기반 BGM 적용
 - 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
 
 ### 2. 검색어 기반 유저 추천
@@ -165,128 +165,267 @@
 </div>
 </details>
 
+### 공통 기본 클래스
+
+- **BaseTimeEntity**
+
+  - 모든 엔티티가 상속받는 시간 관련 기본 클래스
+  - 필드
+    - createdAt: LocalDateTime - 생성 시간, @Column(nullable = false, updatable = false)
+    - modifiedAt: LocalDateTime - 수정 시간, @Column(nullable = false)
+  - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
+
+- **BaseEntity**
+  - BaseTimeEntity를 상속받는 공통 기본 클래스
+  - 필드:
+    - isDeleted: Boolean - 삭제 여부, @Column(nullable = false, default = false)
+  - 메서드: delete(), restore(), isDeleted()
+
+### 도메인 엔티티
+
 - **User (사용자)**
 
-  - 기본 정보: id, username, password, nickname, email
-  - 권한 관리: role (USER, ADMIN)
-  - 계정 상태: createdAt, updatedAt, lastLoginAt, active
-  - 보안: failedLoginAttempts, accountLocked
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - username: String(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
+    - password: String(255) - 암호화된 비밀번호, @NotEmpty
+    - nickname: String(50) - 사용자 별명, @Column(unique = true)
+    - email: String(100) - 이메일 주소, @Email, @Column(unique = true)
+    - profileImageUrl: String(255) - 프로필 이미지 경로
+    - role: UserRole - 사용자 권한 (ENUM)
+    - accountStatus: String - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
+    - lastLoginAt: LocalDateTime - 마지막 로그인 시간
+  - 상속: BaseEntity
 
-- **Book (도서)**
+- **UserRole (사용자 역할 - ENUM)**
 
-  - 기본 정보: id, title, author, isbn, description
-  - 출판 정보: publisher, publishDate
-  - 분류: genres (List)
-  - 상태 관리: createdAt, updatedAt, deleted
+  - USER: 일반 사용자
+  - ADMIN: 관리자
+  - EDITOR: 편집자
+  - WRITER: 작가
 
-- **Quote (문구)**
+- **Auth (인증 정보)**
 
-  - 기본 정보: id, content, page, chapter
-  - 연관 관계: userId, bookId
-  - 메타 데이터: memo, likeCount
-  - 상태 관리: createdAt, updatedAt, deleted
-
-- **Comment (댓글)**
-
-  - 기본 정보: id, content
-  - 연관 관계: userId, quoteId
-  - 상태 관리: createdAt, updatedAt, deleted
-
-- **Like (좋아요)**
-
-  - 기본 정보: id
-  - 연관 관계: userId, quoteId
-  - 상태 관리: createdAt
-
-- **SavedQuotes (저장된 문구)**
-
-  - 기본 정보: id, memo
-  - 연관 관계: userId, quoteId
-  - 상태 관리: createdAt, updatedAt
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - refreshToken: String(255) - 리프레시 토큰
+    - tokenType: String(20) - 토큰 타입, 기본값 "Bearer"
+    - expiryDate: LocalDateTime - 만료 시간
+    - lastUsedAt: LocalDateTime - 마지막 사용 시간
+    - user: User - 연관된 사용자, @OneToOne, @JoinColumn
+  - 상속: BaseEntity
 
 - **UserInterest (사용자 관심사)**
 
-  - 기본 정보: id, interests (List)
-  - 연관 관계: userId
-  - 상태 관리: createdAt, updatedAt
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - interests: List<String> - 관심사 목록, @ElementCollection
+    - user: User - 연관된 사용자, @OneToOne, @JoinColumn
+  - 상속: BaseEntity
 
-- **Summary (요약)**
+- **Book (도서)**
 
-  - 기본 정보: id, content
-  - 연관 관계: bookId
-  - 상태 관리: createdAt, updatedAt
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: String(200) - 도서 제목, @NotEmpty
+    - author: String(100) - 저자, @NotEmpty
+    - isbn: String(20) - ISBN, @Column(unique = true)
+    - description: String(2000) - 도서 설명
+    - publisher: String(100) - 출판사
+    - publishDate: LocalDate - 출판일
+    - thumbnailUrl: String(500) - 썸네일 URL
+    - genres: List<String> - 장르 목록, @ElementCollection
+    - publicationYear: Integer - 출판 연도
+    - totalPages: Integer - 총 페이지 수
+    - avgReadingTime: Integer - 평균 독서 시간(분)
+    - averageRating: Double - 평균 평점, default = 0.0
+    - ratingCount: Integer - 평점 개수, default = 0
+  - 상속: BaseEntity
+
+- **BookInfo (도서 정보 - DTO)**
+
+  - 필드
+    - title: String - 도서 제목
+    - author: String - 저자
+    - isbn: String - ISBN
+    - description: String - 도서 설명
+    - publisher: String - 출판사
+    - publishDate: LocalDate - 출판일
+    - thumbnailUrl: String - 썸네일 URL
+    - genres: List<String> - 장르 목록
+
+- **Quote (문구)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: String(1000) - 문구 내용, @NotEmpty
+    - page: Integer - 페이지 번호
+    - memo: String(500) - 사용자 메모
+    - likeCount: Integer - 좋아요 수, default = 0
+    - saveCount: Integer - 저장 수, default = 0
+    - user: User - 문구 등록자, @ManyToOne(fetch = FetchType.LAZY)
+    - book: Book - 문구가 속한 책, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
+
+- **QuoteSummary (문구 요약)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: String(1000) - 요약 내용, @NotEmpty
+    - algorithm: String(50) - 사용된 알고리즘 (ex: "KoBART")
+    - generatedAt: LocalDateTime - 생성 시간
+    - quality: Double - 요약 품질 점수, default = 0.0
+    - quote: Quote - 원본 문구, @OneToOne, @JoinColumn
+  - 상속: BaseEntity
+
+- **Summary (책 요약)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: String(5000) - 요약 내용, @NotEmpty
+    - algorithm: String(50) - 사용된 알고리즘
+    - generatedAt: LocalDateTime - 생성 시간
+    - book: Book - 요약된 책, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
+
+- **Comment (댓글)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: String(500) - 댓글 내용, @NotEmpty
+    - likeCount: Integer - 좋아요 수, default = 0
+    - user: User - 댓글 작성자, @ManyToOne(fetch = FetchType.LAZY)
+    - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
+
+- **Like (좋아요)**
+
+  - 복합키: @EmbeddedId
+    - LikeId (userId: Long, quoteId: Long)
+  - 필드
+    - user: User - 좋아요한 사용자, @ManyToOne, @MapsId("userId")
+    - quote: Quote - 좋아요된 문구, @ManyToOne, @MapsId("quoteId")
+  - 상속: BaseEntity
+
+- **ContentLike (콘텐츠 좋아요)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user: User - 좋아요한 사용자, @ManyToOne(fetch = FetchType.LAZY)
+    - content: ShortFormContent - 좋아요된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
+
+- **SavedQuote (저장된 문구)**
+
+  - 복합키: @EmbeddedId
+    - SavedQuoteId (userId: Long, quoteId: Long)
+  - 필드
+    - note: String(255) - 사용자 노트
+    - user: User - 저장한 사용자, @ManyToOne, @MapsId("userId")
+    - quote: Quote - 저장된 문구, @ManyToOne, @MapsId("quoteId")
+  - 상속: BaseEntity
+
+- **Post (게시물)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: String(100) - 제목, @NotEmpty
+    - content: String(5000) - 내용, @NotEmpty
+    - viewCount: Integer - 조회수, default = 0
+    - likeCount: Integer - 좋아요 수, default = 0
+    - tags: List<String> - 태그 목록, @ElementCollection
+    - user: User - 게시물 작성자, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
 
 - **ShortFormContent (숏폼 콘텐츠)**
 
-  - 기본 정보: id, title, content, mediaUrl
-  - 연관 관계: quoteId
-  - 메타 데이터: status, viewCount
-  - 상태 관리: createdAt, updatedAt
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: String(100) - 콘텐츠 제목, @NotEmpty
+    - description: String(500) - 콘텐츠 설명
+    - status: ContentStatus - 콘텐츠 상태 (ENUM)
+    - viewCount: Integer - 조회수, default = 0
+    - likeCount: Integer - 좋아요 수, default = 0
+    - shareCount: Integer - 공유 수, default = 0
+    - book: Book - 연관된 책, @ManyToOne(fetch = FetchType.LAZY)
+    - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
 
-- **ContentInteraction (콘텐츠 상호작용)**
+- **MediaResource (미디어 리소스)**
 
-  - 기본 정보: id, type
-  - 연관 관계: userId, contentId
-  - 상태 관리: createdAt
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - type: MediaType - 미디어 타입 (ENUM)
+    - url: String(500) - 리소스 URL, @NotEmpty
+    - thumbnailUrl: String(500) - 썸네일 URL
+    - description: String(255) - 리소스 설명
+    - duration: Integer - 미디어 길이(초)
+    - content: ShortFormContent - 연관된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
 
-- **ContentComment (콘텐츠 댓글)**
-
-  - 기본 정보: id, content
-  - 연관 관계: userId, contentId
-  - 상태 관리: createdAt, updatedAt
-
-- **Post (게시물)**
-  - 기본 정보: id, title, content
-  - 연관 관계: userId
-  - 메타 데이터: viewCount, likeCount
-  - 상태 관리: createdAt, updatedAt, deleted
+- **Search (검색 기록)**
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - keyword: String(100) - 검색어, @NotEmpty
+    - resultCount: Integer - 검색 결과 수, default = 0
+    - searchedAt: LocalDateTime - 검색 시간
+    - user: User - 검색한 사용자, @ManyToOne(fetch = FetchType.LAZY)
+  - 상속: BaseEntity
 
 ### 열거형 (Enums)
 
 - **ContentStatus (콘텐츠 상태)**
 
-  - DRAFT: 임시저장
-  - PENDING: 검토중
-  - PUBLISHED: 발행됨
-  - REJECTED: 거부됨
+  - PROCESSING: 처리중
+  - COMPLETED: 생성 완료
+  - FAILED: 생성 실패
+  - PUBLISHED: 공개됨
+  - PRIVATE: 비공개
+  - DELETED: 삭제됨
 
-- **Role (역할)**
+- **MediaType (미디어 유형)**
+  - VIDEO: 비디오
+  - AUDIO: 오디오
+  - IMAGE: 이미지
+  - SUBTITLE: 자막
+  - BGM: 배경음악
 
-  - USER: 일반 사용자
-  - ADMIN: 관리자
+### 엔티티 관계도
 
-- **UserRole (사용자 역할)**
-  - USER: 일반 사용자
-  - ADMIN: 관리자
+#### 사용자 관련 관계
 
-#### 관계 설명
+- **User ↔ Auth**: 사용자와 인증 정보 (1:1)
+- **User ↔ UserInterest**: 사용자와 관심사 (1:1)
+- **User ↔ Quote**: 사용자가 작성한 문구 (1:N)
+- **User ↔ Comment**: 사용자가 작성한 댓글 (1:N)
+- **User ↔ Like**: 사용자가 좋아요한 문구 (1:N)
+- **User ↔ ContentLike**: 사용자가 좋아요한 콘텐츠 (1:N)
+- **User ↔ SavedQuote**: 사용자가 저장한 문구 (1:N)
+- **User ↔ Post**: 사용자가 작성한 게시물 (1:N)
+- **User ↔ Search**: 사용자의 검색 기록 (1:N)
 
-- **User 관련**
+#### 도서 관련 관계
 
-  - User ↔ Quote: 사용자별 작성 문구 관리 (1:N)
-  - User ↔ Comment: 사용자별 작성 댓글 관리 (1:N)
-  - User ↔ Like: 사용자별 좋아요 관리 (1:N)
-  - User ↔ SavedQuotes: 사용자별 저장 문구 관리 (1:N)
-  - User ↔ UserInterest: 사용자별 관심사 관리 (1:1)
-  - User ↔ Post: 사용자별 게시물 관리 (1:N)
-  - User ↔ ContentInteraction: 사용자별 콘텐츠 상호작용 (1:N)
-  - User ↔ ContentComment: 사용자별 콘텐츠 댓글 (1:N)
+- **Book ↔ Quote**: 책에 포함된 문구 (1:N)
+- **Book ↔ Summary**: 책의 요약 (1:N)
+- **Book ↔ ShortFormContent**: 책 기반 숏폼 콘텐츠 (1:N)
 
-- **Book 관련**
+#### 문구 관련 관계
 
-  - Book ↔ Quote: 책별 문구 관리 (1:N)
-  - Book ↔ Summary: 책별 요약 관리 (1:1)
+- **Quote ↔ Comment**: 문구에 달린 댓글 (1:N)
+- **Quote ↔ Like**: 문구에 대한 좋아요 (1:N)
+- **Quote ↔ SavedQuote**: 저장된 문구 (1:N)
+- **Quote ↔ ShortFormContent**: 문구 기반 숏폼 콘텐츠 (1:N)
+- **Quote ↔ QuoteSummary**: 문구와 그 요약 (1:1)
 
-- **Quote 관련**
+#### 콘텐츠 관련 관계
 
-  - Quote ↔ Comment: 문구별 댓글 관리 (1:N)
-  - Quote ↔ Like: 문구별 좋아요 관리 (1:N)
-  - Quote ↔ SavedQuotes: 문구별 저장 관리 (1:N)
-  - Quote ↔ ShortFormContent: 문구별 숏폼 콘텐츠 (1:N)
+- **ShortFormContent ↔ MediaResource**: 콘텐츠와 미디어 자원 (1:N)
+- **ShortFormContent ↔ ContentLike**: 콘텐츠에 대한 좋아요 (1:N)
 
-- **ShortFormContent 관련**
-  - ShortFormContent ↔ ContentInteraction: 콘텐츠별 상호작용 (1:N)
-  - ShortFormContent ↔ ContentComment: 콘텐츠별 댓글 (1:N)
+#### 게시물 관련 관계
+
+- **Post ↔ Comment**: 게시물에 달린 댓글 (1:N, 댓글 엔티티 재사용)
 
 ---
 
@@ -295,8 +434,8 @@
 ### 공통 사항
 
 - **인증:** Bearer Token 방식 (JWT)
-- **권한 요구사항:** 일부 엔드포인트는 인증 필요 (표기됨)
-- **에러 코드 및 메시지 예시:**
+- **권한 요구사항:** 일부 엔드포인트는 인증 필요
+- **에러 코드 및 메시지 예시**
 
 ```json
 {

@@ -57,6 +57,12 @@ public class GlobalExceptionHandler {
         return errorResponseEntity("접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(org.springframework.security.authentication.AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handleAuthenticationCredentialsNotFoundException(
+            org.springframework.security.authentication.AuthenticationCredentialsNotFoundException ex) {
+        return errorResponseEntity("인증이 필요한 요청입니다.", HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleAllUncaughtException(Exception ex) {
         return errorResponseEntity("서버 내부 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);

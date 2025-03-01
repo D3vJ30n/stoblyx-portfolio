@@ -22,4 +22,27 @@ public record QuoteSummaryResponse(
             quote.getUser().getNickname()
         );
     }
+    
+    // 빌더 패턴 추가
+    public static QuoteSummaryResponseBuilder builder() {
+        return new QuoteSummaryResponseBuilder();
+    }
+    
+    public static class QuoteSummaryResponseBuilder {
+        private Long id;
+        private String originalContent;
+        private String summarizedContent;
+        private String bookTitle;
+        private String authorNickname;
+        
+        public QuoteSummaryResponseBuilder id(Long id) { this.id = id; return this; }
+        public QuoteSummaryResponseBuilder originalContent(String originalContent) { this.originalContent = originalContent; return this; }
+        public QuoteSummaryResponseBuilder summarizedContent(String summarizedContent) { this.summarizedContent = summarizedContent; return this; }
+        public QuoteSummaryResponseBuilder bookTitle(String bookTitle) { this.bookTitle = bookTitle; return this; }
+        public QuoteSummaryResponseBuilder authorNickname(String authorNickname) { this.authorNickname = authorNickname; return this; }
+        
+        public QuoteSummaryResponse build() {
+            return new QuoteSummaryResponse(id, originalContent, summarizedContent, bookTitle, authorNickname);
+        }
+    }
 }

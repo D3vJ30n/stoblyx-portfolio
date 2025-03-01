@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class LikePersistenceAdapter implements LikePort {
             .ifPresentOrElse(
                 like -> {
                     if (like.isDeleted()) {
-                        like.undelete();
+                        like.restore();
                     }
                 },
                 () -> {
@@ -70,7 +69,7 @@ public class LikePersistenceAdapter implements LikePort {
         return likeRepository.findByUserId(userId)
             .stream()
             .map(like -> like.getQuote().getId())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override

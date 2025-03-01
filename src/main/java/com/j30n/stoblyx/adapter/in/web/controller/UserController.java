@@ -8,11 +8,13 @@ import com.j30n.stoblyx.application.port.in.user.UserUseCase;
 import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import com.j30n.stoblyx.infrastructure.annotation.CurrentUser;
+import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 사용자 관련 API를 처리하는 컨트롤러
@@ -22,110 +24,127 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
+    private static final String RESULT_SUCCESS = "SUCCESS";
+    private static final String RESULT_ERROR = "ERROR";
+
     private final UserUseCase userUseCase;
     private final UserInterestUseCase userInterestUseCase;
 
     /**
      * 현재 사용자의 프로필을 조회합니다.
      *
-     * @param userId 현재 사용자 ID
+     * @param userPrincipal 현재 사용자 인증 정보
      * @return 사용자 프로필 정보
      */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<UserProfileResponse>> getCurrentUser(
-        @CurrentUser Long userId
+        @CurrentUser UserPrincipal userPrincipal
     ) {
-        try {
-            UserProfileResponse profile = userUseCase.getCurrentUser(userId);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 프로필을 성공적으로 조회했습니다.", profile));
-        } catch (Exception e) {
-            log.error("사용자 프로필 조회 중 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", "사용자 프로필 조회에 실패했습니다.", null));
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
+        
+        UserProfileResponse profile = userUseCase.getCurrentUser(userPrincipal.getId());
+        return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 프로필을 성공적으로 조회했습니다.", profile));
     }
 
     /**
      * 사용자 프로필을 수정합니다.
      *
-     * @param userId 현재 사용자 ID
+     * @param userPrincipal 현재 사용자 인증 정보
      * @param request 수정할 프로필 정보
      * @return 수정된 사용자 프로필 정보
      */
     @PutMapping("/me")
     public ResponseEntity<ApiResponse<UserProfileResponse>> updateUser(
-        @CurrentUser Long userId,
+        @CurrentUser UserPrincipal userPrincipal,
         @Valid @RequestBody UserUpdateRequest request
     ) {
-        try {
-            UserProfileResponse updatedProfile = userUseCase.updateUser(userId, request);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 프로필을 성공적으로 수정했습니다.", updatedProfile));
-        } catch (Exception e) {
-            log.error("사용자 프로필 수정 중 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", "사용자 프로필 수정에 실패했습니다.", null));
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
+        
+        UserProfileResponse updatedProfile = userUseCase.updateUser(userPrincipal.getId(), request);
+        return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 프로필을 성공적으로 수정했습니다.", updatedProfile));
     }
 
     /**
      * 사용자 계정을 삭제합니다.
      *
-     * @param userId 현재 사용자 ID
-     * @return 삭제 결과
+     * @param userPrincipal 현재 사용자 인증 정보
+     * @return 삭제 성공 여부
      */
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> deleteUser(
-        @CurrentUser Long userId
+        @CurrentUser UserPrincipal userPrincipal
     ) {
-        try {
-            userUseCase.deleteUser(userId);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 계정을 성공적으로 삭제했습니다.", null));
-        } catch (Exception e) {
-            log.error("사용자 계정 삭제 중 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", "사용자 계정 삭제에 실패했습니다.", null));
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
+        
+        userUseCase.deleteUser(userPrincipal.getId());
+        return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 계정이 성공적으로 삭제되었습니다.", null));
     }
 
     /**
-     * 사용자의 관심사 정보를 조회합니다.
+     * 사용자의 관심사를 조회합니다.
      *
-     * @param userId 현재 사용자 ID
-     * @return 사용자의 관심사 정보
+     * @param userPrincipal 현재 사용자 인증 정보
+     * @return 사용자 관심사 정보
      */
     @GetMapping("/me/interests")
     public ResponseEntity<ApiResponse<UserInterestResponse>> getUserInterest(
-        @CurrentUser Long userId
+        @CurrentUser UserPrincipal userPrincipal
     ) {
-        try {
-            UserInterestResponse interests = userInterestUseCase.getUserInterest(userId);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 관심사를 성공적으로 조회했습니다.", interests));
-        } catch (Exception e) {
-            log.error("사용자 관심사 조회 중 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", "사용자 관심사 조회에 실패했습니다.", null));
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
+        
+        UserInterestResponse interestResponse = userInterestUseCase.getUserInterest(userPrincipal.getId());
+        return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 관심사를 성공적으로 조회했습니다.", interestResponse));
     }
 
     /**
-     * 사용자의 관심사 정보를 수정합니다.
+     * 사용자의 관심사를 업데이트합니다.
      *
-     * @param userId 현재 사용자 ID
+     * @param userPrincipal 현재 사용자 인증 정보
      * @param request 수정할 관심사 정보
-     * @return 수정된 관심사 정보
+     * @return 업데이트된 관심사 정보
      */
     @PutMapping("/me/interests")
     public ResponseEntity<ApiResponse<UserInterestResponse>> updateUserInterest(
-        @CurrentUser Long userId,
+        @CurrentUser UserPrincipal userPrincipal,
         @Valid @RequestBody UserInterestRequest request
     ) {
-        try {
-            UserInterestResponse updatedInterests = userInterestUseCase.updateUserInterest(userId, request);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 관심사를 성공적으로 수정했습니다.", updatedInterests));
-        } catch (Exception e) {
-            log.error("사용자 관심사 수정 중 오류 발생: {}", e.getMessage(), e);
-            return ResponseEntity.badRequest()
-                .body(new ApiResponse<>("ERROR", "사용자 관심사 수정에 실패했습니다.", null));
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
         }
+        
+        UserInterestResponse updatedInterest = userInterestUseCase.updateUserInterest(userPrincipal.getId(), request);
+        return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 관심사를 성공적으로 업데이트했습니다.", updatedInterest));
+    }
+
+    /**
+     * 사용자 프로필 이미지를 업로드합니다.
+     *
+     * @param userPrincipal 현재 사용자 인증 정보
+     * @param image 업로드할 이미지 파일
+     * @return 업데이트된 사용자 프로필 정보
+     */
+    @PostMapping("/me/profile-image")
+    public ResponseEntity<ApiResponse<UserProfileResponse>> uploadProfileImage(
+        @CurrentUser UserPrincipal userPrincipal,
+        @RequestParam("image") MultipartFile image
+    ) {
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+        }
+        
+        if (image.isEmpty()) {
+            throw new IllegalArgumentException("이미지 파일이 제공되지 않았습니다.");
+        }
+        
+        UserProfileResponse updatedProfile = userUseCase.updateProfileImage(userPrincipal.getId(), image);
+        return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "프로필 이미지가 성공적으로 업로드되었습니다.", updatedProfile));
     }
 }

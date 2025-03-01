@@ -4,6 +4,7 @@ import com.j30n.stoblyx.adapter.in.web.dto.search.SearchRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.search.SearchResponse;
 import com.j30n.stoblyx.application.port.in.search.SearchUseCase;
 import com.j30n.stoblyx.application.port.out.search.SearchPort;
+import com.j30n.stoblyx.domain.model.Search;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,11 +27,18 @@ public class SearchService implements SearchUseCase {
     @Override
     @Transactional(readOnly = true)
     public Page<SearchResponse> search(SearchRequest request, Pageable pageable) {
-        return switch (request.type()) {
+        Page<SearchResponse> result = switch (request.type()) {
             case QUOTE -> searchQuotes(request.keyword(), request.category(), pageable);
             case BOOK -> searchBooks(request.keyword(), request.category(), pageable);
             case ALL -> searchAll(request.keyword(), pageable);
         };
+        
+        // 검색 결과가 있고 사용자가 로그인한 경우 검색 기록 저장
+        if (request.userId() != null && result.getTotalElements() > 0) {
+            saveSearchHistory(request.keyword(), request.category(), request.userId(), (int) result.getTotalElements());
+        }
+        
+        return result;
     }
 
     private Page<SearchResponse> searchQuotes(String keyword, String category, Pageable pageable) {
@@ -53,7 +61,7 @@ public class SearchService implements SearchUseCase {
         combined.addAll(books.getContent());
 
         // 생성일자 기준으로 정렬
-        combined.sort(Comparator.comparing(SearchResponse::getCreatedAt).reversed());
+        combined.sort(Comparator.comparing(SearchResponse::createdAt).reversed());
 
         // 페이징 처리
         int start = (int) pageable.getOffset();
@@ -64,5 +72,29 @@ public class SearchService implements SearchUseCase {
             pageable,
             combined.size()
         );
+    }
+    
+    @Override
+    @Transactional
+    public Search saveSearchHistory(String keyword, String category, Long userId, Integer resultCount) {
+        return searchPort.saveSearch(keyword, category, userId, resultCount);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Search> getUserSearchHistory(Long userId, Pageable pageable) {
+        return searchPort.findSearchesByUserId(userId, pageable);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteSearchHistory(Long searchId) {
+        searchPort.deleteSearch(searchId);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteAllUserSearchHistory(Long userId) {
+        searchPort.deleteAllSearchesByUserId(userId);
     }
 }

@@ -1,6 +1,6 @@
 package com.j30n.stoblyx.domain.model;
 
-import com.j30n.stoblyx.domain.model.common.BaseTimeEntity;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ContentComment extends BaseTimeEntity {
+public class ContentComment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,6 @@ public class ContentComment extends BaseTimeEntity {
     private String commentText;
 
     private int likeCount = 0;
-    private boolean deleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
@@ -49,8 +48,4 @@ public class ContentComment extends BaseTimeEntity {
     public void updateLikeCount(int delta) {
         this.likeCount += delta;
     }
-
-    public void delete() {
-        this.deleted = true;
-    }
-} 
+}

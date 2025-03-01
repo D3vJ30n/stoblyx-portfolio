@@ -3,9 +3,9 @@ package com.j30n.stoblyx.adapter.out.persistence.ai;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import javax.sound.sampled.*;
-import java.io.ByteArrayInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -18,15 +18,14 @@ import java.util.UUID;
 @Component
 public class TTSClient {
     private final Path audioPath;
-    private static final float SAMPLE_RATE = 44100;
-    private static final int SAMPLE_SIZE_IN_BITS = 16;
-    private static final int CHANNELS = 1;
-    private static final boolean SIGNED = true;
-    private static final boolean BIG_ENDIAN = true;
+    private final String pythonScriptPath;
 
     public TTSClient() {
         this.audioPath = Paths.get("audio");
         this.audioPath.toFile().mkdirs();
+        
+        // Python 스크립트 경로 설정 (프로젝트 루트 디렉토리 기준)
+        this.pythonScriptPath = "test_stt.py";
     }
 
     /**
@@ -39,52 +38,66 @@ public class TTSClient {
         log.info("TTS 생성 요청: text={}", text);
         
         try {
-            // 간단한 사인파 생성
-            byte[] audioData = generateSineWaveAudio();
-            
-            // WAV 파일로 저장
-            String fileName = UUID.randomUUID().toString() + ".wav";
+            // UUID로 고유한 파일명 생성
+            String fileName = UUID.randomUUID().toString() + ".mp3";
             File outputFile = audioPath.resolve(fileName).toFile();
             
-            AudioFormat format = new AudioFormat(
-                SAMPLE_RATE,
-                SAMPLE_SIZE_IN_BITS,
-                CHANNELS,
-                SIGNED,
-                BIG_ENDIAN
+            // ProcessBuilder를 사용하여 Python 스크립트 실행
+            ProcessBuilder pb = new ProcessBuilder(
+                "python", 
+                pythonScriptPath, 
+                text, 
+                outputFile.getAbsolutePath()
             );
             
-            ByteArrayInputStream bais = new ByteArrayInputStream(audioData);
-            AudioInputStream ais = new AudioInputStream(
-                bais,
-                format,
-                audioData.length / format.getFrameSize()
-            );
+            // 현재 작업 디렉토리 설정
+            pb.directory(new File(System.getProperty("user.dir")));
+            pb.redirectErrorStream(true);
             
-            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, outputFile);
+            log.info("Python TTS 스크립트 실행: {}", pb.command());
             
-            return outputFile.toURI().toString();
+            Process process = pb.start();
+            
+            // 프로세스 출력 로깅
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    log.info("Python TTS 출력: {}", line);
+                }
+            }
+            
+            // 프로세스 종료 대기
+            int exitCode = process.waitFor();
+            
+            if (exitCode == 0) {
+                log.info("TTS 생성 성공: {}", outputFile.getAbsolutePath());
+                return outputFile.toURI().toString();
+            } else {
+                log.error("TTS 생성 실패: exitCode={}", exitCode);
+                throw new TTSException("TTS 생성 실패: 종료 코드 " + exitCode);
+            }
+        } catch (InterruptedException e) {
+            // 인터럽트 상태 복원
+            Thread.currentThread().interrupt();
+            log.error("TTS 생성 중 중단됨", e);
+            throw new TTSException("TTS 생성 중 중단됨", e);
         } catch (Exception e) {
             log.error("음성 파일 생성 실패", e);
-            return null;
+            throw new TTSException("TTS 처리 중 오류 발생", e);
         }
     }
 
-    private byte[] generateSineWaveAudio() {
-        // 1초 길이의 440Hz 사인파 생성
-        int numSamples = (int) SAMPLE_RATE;
-        byte[] buffer = new byte[2 * numSamples];
-        double frequency = 440.0; // A4 음
-        
-        for (int i = 0; i < numSamples; i++) {
-            double time = i / SAMPLE_RATE;
-            double angle = 2.0 * Math.PI * frequency * time;
-            short sample = (short) (Short.MAX_VALUE * Math.sin(angle));
-            
-            buffer[2*i] = (byte) (sample & 0xFF);
-            buffer[2*i+1] = (byte) ((sample >> 8) & 0xFF);
+    /**
+     * TTS API 관련 예외 클래스
+     */
+    public static class TTSException extends RuntimeException {
+        public TTSException(String message) {
+            super(message);
         }
         
-        return buffer;
+        public TTSException(String message, Throwable cause) {
+            super(message, cause);
+        }
     }
 }

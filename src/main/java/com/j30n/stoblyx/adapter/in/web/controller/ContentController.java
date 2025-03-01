@@ -3,8 +3,6 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
 import com.j30n.stoblyx.application.service.content.ContentService;
-import com.j30n.stoblyx.application.service.content.ContentGenerationService;
-import com.j30n.stoblyx.domain.repository.QuoteRepository;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class ContentController {
 
     private final ContentService contentService;
-    private final ContentGenerationService contentGenerationService;
-    private final QuoteRepository quoteRepository;
 
     /**
      * 트렌딩 콘텐츠 목록을 조회합니다.
@@ -130,9 +126,17 @@ public class ContentController {
     public ResponseEntity<ApiResponse<ContentResponse>> generateContent(
         @PathVariable Long quoteId
     ) {
-        return ResponseEntity.ok(
-            ApiResponse.success("콘텐츠가 생성되었습니다.",
-                contentService.generateContent(quoteId))
-        );
+        try {
+            // contentService를 사용하여 콘텐츠 생성 및 응답 반환
+            ContentResponse contentResponse = contentService.generateContent(quoteId);
+            
+            return ResponseEntity.ok(
+                ApiResponse.success("콘텐츠가 생성되었습니다.", contentResponse)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                ApiResponse.error("콘텐츠 생성에 실패했습니다: " + e.getMessage())
+            );
+        }
     }
 }

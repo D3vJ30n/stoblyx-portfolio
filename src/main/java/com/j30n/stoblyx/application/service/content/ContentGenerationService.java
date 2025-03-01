@@ -4,7 +4,8 @@ import com.j30n.stoblyx.application.port.in.content.ContentGenerationUseCase;
 import com.j30n.stoblyx.adapter.out.persistence.ai.BGMClient;
 import com.j30n.stoblyx.adapter.out.persistence.ai.PexelsClient;
 import com.j30n.stoblyx.adapter.out.persistence.ai.TTSClient;
-import com.j30n.stoblyx.domain.model.ContentStatus;
+import com.j30n.stoblyx.domain.enums.ContentStatus;
+import com.j30n.stoblyx.domain.model.MediaResource;
 import com.j30n.stoblyx.domain.model.Quote;
 import com.j30n.stoblyx.domain.model.ShortFormContent;
 import com.j30n.stoblyx.domain.repository.ShortFormContentRepository;
@@ -30,32 +31,90 @@ public class ContentGenerationService implements ContentGenerationUseCase {
         try {
             log.info("콘텐츠 생성 시작 - Quote ID: {}", quote.getId());
 
-            // 1. 이미지 검색
+            // 1. 이미지/비디오 검색 (랜덤하게 선택)
             String imagePrompt = generateImagePrompt(quote);
-            String thumbnailUrl = pexelsClient.searchImage(imagePrompt);
-            log.debug("이미지 검색 완료: {}", thumbnailUrl);
+            String thumbnailUrl;
+            String videoUrl = null;
+            
+            // 랜덤하게 이미지 또는 비디오 선택
+            boolean useVideo = Math.random() < 0.5; // 50% 확률로 비디오 사용
+            
+            if (useVideo) {
+                // 비디오 사용
+                videoUrl = pexelsClient.searchVideo(imagePrompt);
+                thumbnailUrl = pexelsClient.searchImage(imagePrompt); // 썸네일용 이미지
+                log.debug("비디오 검색 완료: {}", videoUrl);
+            } else {
+                // 이미지만 사용
+                thumbnailUrl = pexelsClient.searchImage(imagePrompt);
+                log.debug("이미지 검색 완료: {}", thumbnailUrl);
+            }
 
             // 2. 음성 생성
             String audioUrl = ttsClient.generateSpeech(quote.getContent());
             log.debug("음성 생성 완료: {}", audioUrl);
 
-            // 3. BGM 선택
-            String bgmUrl = bgmClient.selectBGM();
+            // 3. BGM 선택 (텍스트 내용에 따라 감정 분석하여 선택)
+            String bgmUrl = bgmClient.selectBGMByText(quote.getContent());
             log.debug("BGM 선택 완료: {}", bgmUrl);
 
             // 4. 자막 생성
             String subtitles = generateSubtitles(quote.getContent());
             log.debug("자막 생성 완료");
 
-            // 5. 콘텐츠 저장
+            // 5. 콘텐츠 생성
             ShortFormContent content = ShortFormContent.builder()
                 .book(quote.getBook())
                 .quote(quote)
-                .videoUrl(audioUrl)  // 음성을 비디오 URL로 사용
-                .thumbnailUrl(thumbnailUrl)  // 검색한 이미지를 썸네일로 사용
-                .bgmUrl(bgmUrl)
-                .subtitles(subtitles)
+                .title(quote.getBook().getTitle() + " - 인용구") // 기본 제목 설정
+                .description(quote.getContent()) // 기본 설명 설정
                 .build();
+
+            // 6. 미디어 리소스 추가
+            // 오디오 리소스 추가
+            MediaResource audioResource = MediaResource.builder()
+                .type(MediaResource.MediaType.AUDIO)
+                .url(audioUrl)
+                .content(content)
+                .build();
+            content.addMediaResource(audioResource);
+
+            // 이미지 리소스 추가
+            MediaResource imageResource = MediaResource.builder()
+                .type(MediaResource.MediaType.IMAGE)
+                .url(thumbnailUrl)
+                .thumbnailUrl(thumbnailUrl)
+                .content(content)
+                .build();
+            content.addMediaResource(imageResource);
+            
+            // 비디오 리소스 추가 (비디오를 사용하는 경우)
+            if (useVideo && videoUrl != null) {
+                MediaResource videoResource = MediaResource.builder()
+                    .type(MediaResource.MediaType.VIDEO)
+                    .url(videoUrl)
+                    .thumbnailUrl(thumbnailUrl)
+                    .content(content)
+                    .build();
+                content.addMediaResource(videoResource);
+            }
+
+            // BGM 리소스 추가
+            MediaResource bgmResource = MediaResource.builder()
+                .type(MediaResource.MediaType.BGM)
+                .url(bgmUrl)
+                .content(content)
+                .build();
+            content.addMediaResource(bgmResource);
+            
+            // 자막 리소스 추가
+            MediaResource subtitleResource = MediaResource.builder()
+                .type(MediaResource.MediaType.SUBTITLE)
+                .url("#") // 자막은 URL이 없으므로 임시값
+                .description(subtitles) // 자막 내용을 설명에 저장
+                .content(content)
+                .build();
+            content.addMediaResource(subtitleResource);
 
             content.updateStatus(ContentStatus.COMPLETED);
             contentRepository.save(content);
@@ -66,8 +125,10 @@ public class ContentGenerationService implements ContentGenerationUseCase {
             ShortFormContent failedContent = ShortFormContent.builder()
                 .book(quote.getBook())
                 .quote(quote)
+                .title(quote.getBook().getTitle() + " - 인용구") // 기본 제목 설정
+                .description("생성 실패") // 실패 메시지
+                .status(ContentStatus.FAILED)
                 .build();
-            failedContent.updateStatus(ContentStatus.FAILED);
             contentRepository.save(failedContent);
         }
     }
@@ -88,25 +149,44 @@ public class ContentGenerationService implements ContentGenerationUseCase {
 
     @Override
     public String generateImage(Quote quote) {
-        // TODO: Implement image generation using external service
-        // For now, return a placeholder URL
-        log.info("Generating image for quote: {}", quote.getId());
-        return "https://placeholder.com/image/" + quote.getId();
+        try {
+            log.info("Generating image for quote: {}", quote.getId());
+            String imagePrompt = generateImagePrompt(quote);
+            return pexelsClient.searchImage(imagePrompt);
+        } catch (Exception e) {
+            log.error("Image generation failed for quote: {}", quote.getId(), e);
+            return "https://placeholder.com/image/" + quote.getId();
+        }
     }
 
     @Override
     public String generateAudio(Quote quote) {
-        // TODO: Implement audio generation using external service
-        // For now, return a placeholder URL
-        log.info("Generating audio for quote: {}", quote.getId());
-        return "https://placeholder.com/audio/" + quote.getId();
+        try {
+            log.info("Generating audio for quote: {}", quote.getId());
+            return ttsClient.generateSpeech(quote.getContent());
+        } catch (Exception e) {
+            log.error("Audio generation failed for quote: {}", quote.getId(), e);
+            return "https://placeholder.com/audio/" + quote.getId();
+        }
     }
 
     @Override
     public String generateVideo(Quote quote) {
-        // TODO: Implement video generation using external service
-        // For now, return a placeholder URL
-        log.info("Generating video for quote: {}", quote.getId());
-        return "https://placeholder.com/video/" + quote.getId();
+        try {
+            log.info("Generating video for quote: {}", quote.getId());
+            // 랜덤하게 비디오를 생성하거나 이미지를 반환
+            if (Math.random() < 0.5) {
+                // 50% 확률로 비디오 생성
+                String imagePrompt = generateImagePrompt(quote);
+                return pexelsClient.searchVideo(imagePrompt);
+            } else {
+                // 50% 확률로 이미지 생성
+                String imagePrompt = generateImagePrompt(quote);
+                return pexelsClient.searchImage(imagePrompt);
+            }
+        } catch (Exception e) {
+            log.error("Video generation failed for quote: {}", quote.getId(), e);
+            return "https://placeholder.com/video/" + quote.getId();
+        }
     }
 }

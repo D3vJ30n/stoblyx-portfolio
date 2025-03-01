@@ -7,7 +7,6 @@ import com.j30n.stoblyx.infrastructure.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,33 +23,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import lombok.RequiredArgsConstructor;
 
 import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
 @Profile("!test")
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final Environment environment;
+    private static final String ROLE_ADMIN = "ADMIN";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
     private final AuthenticationConfiguration authenticationConfiguration;
-
-    public SecurityConfig(
-        Environment environment,
-        UserRepository userRepository,
-        PasswordEncoder passwordEncoder,
-        RedisTemplate<String, String> redisTemplate,
-        AuthenticationConfiguration authenticationConfiguration
-    ) {
-        this.environment = environment;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.redisTemplate = redisTemplate;
-        this.authenticationConfiguration = authenticationConfiguration;
-    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -113,22 +101,13 @@ public class SecurityConfig {
                     "/books/{id}"
                 ).permitAll()
                 .requestMatchers(GET, "/books").permitAll()
-                .requestMatchers(POST, "/books").hasRole("ADMIN")
-                .requestMatchers(PUT, "/books/**").hasRole("ADMIN")
-                .requestMatchers(DELETE, "/books/**").hasRole("ADMIN")
+                .requestMatchers(POST, "/books").hasRole(ROLE_ADMIN)
+                .requestMatchers(PUT, "/books/**").hasRole(ROLE_ADMIN)
+                .requestMatchers(DELETE, "/books/**").hasRole(ROLE_ADMIN)
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
             .build();
-    }
-
-    private boolean isTestProfile() {
-        for (String profile : environment.getActiveProfiles()) {
-            if (profile.equals("test")) {
-                return true;
-            }
-        }
-        return false;
     }
 }

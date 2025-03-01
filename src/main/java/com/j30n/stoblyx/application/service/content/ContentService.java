@@ -3,7 +3,8 @@ package com.j30n.stoblyx.application.service.content;
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
 import com.j30n.stoblyx.application.port.in.content.ContentUseCase;
 import com.j30n.stoblyx.application.port.out.content.ContentPort;
-import com.j30n.stoblyx.domain.model.ContentStatus;
+import com.j30n.stoblyx.domain.enums.ContentStatus;
+import com.j30n.stoblyx.domain.model.MediaResource;
 import com.j30n.stoblyx.domain.model.Quote;
 import com.j30n.stoblyx.domain.model.ShortFormContent;
 import com.j30n.stoblyx.domain.model.ContentBookmark;
@@ -23,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ContentService implements ContentUseCase {
 
+    private static final String CONTENT_NOT_FOUND_MSG = "콘텐츠를 찾을 수 없습니다. ID: ";
+    private static final String QUOTE_NOT_FOUND_MSG = "인용구를 찾을 수 없습니다. ID: ";
+    private static final String USER_NOT_FOUND_MSG = "사용자를 찾을 수 없습니다. ID: ";
+    
     private final ContentPort contentPort;
     private final QuoteRepository quoteRepository;
     private final UserRepository userRepository;
@@ -33,18 +38,50 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public ContentResponse generateContent(Long quoteId) {
         Quote quote = quoteRepository.findById(quoteId)
-            .orElseThrow(() -> new EntityNotFoundException("인용구를 찾을 수 없습니다. ID: " + quoteId));
+            .orElseThrow(() -> new EntityNotFoundException(QUOTE_NOT_FOUND_MSG + quoteId));
 
         ShortFormContent content = ShortFormContent.builder()
             .quote(quote)
             .book(quote.getBook())
-            .imageUrl(contentGenerationService.generateImage(quote))
-            .audioUrl(contentGenerationService.generateAudio(quote))
-            .videoUrl(contentGenerationService.generateVideo(quote))
-            .thumbnailUrl(contentGenerationService.generateImage(quote)) // 썸네일로 같은 이미지 사용
-            .subtitles(quote.getContent())
+            .title(quote.getBook().getTitle() + " - 인용구")
+            .description(quote.getContent())
             .status(ContentStatus.COMPLETED)
             .build();
+
+        // 이미지 리소스 추가
+        String imageUrl = contentGenerationService.generateImage(quote);
+        MediaResource imageResource = MediaResource.builder()
+            .type(MediaResource.MediaType.IMAGE)
+            .url(imageUrl)
+            .thumbnailUrl(imageUrl)
+            .content(content)
+            .build();
+        content.addMediaResource(imageResource);
+
+        // 오디오 리소스 추가
+        MediaResource audioResource = MediaResource.builder()
+            .type(MediaResource.MediaType.AUDIO)
+            .url(contentGenerationService.generateAudio(quote))
+            .content(content)
+            .build();
+        content.addMediaResource(audioResource);
+
+        // 비디오 리소스 추가
+        MediaResource videoResource = MediaResource.builder()
+            .type(MediaResource.MediaType.VIDEO)
+            .url(contentGenerationService.generateVideo(quote))
+            .content(content)
+            .build();
+        content.addMediaResource(videoResource);
+
+        // 자막 리소스 추가
+        MediaResource subtitleResource = MediaResource.builder()
+            .type(MediaResource.MediaType.SUBTITLE)
+            .url("#")
+            .description(quote.getContent())
+            .content(content)
+            .build();
+        content.addMediaResource(subtitleResource);
 
         content = contentPort.save(content);
         return ContentResponse.from(content, false, false); // 새로 생성된 콘텐츠는 아직 좋아요나 북마크되지 않음
@@ -72,7 +109,7 @@ public class ContentService implements ContentUseCase {
     @Transactional(readOnly = true)
     public ContentResponse getContent(Long id) {
         ShortFormContent content = contentPort.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + id));
         return ContentResponse.from(content, false, false);
     }
 
@@ -80,7 +117,7 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public void toggleLike(Long userId, Long contentId) {
         ShortFormContent content = contentPort.findById(contentId)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + contentId));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + contentId));
         content.updateLikeCount(1); // 실제로는 좋아요 토글 로직이 필요
         contentPort.save(content);
     }
@@ -89,14 +126,14 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public void toggleBookmark(Long userId, Long contentId) {
         ShortFormContent content = contentPort.findById(contentId)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + contentId));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + contentId));
 
         if (bookmarkRepository.existsByUserIdAndContentId(userId, contentId)) {
             bookmarkRepository.deleteByUserIdAndContentId(userId, contentId);
         } else {
             ContentBookmark bookmark = ContentBookmark.builder()
                 .user(userRepository.findById(userId)
-                    .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. ID: " + userId)))
+                    .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MSG + userId)))
                 .content(content)
                 .build();
             bookmarkRepository.save(bookmark);
@@ -107,7 +144,7 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public void incrementViewCount(Long id) {
         ShortFormContent content = contentPort.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + id));
         content.incrementViewCount();
         contentPort.save(content);
     }
@@ -116,7 +153,7 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public void incrementShareCount(Long id) {
         ShortFormContent content = contentPort.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + id));
         content.incrementShareCount();
         contentPort.save(content);
     }
@@ -157,7 +194,7 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public void deleteContent(Long id) {
         ShortFormContent content = contentPort.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + id));
         content.delete(); // 소프트 삭제 사용
         contentPort.save(content);
     }
@@ -166,7 +203,7 @@ public class ContentService implements ContentUseCase {
     @Transactional
     public void updateContentStatus(Long id, String status) {
         ShortFormContent content = contentPort.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("콘텐츠를 찾을 수 없습니다. ID: " + id));
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + id));
         content.updateStatus(ContentStatus.valueOf(status.toUpperCase()));
         contentPort.save(content);
     }

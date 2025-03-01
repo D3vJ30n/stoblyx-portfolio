@@ -1,6 +1,6 @@
 package com.j30n.stoblyx.domain.model;
 
-import com.j30n.stoblyx.domain.model.common.BaseTimeEntity;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Book extends BaseTimeEntity {
+public class Book extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,42 +43,95 @@ public class Book extends BaseTimeEntity {
     @Column(name = "genre")
     private List<String> genres = new ArrayList<>();
 
-    private boolean deleted = false;
-
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Quote> quotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Summary> summaries = new ArrayList<>();
 
+    private Integer publicationYear;
+    private Integer totalPages;
+    private Integer avgReadingTime;
+    private Double averageRating;
+    private Integer ratingCount;
+
     @Builder
-    public Book(String title, String author, String isbn, String description, String publisher, LocalDate publishDate, String thumbnailUrl, List<String> genres) {
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-        this.description = description;
-        this.publisher = publisher;
-        this.publishDate = publishDate;
-        this.thumbnailUrl = thumbnailUrl;
-        if (genres != null) {
-            this.genres = new ArrayList<>(genres);
+    public Book(BookInfo bookInfo) {
+        this.title = bookInfo.getTitle();
+        this.author = bookInfo.getAuthor();
+        this.isbn = bookInfo.getIsbn();
+        this.description = bookInfo.getDescription();
+        this.publisher = bookInfo.getPublisher();
+        this.publishDate = bookInfo.getPublishDate();
+        this.thumbnailUrl = bookInfo.getThumbnailUrl();
+        if (bookInfo.getGenres() != null) {
+            this.genres = new ArrayList<>(bookInfo.getGenres());
         }
     }
 
-    public void update(String title, String author, String isbn, String description, String publisher, LocalDate publishDate, String thumbnailUrl, List<String> genres) {
-        this.title = title;
-        this.author = author;
-        this.isbn = isbn;
-        this.description = description;
-        this.publisher = publisher;
-        this.publishDate = publishDate;
-        this.thumbnailUrl = thumbnailUrl;
-        if (genres != null) {
-            this.genres = new ArrayList<>(genres);
+    /**
+     * 도서 정보를 업데이트합니다
+     */
+    public void update(BookInfo bookInfo) {
+        this.title = bookInfo.getTitle();
+        this.author = bookInfo.getAuthor();
+        this.isbn = bookInfo.getIsbn();
+        this.description = bookInfo.getDescription();
+        this.publisher = bookInfo.getPublisher();
+        this.publishDate = bookInfo.getPublishDate();
+        this.thumbnailUrl = bookInfo.getThumbnailUrl();
+        if (bookInfo.getGenres() != null) {
+            this.genres = new ArrayList<>(bookInfo.getGenres());
         }
     }
 
+    /**
+     * 도서를 논리적으로 삭제합니다
+     * BaseEntity의 delete() 메서드를 호출하고 추가적인 처리를 수행합니다.
+     */
+    @Override
     public void delete() {
-        this.deleted = true;
+        super.delete();
+        updateModifiedAt();
+    }
+
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
+    public Integer getTotalPages() {
+        return totalPages;
+    }
+
+    public void setTotalPages(Integer totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public Integer getAvgReadingTime() {
+        return avgReadingTime;
+    }
+
+    public void setAvgReadingTime(Integer avgReadingTime) {
+        this.avgReadingTime = avgReadingTime;
+    }
+
+    public Double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(Double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public Integer getRatingCount() {
+        return ratingCount;
+    }
+
+    public void setRatingCount(Integer ratingCount) {
+        this.ratingCount = ratingCount;
     }
 } 

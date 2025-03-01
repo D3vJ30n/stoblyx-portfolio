@@ -16,9 +16,9 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
     @Query("SELECT CASE WHEN COUNT(q) > 0 THEN true ELSE false END FROM Quote q WHERE q.id = :id AND q.user.id = :userId")
     boolean existsByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 
-    @Query("SELECT q FROM Quote q WHERE " +
+    @Query("SELECT q FROM Quote q JOIN q.book b WHERE " +
            "(:keyword IS NULL OR LOWER(q.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
-           "(:category IS NULL OR q.book.category = :category)")
+           "(:category IS NULL OR :category MEMBER OF b.genres)")
     Page<Quote> findByKeywordAndCategory(
         @Param("keyword") String keyword,
         @Param("category") String category,

@@ -55,7 +55,3 @@ src/main/resources/application.yml
 
 ### Cursor AI Project Rules ###
 .cursor/
-
-### Windsurf AI Project Rules
-.windsurfrules
-

@@ -1,36 +1,27 @@
 package com.j30n.stoblyx.domain.model;
 
-import com.j30n.stoblyx.domain.model.common.BaseTimeEntity;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Entity
-@Table(
-    name = "likes",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "quote_id"})
-    }
-)
+@Table(name = "likes")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like extends BaseTimeEntity {
+@IdClass(Like.LikeId.class)
+public class Like extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quote_id")
     private Quote quote;
-
-    private boolean deleted = false;
 
     @Builder
     public Like(User user, Quote quote) {
@@ -38,15 +29,18 @@ public class Like extends BaseTimeEntity {
         this.quote = quote;
     }
 
-    public void delete() {
-        this.deleted = true;
-    }
-
-    public void undelete() {
-        this.deleted = false;
-    }
-
     public boolean isOwner(Long userId) {
         return this.user.getId().equals(userId);
+    }
+
+    /**
+     * Like 엔티티의 복합키 클래스
+     */
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LikeId implements Serializable {
+        private Long user;
+        private Long quote;
     }
 } 

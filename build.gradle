@@ -54,6 +54,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+
+    // JSR-305 for annotations
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -82,6 +86,12 @@ dependencies {
     testRuntimeOnly 'com.h2database:h2'
 
     implementation 'net.sf.sociaal:freetts:1.2.2'
+
+    // 환경변수 로드를 위한 의존성 추가
+    implementation 'me.paulschwarz:spring-dotenv:2.5.4'
+    
+    // 캐싱을 위한 Caffeine 캐시 추가
+    implementation 'com.github.ben-manes.caffeine:caffeine'
 }
 
 testing {
