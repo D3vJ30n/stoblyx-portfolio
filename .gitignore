@@ -51,7 +51,7 @@ Thumbs.db
 
 ### Application Properties ###
 src/main/resources/application-*.yml
-!src/main/resources/application.yml
+src/main/resources/application.yml
 
 ### Cursor AI Project Rules ###
-.cursorrules
+.cursor/
