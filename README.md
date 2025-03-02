@@ -8,27 +8,6 @@
 
 ---
 
-## 목차
-
-1. @프로젝트 개요
-2. @Why Stoblyx?
-3. @Stoblyx만의 차별점
-4. @아키텍처 설계
-5. @주요 기능
-6. @데이터베이스 설계
-7. @API 문서
-8. @개발 환경 설정
-9. @보안 및 확장성 고려 사항
-10. @트러블슈팅
-11. @프로젝트 구조
-12. @테스트 및 품질 관리
-13. @성능 최적화 및 모니터링
-14. @배포 및 운영 전략
-15. @개발자 노트
-16. @라이선스
-
----
-
 ## 1. 프로젝트 개요
 
 **프로젝트명:** 스토블릭스 (Stoblyx)  
@@ -41,10 +20,10 @@
 - **Cache:** Redis 7.0.15
 - **Security:** JWT, Spring Security
 - **AI Integration:**
-  - KoBART (텍스트 요약)
-  - TTS (텍스트-음성 변환)
-  - BGM 선택 (감정에 따른 배경음악)
-  - Pexels API (이미지/비디오 검색)
+    - KoBART (텍스트 요약)
+    - TTS (텍스트-음성 변환) - Python 스크립트 연동을 통한 고품질 음성 생성
+    - BGM 선택 (텍스트 감정 분석에 기반한 자동 배경음악 선택 시스템)
+    - Pexels API (이미지/비디오 검색) - 키워드 기반, API 속도 제한 및 캐싱 최적화
 - **Deployment:** Koyeb + GitHub Actions + Docker
 - **모니터링:** Prometheus, Grafana
 
@@ -74,7 +53,7 @@
 ### 1. AI 기반 문구 → 숏폼 슬라이드 이미지 변환
 
 - 키워드 기반 문구 추출 및 자동 슬라이드 이미지 생성
-- 이미지지 요소: 책 표지, 문장, 배경 이미지, 자막, 감성 기반 BGM 적용
+- 이미지 요소: 책 표지, 문장, 배경 이미지, 자막, 감성 기반 BGM 적용
 - 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
 
 ### 2. 검색어 기반 유저 추천
@@ -84,13 +63,13 @@
 
 ### 3. 게이미피케이션 & 랭킹 시스템
 
-| 랭크     | 조건                       |
-| -------- | -------------------------- |
-| 브론즈   | 기본 기능 사용 가능        |
-| 실버     | 인기 문구 TOP 10 확인 가능 |
-| 골드     | 100+ 좋아요 문구 저장 가능 |
+| 랭크   | 조건                 |
+|------|--------------------|
+| 브론즈  | 기본 기능 사용 가능        |
+| 실버   | 인기 문구 TOP 10 확인 가능 |
+| 골드   | 100+ 좋아요 문구 저장 가능  |
 | 플래티넘 | AI 추천 영상 제작 가능     |
-| 다이아   | 콘텐츠 트렌드 피드 노출    |
+| 다이아  | 콘텐츠 트렌드 피드 노출      |
 
 #### 랭킹 산정 공식
 
@@ -130,6 +109,20 @@
 </div>
 </details>
 
+### AI 서비스 통합 아키텍처
+
+- **헥사고날 아키텍처 기반 AI 서비스 통합**
+
+    - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
+    - 도메인 로직과 AI 서비스 간의 느슨한 결합
+    - 폴백 메커니즘을 통한 서비스 안정성 확보
+
+- **AI 통합 컴포넌트**
+    - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
+    - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동
+    - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
+    - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
+
 ---
 
 ## 5. 주요 기능
@@ -150,7 +143,64 @@
 ### 커뮤니티 기능
 
 - 좋아요, 댓글, 문구 저장 및 트렌드 피드 제공
-- 신고 기능 및 자동 임시 정지 기능 포함
+- 북마크 기능을 통한 콘텐츠 저장 기능 구현
+
+### AI 서비스 통합 기능
+
+#### 1. Pexels API 연동
+
+- **키워드 기반 이미지 검색:** 책 제목과 인용구를 결합한 검색어로 최적의 이미지 제공
+- **키워드 기반 비디오 검색:** 숏폼에 적합한 세로형 비디오 검색 및 처리
+- **API 속도 제한 대응:** 초당 요청 수 제한을 고려한 throttleRequest() 메커니즘 구현
+- **응답 캐싱 시스템:** Redis 기반 캐싱으로 API 호출 최소화 (@Cacheable 적용)
+- **오류 처리 및 폴백:** API 오류 발생 시 기본 이미지/비디오 제공으로 서비스 안정성 확보
+
+#### 2. 감정 기반 BGM 선택 로직
+
+- **텍스트 감정 분석 알고리즘:** 키워드 기반 감정 분석 시스템 구현
+- **4가지 감정 분류:** happy, sad, calm, neutral 감정 인식 및 점수화
+- **감정별 BGM 매핑:** 각 감정에 적합한 BGM 자동 선택
+- **한국어/영어 키워드 지원:** 다국어 감정 키워드 인식 시스템
+
+#### 3. 숏폼 콘텐츠 생성 파이프라인
+
+- **비동기 처리:** @Async 어노테이션을 통한 백그라운드 콘텐츠 생성
+- **통합 미디어 리소스:** 이미지, 비디오, 오디오, BGM, 자막을 포함한 종합 콘텐츠 생성
+- **TTS(Text-to-Speech):** Python 스크립트 연동을 통한 고품질 음성 생성
+- **자막 생성:** 인용구 내용 기반 자막 자동 생성
+- **오류 처리 전략:** 각 단계별 오류 발생 시 적절한 폴백 메커니즘과 로깅 시스템
+
+### 관리자 기능
+
+#### 1. 콘텐츠 관리
+
+- **콘텐츠 승인/반려 시스템:** 생성된 콘텐츠 검토 및 상태 관리 기능
+- **콘텐츠 삭제 및 복구:** 부적절한 콘텐츠 관리 기능
+- **콘텐츠 일괄 처리:** 다중 콘텐츠 상태 변경 기능
+
+#### 2. 사용자 관리
+
+- **사용자 정보 조회:** 전체 사용자 목록 및 상세 정보 조회 기능
+- **권한 관리:** 사용자 역할(USER, ADMIN, EDITOR, WRITER) 관리 기능
+- **활동 내역 조회:** 사용자별 활동 로그 확인 기능
+
+#### 3. 통계 대시보드
+
+- **콘텐츠 생성 현황:** 일별/주별/월별 콘텐츠 생성 통계
+- **사용자 활동 분석:** 신규 가입, 로그인, 콘텐츠 생성 등의 활동 분석
+- **시스템 리소스 모니터링:** CPU, 메모리, 디스크 사용량 실시간 모니터링
+
+#### 4. 시스템 설정 관리
+
+- **API 키 관리:** Pexels API 키 등 외부 서비스 연동 키 관리
+- **리소스 경로 설정:** 미디어 파일 저장 경로 등 시스템 설정 관리
+- **캐시 관리:** Redis 캐시 수동 갱신 및 TTL 설정 기능
+
+#### 5. 로그 모니터링
+
+- **오류 로그 실시간 조회:** 시스템 오류 실시간 모니터링
+- **사용자 행동 로그 분석:** 사용자 활동 패턴 분석 도구
+- **AI 서비스 통합 로그:** AI 서비스 응답 시간 및 성공률 모니터링
 
 ---
 
@@ -169,226 +219,268 @@
 
 - **BaseTimeEntity**
 
-  - 모든 엔티티가 상속받는 시간 관련 기본 클래스
-  - 필드
-    - createdAt: LocalDateTime - 생성 시간, @Column(nullable = false, updatable = false)
-    - modifiedAt: LocalDateTime - 수정 시간, @Column(nullable = false)
-  - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
+    - 모든 엔티티가 상속받는 시간 관련 기본 클래스
+    - 필드
+        - createdAt: LocalDateTime - 생성 시간, @Column(nullable = false, updatable = false)
+        - modifiedAt: LocalDateTime - 수정 시간, @Column(nullable = false)
+    - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
 
 - **BaseEntity**
-  - BaseTimeEntity를 상속받는 공통 기본 클래스
-  - 필드:
-    - isDeleted: Boolean - 삭제 여부, @Column(nullable = false, default = false)
-  - 메서드: delete(), restore(), isDeleted()
+    - BaseTimeEntity를 상속받는 공통 기본 클래스
+    - 필드:
+        - isDeleted: Boolean - 삭제 여부, @Column(nullable = false, default = false)
+    - 메서드: delete(), restore(), isDeleted()
 
 ### 도메인 엔티티
 
 - **User (사용자)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - username: String(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
-    - password: String(255) - 암호화된 비밀번호, @NotEmpty
-    - nickname: String(50) - 사용자 별명, @Column(unique = true)
-    - email: String(100) - 이메일 주소, @Email, @Column(unique = true)
-    - profileImageUrl: String(255) - 프로필 이미지 경로
-    - role: UserRole - 사용자 권한 (ENUM)
-    - accountStatus: String - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
-    - lastLoginAt: LocalDateTime - 마지막 로그인 시간
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - username: String(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
+        - password: String(255) - 암호화된 비밀번호, @NotEmpty
+        - nickname: String(50) - 사용자 별명, @Column(unique = true)
+        - email: String(100) - 이메일 주소, @Email, @Column(unique = true)
+        - profileImageUrl: String(255) - 프로필 이미지 경로
+        - role: UserRole - 사용자 권한 (ENUM)
+        - accountStatus: String - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
+        - lastLoginAt: LocalDateTime - 마지막 로그인 시간
+    - 상속: BaseEntity
 
 - **UserRole (사용자 역할 - ENUM)**
 
-  - USER: 일반 사용자
-  - ADMIN: 관리자
-  - EDITOR: 편집자
-  - WRITER: 작가
+    - USER: 일반 사용자
+    - ADMIN: 관리자
+    - EDITOR: 편집자
+    - WRITER: 작가
 
 - **Auth (인증 정보)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - refreshToken: String(255) - 리프레시 토큰
-    - tokenType: String(20) - 토큰 타입, 기본값 "Bearer"
-    - expiryDate: LocalDateTime - 만료 시간
-    - lastUsedAt: LocalDateTime - 마지막 사용 시간
-    - user: User - 연관된 사용자, @OneToOne, @JoinColumn
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - refreshToken: String(255) - 리프레시 토큰
+        - tokenType: String(20) - 토큰 타입, 기본값 "Bearer"
+        - expiryDate: LocalDateTime - 만료 시간
+        - lastUsedAt: LocalDateTime - 마지막 사용 시간
+        - user: User - 연관된 사용자, @OneToOne, @JoinColumn
+    - 상속: BaseEntity
 
 - **UserInterest (사용자 관심사)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - interests: List<String> - 관심사 목록, @ElementCollection
-    - user: User - 연관된 사용자, @OneToOne, @JoinColumn
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - interests: List<String> - 관심사 목록, @ElementCollection
+        - user: User - 연관된 사용자, @OneToOne, @JoinColumn
+    - 상속: BaseEntity
 
 - **Book (도서)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - title: String(200) - 도서 제목, @NotEmpty
-    - author: String(100) - 저자, @NotEmpty
-    - isbn: String(20) - ISBN, @Column(unique = true)
-    - description: String(2000) - 도서 설명
-    - publisher: String(100) - 출판사
-    - publishDate: LocalDate - 출판일
-    - thumbnailUrl: String(500) - 썸네일 URL
-    - genres: List<String> - 장르 목록, @ElementCollection
-    - publicationYear: Integer - 출판 연도
-    - totalPages: Integer - 총 페이지 수
-    - avgReadingTime: Integer - 평균 독서 시간(분)
-    - averageRating: Double - 평균 평점, default = 0.0
-    - ratingCount: Integer - 평점 개수, default = 0
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - title: String(200) - 도서 제목, @NotEmpty
+        - author: String(100) - 저자, @NotEmpty
+        - isbn: String(20) - ISBN, @Column(unique = true)
+        - description: String(2000) - 도서 설명
+        - publisher: String(100) - 출판사
+        - publishDate: LocalDate - 출판일
+        - thumbnailUrl: String(500) - 썸네일 URL
+        - genres: List<String> - 장르 목록, @ElementCollection
+        - publicationYear: Integer - 출판 연도
+        - totalPages: Integer - 총 페이지 수
+        - avgReadingTime: Integer - 평균 독서 시간(분)
+        - averageRating: Double - 평균 평점, default = 0.0
+        - ratingCount: Integer - 평점 개수, default = 0
+    - 상속: BaseEntity
 
 - **BookInfo (도서 정보 - DTO)**
 
-  - 필드
-    - title: String - 도서 제목
-    - author: String - 저자
-    - isbn: String - ISBN
-    - description: String - 도서 설명
-    - publisher: String - 출판사
-    - publishDate: LocalDate - 출판일
-    - thumbnailUrl: String - 썸네일 URL
-    - genres: List<String> - 장르 목록
+    - 필드
+        - title: String - 도서 제목
+        - author: String - 저자
+        - isbn: String - ISBN
+        - description: String - 도서 설명
+        - publisher: String - 출판사
+        - publishDate: LocalDate - 출판일
+        - thumbnailUrl: String - 썸네일 URL
+        - genres: List<String> - 장르 목록
 
 - **Quote (문구)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(1000) - 문구 내용, @NotEmpty
-    - page: Integer - 페이지 번호
-    - memo: String(500) - 사용자 메모
-    - likeCount: Integer - 좋아요 수, default = 0
-    - saveCount: Integer - 저장 수, default = 0
-    - user: User - 문구 등록자, @ManyToOne(fetch = FetchType.LAZY)
-    - book: Book - 문구가 속한 책, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - content: String(1000) - 문구 내용, @NotEmpty
+        - page: Integer - 페이지 번호
+        - memo: String(500) - 사용자 메모
+        - likeCount: Integer - 좋아요 수, default = 0
+        - saveCount: Integer - 저장 수, default = 0
+        - user: User - 문구 등록자, @ManyToOne(fetch = FetchType.LAZY)
+        - book: Book - 문구가 속한 책, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
 
 - **QuoteSummary (문구 요약)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(1000) - 요약 내용, @NotEmpty
-    - algorithm: String(50) - 사용된 알고리즘 (ex: "KoBART")
-    - generatedAt: LocalDateTime - 생성 시간
-    - quality: Double - 요약 품질 점수, default = 0.0
-    - quote: Quote - 원본 문구, @OneToOne, @JoinColumn
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - content: String(1000) - 요약 내용, @NotEmpty
+        - algorithm: String(50) - 사용된 알고리즘 (ex: "KoBART")
+        - generatedAt: LocalDateTime - 생성 시간
+        - quality: Double - 요약 품질 점수, default = 0.0
+        - quote: Quote - 원본 문구, @OneToOne, @JoinColumn
+    - 상속: BaseEntity
 
 - **Summary (책 요약)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(5000) - 요약 내용, @NotEmpty
-    - algorithm: String(50) - 사용된 알고리즘
-    - generatedAt: LocalDateTime - 생성 시간
-    - book: Book - 요약된 책, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - content: String(5000) - 요약 내용, @NotEmpty
+        - algorithm: String(50) - 사용된 알고리즘
+        - generatedAt: LocalDateTime - 생성 시간
+        - book: Book - 요약된 책, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
 
 - **Comment (댓글)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(500) - 댓글 내용, @NotEmpty
-    - likeCount: Integer - 좋아요 수, default = 0
-    - user: User - 댓글 작성자, @ManyToOne(fetch = FetchType.LAZY)
-    - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - content: String(500) - 댓글 내용, @NotEmpty
+        - likeCount: Integer - 좋아요 수, default = 0
+        - user: User - 댓글 작성자, @ManyToOne(fetch = FetchType.LAZY)
+        - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
 
 - **Like (좋아요)**
 
-  - 복합키: @EmbeddedId
-    - LikeId (userId: Long, quoteId: Long)
-  - 필드
-    - user: User - 좋아요한 사용자, @ManyToOne, @MapsId("userId")
-    - quote: Quote - 좋아요된 문구, @ManyToOne, @MapsId("quoteId")
-  - 상속: BaseEntity
+    - 복합키: @EmbeddedId
+        - LikeId (userId: Long, quoteId: Long)
+    - 필드
+        - user: User - 좋아요한 사용자, @ManyToOne, @MapsId("userId")
+        - quote: Quote - 좋아요된 문구, @ManyToOne, @MapsId("quoteId")
+    - 상속: BaseEntity
 
 - **ContentLike (콘텐츠 좋아요)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user: User - 좋아요한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - content: ShortFormContent - 좋아요된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - user: User - 좋아요한 사용자, @ManyToOne(fetch = FetchType.LAZY)
+        - content: ShortFormContent - 좋아요된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
 
 - **SavedQuote (저장된 문구)**
 
-  - 복합키: @EmbeddedId
-    - SavedQuoteId (userId: Long, quoteId: Long)
-  - 필드
-    - note: String(255) - 사용자 노트
-    - user: User - 저장한 사용자, @ManyToOne, @MapsId("userId")
-    - quote: Quote - 저장된 문구, @ManyToOne, @MapsId("quoteId")
-  - 상속: BaseEntity
+    - 복합키: @EmbeddedId
+        - SavedQuoteId (userId: Long, quoteId: Long)
+    - 필드
+        - note: String(255) - 사용자 노트
+        - user: User - 저장한 사용자, @ManyToOne, @MapsId("userId")
+        - quote: Quote - 저장된 문구, @ManyToOne, @MapsId("quoteId")
+    - 상속: BaseEntity
 
 - **Post (게시물)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - title: String(100) - 제목, @NotEmpty
-    - content: String(5000) - 내용, @NotEmpty
-    - viewCount: Integer - 조회수, default = 0
-    - likeCount: Integer - 좋아요 수, default = 0
-    - tags: List<String> - 태그 목록, @ElementCollection
-    - user: User - 게시물 작성자, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - title: String(100) - 제목, @NotEmpty
+        - content: String(5000) - 내용, @NotEmpty
+        - viewCount: Integer - 조회수, default = 0
+        - likeCount: Integer - 좋아요 수, default = 0
+        - tags: List<String> - 태그 목록, @ElementCollection
+        - user: User - 게시물 작성자, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
 
 - **ShortFormContent (숏폼 콘텐츠)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - title: String(100) - 콘텐츠 제목, @NotEmpty
-    - description: String(500) - 콘텐츠 설명
-    - status: ContentStatus - 콘텐츠 상태 (ENUM)
-    - viewCount: Integer - 조회수, default = 0
-    - likeCount: Integer - 좋아요 수, default = 0
-    - shareCount: Integer - 공유 수, default = 0
-    - book: Book - 연관된 책, @ManyToOne(fetch = FetchType.LAZY)
-    - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - title: String(100) - 콘텐츠 제목, @NotEmpty
+        - description: String(500) - 콘텐츠 설명
+        - status: ContentStatus - 콘텐츠 상태 (ENUM)
+        - viewCount: Integer - 조회수, default = 0
+        - likeCount: Integer - 좋아요 수, default = 0
+        - shareCount: Integer - 공유 수, default = 0
+        - processingProgress: Integer - 생성 진행률, default = 0
+        - generationStartedAt: LocalDateTime - 생성 시작 시간
+        - generationCompletedAt: LocalDateTime - 생성 완료 시간
+        - approvalStatus: ApprovalStatus - 승인 상태 (ENUM), default = PENDING
+        - rejectionReason: String(500) - 반려 사유
+        - adminId: Long - 처리한 관리자 ID
+        - book: Book - 연관된 책, @ManyToOne(fetch = FetchType.LAZY)
+        - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
 
 - **MediaResource (미디어 리소스)**
 
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - type: MediaType - 미디어 타입 (ENUM)
-    - url: String(500) - 리소스 URL, @NotEmpty
-    - thumbnailUrl: String(500) - 썸네일 URL
-    - description: String(255) - 리소스 설명
-    - duration: Integer - 미디어 길이(초)
-    - content: ShortFormContent - 연관된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - type: MediaType - 미디어 타입 (ENUM)
+        - url: String(500) - 리소스 URL, @NotEmpty
+        - thumbnailUrl: String(500) - 썸네일 URL
+        - description: String(255) - 리소스 설명
+        - duration: Integer - 미디어 길이(초)
+        - size: Long - 파일 크기(바이트)
+        - format: String(50) - 파일 형식(확장자)
+        - width: Integer - 너비(픽셀)
+        - height: Integer - 높이(픽셀)
+        - emotion: String(50) - 감정 타입(BGM의 경우)
+        - keywords: List<String> - 관련 키워드, @ElementCollection
+        - sourceUrl: String(500) - 원본 소스 URL(Pexels 등)
+        - sourceCredit: String(255) - 원본 제작자 정보
+        - content: ShortFormContent - 연관된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
+
+- **ContentBookmark (콘텐츠 북마크)**
+
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - user: User - 북마크한 사용자, @ManyToOne(fetch = FetchType.LAZY)
+        - content: ShortFormContent - 북마크된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
+        - note: String(255) - 사용자 노트
+    - 상속: BaseEntity
 
 - **Search (검색 기록)**
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - keyword: String(100) - 검색어, @NotEmpty
-    - resultCount: Integer - 검색 결과 수, default = 0
-    - searchedAt: LocalDateTime - 검색 시간
-    - user: User - 검색한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
+
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - keyword: String(100) - 검색어, @NotEmpty
+        - resultCount: Integer - 검색 결과 수, default = 0
+        - searchedAt: LocalDateTime - 검색 시간
+        - user: User - 검색한 사용자, @ManyToOne(fetch = FetchType.LAZY)
+    - 상속: BaseEntity
+
+- **ContentInteraction (콘텐츠 상호작용)**
+
+    - 필드
+        - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+        - user: User - 상호작용한 사용자, @ManyToOne(fetch = FetchType.LAZY)
+        - content: ShortFormContent - 대상 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
+        - liked: boolean - 좋아요 여부
+        - bookmarked: boolean - 북마크 여부
+        - viewedAt: LocalDateTime - 조회 시간
+    - 상속: BaseTimeEntity
 
 ### 열거형 (Enums)
 
 - **ContentStatus (콘텐츠 상태)**
 
-  - PROCESSING: 처리중
-  - COMPLETED: 생성 완료
-  - FAILED: 생성 실패
-  - PUBLISHED: 공개됨
-  - PRIVATE: 비공개
-  - DELETED: 삭제됨
+    - PROCESSING: 처리중
+    - COMPLETED: 생성 완료
+    - FAILED: 생성 실패
+    - PUBLISHED: 공개됨
+    - PRIVATE: 비공개
+    - DELETED: 삭제됨
+
+- **ApprovalStatus (승인 상태)**
+
+    - PENDING: 대기중
+    - APPROVED: 승인됨
+    - REJECTED: 반려됨
 
 - **MediaType (미디어 유형)**
-  - VIDEO: 비디오
-  - AUDIO: 오디오
-  - IMAGE: 이미지
-  - SUBTITLE: 자막
-  - BGM: 배경음악
+
+    - VIDEO: 비디오
+    - AUDIO: 오디오
+    - IMAGE: 이미지
+    - SUBTITLE: 자막
+    - BGM: 배경음악
 
 ### 엔티티 관계도
 
@@ -403,6 +495,7 @@
 - **User ↔ SavedQuote**: 사용자가 저장한 문구 (1:N)
 - **User ↔ Post**: 사용자가 작성한 게시물 (1:N)
 - **User ↔ Search**: 사용자의 검색 기록 (1:N)
+- **User ↔ ContentInteraction**: 사용자의 콘텐츠 상호작용 (1:N)
 
 #### 도서 관련 관계
 
@@ -422,10 +515,8 @@
 
 - **ShortFormContent ↔ MediaResource**: 콘텐츠와 미디어 자원 (1:N)
 - **ShortFormContent ↔ ContentLike**: 콘텐츠에 대한 좋아요 (1:N)
-
-#### 게시물 관련 관계
-
-- **Post ↔ Comment**: 게시물에 달린 댓글 (1:N, 댓글 엔티티 재사용)
+- **ShortFormContent ↔ ContentBookmark**: 콘텐츠에 대한 북마크 (1:N)
+- **ShortFormContent ↔ ContentInteraction**: 콘텐츠 상호작용 (1:N)
 
 ---
 
@@ -512,9 +603,13 @@ JWT_EXPIRATION=86400000  # 24시간
 
 ## 10. 트러블슈팅
 
-### 문제: AI 영상 생성 API 타임아웃 (30초 초과)
+### 문제: 텍스트 감정 분석의 정확도 향상
 
 #### 해결책
+
+- **키워드 기반 감정 분석 시스템 개선:** 한국어/영어 감정 키워드 데이터베이스 확장
+- **가중치 시스템 도입:** 문맥에 따른 키워드 중요도 조정
+- **기본 점수 시스템 구현:** 감정이 명확하지 않은 경우 'neutral' 감정 기본 점수 부여
 
 ---
 
@@ -549,8 +644,7 @@ src/
 │   │       ├── annotation/          # 커스텀 어노테이션
 │   │       └── security/            # 보안 관련 클래스
 │   └── resources/                   # 리소스 파일
-│       ├── application.yml          # 애플리케이션 설정
-│       └── static/                  # 정적 리소스
+│       ├── application.yml          # 애플리케이션 설정               # 정적 리소스
 └── test/                            # 테스트 코드
 ```
 
@@ -593,11 +687,11 @@ src/
 #### 3. **어댑터 계층 (Adapter Layer)**
 
 - 입력 어댑터 (Inbound)
-  - REST API 컨트롤러
-  - 메시지 컨슈머
+    - REST API 컨트롤러
+    - 메시지 컨슈머
 - 출력 어댑터 (Outbound)
-  - 데이터베이스 리포지토리 구현
-  - 외부 API 클라이언트
+    - 데이터베이스 리포지토리 구현
+    - 외부 API 클라이언트
 
 #### 4. **인프라스트럭처 계층 (Infrastructure Layer)**
 
@@ -651,11 +745,11 @@ src/
 
 ### 캐시 및 데이터 처리
 
-| 전략         | 구현 방식                       | 적용 대상        |
-| ------------ | ------------------------------- | ---------------- |
-| Lazy Loading | `FetchType.LAZY` 설정           | 사용자-문구 관계 |
-| Cache-Aside  | Redis `@Cacheable` + TTL(1시간) | 인기 문구 조회   |
-| Batch Insert | `hibernate.jdbc.batch_size=50`  | 대량 댓글 입력   |
+| 전략           | 구현 방식                          | 적용 대상     |
+|--------------|--------------------------------|-----------|
+| Lazy Loading | `FetchType.LAZY` 설정            | 사용자-문구 관계 |
+| Cache-Aside  | Redis `@Cacheable` + TTL(1시간)  | 인기 문구 조회  |
+| Batch Insert | `hibernate.jdbc.batch_size=50` | 대량 댓글 입력  |
 
 ### 모니터링 도구 사용
 
@@ -683,15 +777,24 @@ src/
 
 ---
 
-## 14. 개발자 노트
+## 15. 개발자 노트
 
-- **도전 과제:** AI API 통합 시 타임아웃 최소화
-- **배운 점:** 헥사고날 아키텍처의 유지보수성 및 확장성 확보
-- **추후 계획:** 마이크로서비스 전환 및 기능 확장
+- **도전 과제**
+    - AI API 통합 시 타임아웃 최소화
+    - 텍스트 기반 감정 분석 정확도 향상
+    - 비동기 콘텐츠 생성 시 상태 추적 메커니즘 구현
+- **배운 점**
+    - 헥사고날 아키텍처의 유지보수성 및 확장성 확보
+    - API 속도 제한 대응을 위한 효과적인 전략
+    - 캐싱 시스템을 통한 성능 최적화 방법
+- **추후 계획**
+    - 마이크로서비스 전환 및 기능 확장
+    - 고급 감정 분석을 위한 머신러닝 모델 도입
+    - 실시간 콘텐츠 생성 상태 알림 시스템 구현
 
 ---
 
-## 15. 라이선스
+## 16. 라이선스
 
 이 프로젝트는 제 개인 포트폴리오 목적으로만 사용 가능하며, 모든 이용이 금지됩니다.  
 CC BY-NC-ND 4.0 라이선스 적용  
