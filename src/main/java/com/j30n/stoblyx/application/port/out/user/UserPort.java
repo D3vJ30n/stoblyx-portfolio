@@ -1,6 +1,8 @@
 package com.j30n.stoblyx.application.port.out.user;
 
 import com.j30n.stoblyx.domain.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface UserPort {
@@ -27,4 +29,12 @@ public interface UserPort {
      * @return 저장된 사용자
      */
     User save(User user);
+    
+    /**
+     * 모든 사용자를 페이징하여 조회합니다.
+     *
+     * @param pageable 페이징 정보
+     * @return 사용자 페이지
+     */
+    Page<User> findAll(Pageable pageable);
 }

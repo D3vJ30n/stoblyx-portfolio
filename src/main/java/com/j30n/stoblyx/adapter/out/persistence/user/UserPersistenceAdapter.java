@@ -4,6 +4,8 @@ import com.j30n.stoblyx.application.port.out.user.UserPort;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -26,5 +28,10 @@ public class UserPersistenceAdapter implements UserPort {
     @Override
     public User save(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> findAll(Pageable pageable) {
+        return userRepository.findAll(pageable);
     }
 }
