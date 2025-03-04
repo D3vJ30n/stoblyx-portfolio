@@ -23,7 +23,7 @@ public class TTSClient {
     public TTSClient() {
         this.audioPath = Paths.get("audio");
         this.audioPath.toFile().mkdirs();
-        
+
         // Python 스크립트 경로 설정 (프로젝트 루트 디렉토리 기준)
         this.pythonScriptPath = "test_stt.py";
     }
@@ -36,40 +36,40 @@ public class TTSClient {
      */
     public String generateSpeech(String text) {
         log.info("TTS 생성 요청: text={}", text);
-        
+
         try {
             // UUID로 고유한 파일명 생성
-            String fileName = UUID.randomUUID().toString() + ".mp3";
+            String fileName = UUID.randomUUID() + ".mp3";
             File outputFile = audioPath.resolve(fileName).toFile();
-            
+
             // ProcessBuilder를 사용하여 Python 스크립트 실행
             ProcessBuilder pb = new ProcessBuilder(
-                "python", 
-                pythonScriptPath, 
-                text, 
+                "python",
+                pythonScriptPath,
+                text,
                 outputFile.getAbsolutePath()
             );
-            
+
             // 현재 작업 디렉토리 설정
             pb.directory(new File(System.getProperty("user.dir")));
             pb.redirectErrorStream(true);
-            
+
             log.info("Python TTS 스크립트 실행: {}", pb.command());
-            
+
             Process process = pb.start();
-            
+
             // 프로세스 출력 로깅
             try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()))) {
+                new InputStreamReader(process.getInputStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     log.info("Python TTS 출력: {}", line);
                 }
             }
-            
+
             // 프로세스 종료 대기
             int exitCode = process.waitFor();
-            
+
             if (exitCode == 0) {
                 log.info("TTS 생성 성공: {}", outputFile.getAbsolutePath());
                 return outputFile.toURI().toString();
@@ -95,7 +95,7 @@ public class TTSClient {
         public TTSException(String message) {
             super(message);
         }
-        
+
         public TTSException(String message, Throwable cause) {
             super(message, cause);
         }

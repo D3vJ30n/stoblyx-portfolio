@@ -18,16 +18,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Auth extends BaseEntity {
 
+    @Column(length = 20, nullable = false)
+    private final String tokenType = "Bearer";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(length = 255)
     private String refreshToken;
-
-    @Column(length = 20, nullable = false)
-    private String tokenType = "Bearer";
-
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 

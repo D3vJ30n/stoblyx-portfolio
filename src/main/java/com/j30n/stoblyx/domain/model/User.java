@@ -21,6 +21,21 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Search> searches = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Quote> quotes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<Like> likes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private final List<SavedQuote> savedQuotes = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,32 +64,16 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.USER;
-    
+
     @Column(length = 20)
     private String accountStatus = "ACTIVE";
-    
     private LocalDateTime lastLoginAt;
-    
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Auth auth;
-    
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private UserInterest userInterest;
-    
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private final List<Search> searches = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Quote> quotes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Like> likes = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<SavedQuote> savedQuotes = new ArrayList<>();
 
     @Builder
     public User(String username, String password, String nickname, String email, String profileImageUrl, UserRole role) {
@@ -115,14 +114,14 @@ public class User extends BaseEntity {
     public void updateRole(UserRole role) {
         this.role = role;
     }
-    
+
     /**
      * 계정 상태를 업데이트합니다.
      */
     public void updateStatus(String accountStatus) {
         this.accountStatus = accountStatus;
     }
-    
+
     /**
      * 마지막 로그인 시간을 업데이트합니다.
      */

@@ -1,8 +1,8 @@
 package com.j30n.stoblyx.domain.model;
 
-import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import com.j30n.stoblyx.domain.enums.ContentStatus;
 import com.j30n.stoblyx.domain.enums.ContentType;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -24,48 +24,36 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShortFormContent extends BaseEntity {
 
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<MediaResource> mediaResources = new ArrayList<>();
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<ContentInteraction> interactions = new ArrayList<>();
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<ContentComment> comments = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quote_id")
     private Quote quote;
-
     @Column(length = 100, nullable = false)
     private String title;
-
     @Column(length = 1000)
     private String description;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ContentStatus status = ContentStatus.PROCESSING;
-
     @Column
     private boolean deleted = false;
-
     @Column
     private int duration;
-
     private int viewCount = 0;
     private int likeCount = 0;
     private int shareCount = 0;
     private int commentCount = 0;
-
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<MediaResource> mediaResources = new ArrayList<>();
-
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContentInteraction> interactions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ContentComment> comments = new ArrayList<>();
-
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
