@@ -20,13 +20,14 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 문구(Quote) 관련 API를 처리하는 컨트롤러
  * 문구의 생성, 조회, 수정, 삭제 기능을 제공합니다.
- * 모든 엔드포인트는 API 버전 v1을 사용합니다.
  */
 @RestController
 @RequestMapping("/quotes")
 @RequiredArgsConstructor
 public class QuoteController {
 
+    private static final String SUCCESS = "SUCCESS";
+    
     private final QuoteService quoteService;
 
     /**
@@ -43,7 +44,7 @@ public class QuoteController {
     ) {
         QuoteResponse response = quoteService.createQuote(currentUser.getId(), request);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new ApiResponse<>("SUCCESS", "문구가 성공적으로 생성되었습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "문구가 성공적으로 생성되었습니다.", response));
     }
 
     /**
@@ -60,7 +61,7 @@ public class QuoteController {
     ) {
         QuoteResponse response = quoteService.getQuote(id, currentUser.getId());
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "문구를 성공적으로 조회했습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "문구를 성공적으로 조회했습니다.", response));
     }
 
     /**
@@ -77,7 +78,7 @@ public class QuoteController {
     ) {
         Page<QuoteResponse> response = quoteService.getQuotes(userId, pageable);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "문구 목록을 성공적으로 조회했습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "문구 목록을 성공적으로 조회했습니다.", response));
     }
 
     /**
@@ -97,7 +98,7 @@ public class QuoteController {
     ) {
         QuoteResponse response = quoteService.updateQuote(id, currentUser.getId(), request);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "문구가 성공적으로 수정되었습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "문구가 성공적으로 수정되었습니다.", response));
     }
 
     /**
@@ -115,7 +116,7 @@ public class QuoteController {
     ) {
         quoteService.deleteQuote(currentUser.getId(), id);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "문구가 성공적으로 삭제되었습니다.", null));
+            .body(new ApiResponse<>(SUCCESS, "문구가 성공적으로 삭제되었습니다.", null));
     }
 
     /**
@@ -134,7 +135,7 @@ public class QuoteController {
     ) {
         QuoteResponse response = quoteService.saveQuote(currentUser.getId(), quoteId, request);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "문구가 성공적으로 저장되었습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "문구가 성공적으로 저장되었습니다.", response));
     }
 
     /**
@@ -151,7 +152,7 @@ public class QuoteController {
     ) {
         quoteService.unsaveQuote(currentUser.getId(), quoteId);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "문구 저장이 성공적으로 취소되었습니다.", null));
+            .body(new ApiResponse<>(SUCCESS, "문구 저장이 성공적으로 취소되었습니다.", null));
     }
 
     /**
@@ -168,6 +169,6 @@ public class QuoteController {
     ) {
         Page<QuoteResponse> response = quoteService.getSavedQuotes(currentUser.getId(), pageable);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "저장된 문구 목록을 성공적으로 조회했습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "저장된 문구 목록을 성공적으로 조회했습니다.", response));
     }
 } 

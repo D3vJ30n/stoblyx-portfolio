@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 인증 관련 API를 처리하는 컨트롤러
  * 회원가입, 로그인, 토큰 갱신, 로그아웃 기능을 제공합니다.
- * 모든 엔드포인트는 API 버전 v1을 사용합니다.
  * JWT 토큰 기반의 인증을 사용하며, Access Token과 Refresh Token을 관리합니다.
  */
 @RestController

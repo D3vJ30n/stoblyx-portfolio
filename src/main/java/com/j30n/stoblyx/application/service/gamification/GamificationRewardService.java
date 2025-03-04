@@ -5,8 +5,7 @@ import com.j30n.stoblyx.application.port.out.gamification.GamificationRewardPort
 import com.j30n.stoblyx.domain.enums.RankType;
 import com.j30n.stoblyx.domain.enums.RewardType;
 import com.j30n.stoblyx.domain.model.GamificationReward;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +19,20 @@ import java.util.List;
 @Service
 public class GamificationRewardService implements GamificationRewardUseCase {
 
-    @Autowired
-    private GamificationRewardPort gamificationRewardPort;
-
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private final GamificationRewardPort gamificationRewardPort;
+    private final GamificationRewardUseCase self;
+    
+    /**
+     * 생성자 주입
+     * 
+     * @param gamificationRewardPort 게이미피케이션 보상 포트
+     * @param self 자기 참조 (트랜잭션 처리를 위한 프록시)
+     */
+    public GamificationRewardService(GamificationRewardPort gamificationRewardPort, 
+                                    @Lazy GamificationRewardUseCase self) {
+        this.gamificationRewardPort = gamificationRewardPort;
+        this.self = self;
+    }
 
     /**
      * 사용자 보상 생성
@@ -51,13 +59,8 @@ public class GamificationRewardService implements GamificationRewardUseCase {
             .expiryDate(expiryDate)
             .build();
 
-        // 보상 정보 저장
-        GamificationReward savedReward = gamificationRewardPort.saveReward(reward);
-
-        // 보상 생성 이벤트 발행
-        publishRewardCreatedEvent(savedReward);
-
-        return savedReward;
+        // 보상 정보 저장 및 반환
+        return gamificationRewardPort.saveReward(reward);
     }
 
     /**
@@ -108,7 +111,7 @@ public class GamificationRewardService implements GamificationRewardUseCase {
         GamificationReward reward = gamificationRewardPort.findById(rewardId);
 
         // 보상이 이미 지급되었는지 확인
-        if (reward.getIsClaimed()) {
+        if (Boolean.TRUE.equals(reward.getIsClaimed())) {
             throw new IllegalStateException("Reward already claimed");
         }
 
@@ -120,13 +123,8 @@ public class GamificationRewardService implements GamificationRewardUseCase {
         // 보상 지급 처리
         reward.claim();
 
-        // 보상 정보 저장
-        GamificationReward updatedReward = gamificationRewardPort.saveReward(reward);
-
-        // 보상 지급 이벤트 발행
-        publishRewardClaimedEvent(updatedReward);
-
-        return updatedReward;
+        // 보상 정보 저장 및 반환
+        return gamificationRewardPort.saveReward(reward);
     }
 
     /**
@@ -193,7 +191,7 @@ public class GamificationRewardService implements GamificationRewardUseCase {
         switch (newRankType) {
             case SILVER:
                 // 실버 이상 등급 도달 시 보너스 포인트 지급
-                rewards.add(createReward(
+                rewards.add(self.createReward(
                     userId,
                     newRankType,
                     RewardType.BONUS_POINTS,
@@ -205,7 +203,7 @@ public class GamificationRewardService implements GamificationRewardUseCase {
 
             case GOLD:
                 // 골드 등급 이상 사용자는 매주 추가 경험치 제공
-                rewards.add(createReward(
+                rewards.add(self.createReward(
                     userId,
                     newRankType,
                     RewardType.WEEKLY_EXPERIENCE,
@@ -217,7 +215,7 @@ public class GamificationRewardService implements GamificationRewardUseCase {
 
             case PLATINUM:
                 // 플래티넘 이상 사용자는 커뮤니티 이벤트 초대권 제공
-                rewards.add(createReward(
+                rewards.add(self.createReward(
                     userId,
                     newRankType,
                     RewardType.EVENT_INVITATION,
@@ -229,7 +227,7 @@ public class GamificationRewardService implements GamificationRewardUseCase {
 
             case DIAMOND:
                 // 다이아 등급 이상 사용자는 관리자 추천 피드에 노출
-                rewards.add(createReward(
+                rewards.add(self.createReward(
                     userId,
                     newRankType,
                     RewardType.ADMIN_RECOMMENDATION,
@@ -245,25 +243,5 @@ public class GamificationRewardService implements GamificationRewardUseCase {
 
         // 보상 정보 저장
         return gamificationRewardPort.saveAllRewards(rewards);
-    }
-
-    /**
-     * 보상 생성 이벤트 발행
-     *
-     * @param reward 보상 정보
-     */
-    private void publishRewardCreatedEvent(GamificationReward reward) {
-        // 보상 생성 이벤트 발행 로직
-        // eventPublisher.publishEvent(new RewardCreatedEvent(reward));
-    }
-
-    /**
-     * 보상 지급 이벤트 발행
-     *
-     * @param reward 보상 정보
-     */
-    private void publishRewardClaimedEvent(GamificationReward reward) {
-        // 보상 지급 이벤트 발행 로직
-        // eventPublisher.publishEvent(new RewardClaimedEvent(reward));
     }
 } 

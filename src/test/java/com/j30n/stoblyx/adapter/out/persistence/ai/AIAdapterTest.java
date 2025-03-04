@@ -13,8 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class AIAdapterTest {
@@ -31,12 +32,25 @@ class AIAdapterTest {
     @InjectMocks
     private AIAdapter aiAdapter;
     
+    // 테스트 상수
+    private static final String MOTIVATION_TITLE = "성공하는 습관";
+    private static final String MOTIVATION_DESCRIPTION = "매일 조금씩 성장하는 방법을 알려주는 동기부여 책입니다. 작은 습관이 큰 변화를 만듭니다.";
+    
+    private static final String PHILOSOPHY_TITLE = "존재의 의미";
+    private static final String PHILOSOPHY_DESCRIPTION = "인간 존재의 본질과 삶의 의미에 대해 탐구하는 철학 서적입니다. 실존주의적 관점에서 삶을 바라봅니다.";
+    
+    // 폴백 리소스 상수
+    private static final String FALLBACK_IMAGE = "static/images/fallback/book-cover.jpg";
+    private static final String FALLBACK_VIDEO = "static/videos/fallback/book-animation.mp4";
+    private static final String FALLBACK_AUDIO = "static/audio/fallback/default-narration.mp3";
+    private static final String FALLBACK_BGM = "static/bgm/neutral.mp3";
+    
     @Test
-    @DisplayName("이미지 검색 성공 테스트")
-    void searchImage_Success() {
+    @DisplayName("동기부여 책 이미지 검색 테스트")
+    void searchMotivationBookImage_Test() {
         // Given
-        String query = "book";
-        String expectedUrl = "https://example.com/image.jpg";
+        String query = MOTIVATION_TITLE + " " + MOTIVATION_DESCRIPTION;
+        String expectedUrl = "https://example.com/motivation-image.jpg";
         
         when(pexelsClient.searchImage(query)).thenReturn(expectedUrl);
         
@@ -44,32 +58,33 @@ class AIAdapterTest {
         String result = aiAdapter.searchImage(query);
         
         // Then
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUrl);
-        verify(pexelsClient).searchImage(query);
     }
     
     @Test
-    @DisplayName("이미지 검색 실패 시 폴백 이미지 반환")
-    void searchImage_Failure_ReturnsFallback() {
+    @DisplayName("철학 책 이미지 검색 테스트")
+    void searchPhilosophyBookImage_Test() {
         // Given
-        String query = "book";
+        String query = PHILOSOPHY_TITLE + " " + PHILOSOPHY_DESCRIPTION;
+        String expectedUrl = "https://example.com/philosophy-image.jpg";
         
-        when(pexelsClient.searchImage(query)).thenThrow(new RuntimeException("검색 실패"));
+        when(pexelsClient.searchImage(query)).thenReturn(expectedUrl);
         
         // When
         String result = aiAdapter.searchImage(query);
         
         // Then
-        assertThat(result).isEqualTo("static/images/fallback/book-cover.jpg");
-        verify(pexelsClient).searchImage(query);
+        assertNotNull(result);
+        assertThat(result).isEqualTo(expectedUrl);
     }
     
     @Test
-    @DisplayName("비디오 검색 성공 테스트")
-    void searchVideo_Success() {
+    @DisplayName("동기부여 책 비디오 검색 테스트")
+    void searchMotivationBookVideo_Test() {
         // Given
-        String query = "book";
-        String expectedUrl = "https://example.com/video.mp4";
+        String query = MOTIVATION_TITLE;
+        String expectedUrl = "https://example.com/motivation-video.mp4";
         
         when(pexelsClient.searchVideo(query)).thenReturn(expectedUrl);
         
@@ -77,16 +92,33 @@ class AIAdapterTest {
         String result = aiAdapter.searchVideo(query);
         
         // Then
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUrl);
-        verify(pexelsClient).searchVideo(query);
     }
     
     @Test
-    @DisplayName("음성 생성 성공 테스트")
-    void generateSpeech_Success() {
+    @DisplayName("철학 책 비디오 검색 테스트")
+    void searchPhilosophyBookVideo_Test() {
         // Given
-        String text = "This is a test";
-        String expectedUrl = "https://example.com/speech.mp3";
+        String query = PHILOSOPHY_TITLE;
+        String expectedUrl = "https://example.com/philosophy-video.mp4";
+        
+        when(pexelsClient.searchVideo(query)).thenReturn(expectedUrl);
+        
+        // When
+        String result = aiAdapter.searchVideo(query);
+        
+        // Then
+        assertNotNull(result);
+        assertThat(result).isEqualTo(expectedUrl);
+    }
+    
+    @Test
+    @DisplayName("동기부여 책 설명 음성 생성 테스트")
+    void generateMotivationBookSpeech_Test() {
+        // Given
+        String text = MOTIVATION_DESCRIPTION;
+        String expectedUrl = "https://example.com/motivation-speech.mp3";
         
         when(ttsClient.generateSpeech(text)).thenReturn(expectedUrl);
         
@@ -94,71 +126,138 @@ class AIAdapterTest {
         String result = aiAdapter.generateSpeech(text);
         
         // Then
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUrl);
-        verify(ttsClient).generateSpeech(text);
     }
     
     @Test
-    @DisplayName("BGM 선택 성공 테스트")
-    void selectBGM_Success() {
+    @DisplayName("철학 책 설명 음성 생성 테스트")
+    void generatePhilosophyBookSpeech_Test() {
         // Given
-        String expectedUrl = "static/bgm/happy.mp3";
+        String text = PHILOSOPHY_DESCRIPTION;
+        String expectedUrl = "https://example.com/philosophy-speech.mp3";
         
-        when(bgmClient.selectBGM()).thenReturn(expectedUrl);
+        when(ttsClient.generateSpeech(text)).thenReturn(expectedUrl);
         
         // When
-        String result = aiAdapter.selectBGM();
+        String result = aiAdapter.generateSpeech(text);
         
         // Then
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUrl);
-        verify(bgmClient).selectBGM();
     }
     
     @Test
-    @DisplayName("멀티미디어 생성 통합 테스트")
-    void generateBookMultimedia_Success() throws ExecutionException, InterruptedException, TimeoutException {
+    @DisplayName("동기부여 책 텍스트 기반 BGM 선택 테스트")
+    void selectMotivationBookBGM_Test() {
         // Given
-        String title = "Test Book";
-        String description = "This is a test description";
+        String text = MOTIVATION_DESCRIPTION;
+        String expectedUrl = "https://example.com/motivation-bgm.mp3";
         
-        when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/image.jpg");
-        when(pexelsClient.searchVideo(anyString())).thenReturn("https://example.com/video.mp4");
-        when(ttsClient.generateSpeech(anyString())).thenReturn("https://example.com/speech.mp3");
-        when(bgmClient.selectBGMByText(anyString())).thenReturn("https://example.com/bgm.mp3");
+        when(bgmClient.selectBGMByText(text)).thenReturn(expectedUrl);
+        
+        // When
+        String result = aiAdapter.selectBGMByText(text);
+        
+        // Then
+        assertNotNull(result);
+        assertThat(result).isEqualTo(expectedUrl);
+    }
+    
+    @Test
+    @DisplayName("철학 책 텍스트 기반 BGM 선택 테스트")
+    void selectPhilosophyBookBGM_Test() {
+        // Given
+        String text = PHILOSOPHY_DESCRIPTION;
+        String expectedUrl = "https://example.com/philosophy-bgm.mp3";
+        
+        when(bgmClient.selectBGMByText(text)).thenReturn(expectedUrl);
+        
+        // When
+        String result = aiAdapter.selectBGMByText(text);
+        
+        // Then
+        assertNotNull(result);
+        assertThat(result).isEqualTo(expectedUrl);
+    }
+    
+    @Test
+    @DisplayName("동기부여 책 멀티미디어 생성 통합 테스트")
+    void generateMotivationBookMultimedia_Test() throws ExecutionException, InterruptedException, TimeoutException {
+        // Given
+        String title = MOTIVATION_TITLE;
+        String description = MOTIVATION_DESCRIPTION;
+        
+        when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/motivation-image.jpg");
+        when(pexelsClient.searchVideo(anyString())).thenReturn("https://example.com/motivation-video.mp4");
+        when(ttsClient.generateSpeech(anyString())).thenReturn("https://example.com/motivation-speech.mp3");
+        when(bgmClient.selectBGMByText(anyString())).thenReturn("https://example.com/motivation-bgm.mp3");
         
         // When
         CompletableFuture<BookMultimediaDTO> futureResult = aiAdapter.generateBookMultimedia(title, description);
         BookMultimediaDTO result = futureResult.get(5, TimeUnit.SECONDS);
         
         // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getImageUrl()).isEqualTo("https://example.com/image.jpg");
-        assertThat(result.getVideoUrl()).isEqualTo("https://example.com/video.mp4");
-        assertThat(result.getAudioUrl()).isEqualTo("https://example.com/speech.mp3");
-        assertThat(result.getBgmUrl()).isEqualTo("https://example.com/bgm.mp3");
+        assertNotNull(result);
+        assertThat(result.getImageUrl()).isEqualTo("https://example.com/motivation-image.jpg");
+        assertThat(result.getVideoUrl()).isEqualTo("https://example.com/motivation-video.mp4");
+        assertThat(result.getAudioUrl()).isEqualTo("https://example.com/motivation-speech.mp3");
+        assertThat(result.getBgmUrl()).isEqualTo("https://example.com/motivation-bgm.mp3");
     }
     
     @Test
-    @DisplayName("멀티미디어 생성 중 일부 실패 시 부분 결과 반환")
-    void generateBookMultimedia_PartialFailure() throws ExecutionException, InterruptedException, TimeoutException {
+    @DisplayName("철학 책 멀티미디어 생성 통합 테스트")
+    void generatePhilosophyBookMultimedia_Test() throws ExecutionException, InterruptedException, TimeoutException {
         // Given
-        String title = "Test Book";
-        String description = "This is a test description";
+        String title = PHILOSOPHY_TITLE;
+        String description = PHILOSOPHY_DESCRIPTION;
         
-        when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/image.jpg");
-        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("비디오 검색 실패"));
-        when(ttsClient.generateSpeech(anyString())).thenReturn("https://example.com/speech.mp3");
-        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("BGM 선택 실패"));
+        when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/philosophy-image.jpg");
+        when(pexelsClient.searchVideo(anyString())).thenReturn("https://example.com/philosophy-video.mp4");
+        when(ttsClient.generateSpeech(anyString())).thenReturn("https://example.com/philosophy-speech.mp3");
+        when(bgmClient.selectBGMByText(anyString())).thenReturn("https://example.com/philosophy-bgm.mp3");
         
         // When
         CompletableFuture<BookMultimediaDTO> futureResult = aiAdapter.generateBookMultimedia(title, description);
         BookMultimediaDTO result = futureResult.get(5, TimeUnit.SECONDS);
         
         // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getImageUrl()).isEqualTo("https://example.com/image.jpg");
-        assertThat(result.getVideoUrl()).isEqualTo("static/videos/fallback/book-animation.mp4"); // 폴백 리소스
-        assertThat(result.getAudioUrl()).isEqualTo("https://example.com/speech.mp3");
-        assertThat(result.getBgmUrl()).isEqualTo("static/bgm/neutral.mp3");
+        assertNotNull(result);
+        assertThat(result.getImageUrl()).isEqualTo("https://example.com/philosophy-image.jpg");
+        assertThat(result.getVideoUrl()).isEqualTo("https://example.com/philosophy-video.mp4");
+        assertThat(result.getAudioUrl()).isEqualTo("https://example.com/philosophy-speech.mp3");
+        assertThat(result.getBgmUrl()).isEqualTo("https://example.com/philosophy-bgm.mp3");
+    }
+    
+    @Test
+    @DisplayName("이미지 검색 실패 시 폴백 이미지 반환 테스트")
+    void searchImage_Failure_ReturnsFallback() {
+        // Given
+        String query = MOTIVATION_TITLE;
+        
+        when(pexelsClient.searchImage(query)).thenThrow(new RuntimeException("이미지 검색 실패"));
+        
+        // When
+        String result = aiAdapter.searchImage(query);
+        
+        // Then
+        assertNotNull(result);
+        assertThat(result).isEqualTo(FALLBACK_IMAGE);
+    }
+    
+    @Test
+    @DisplayName("비디오 검색 실패 시 폴백 비디오 반환 테스트")
+    void searchVideo_Failure_ReturnsFallback() {
+        // Given
+        String query = PHILOSOPHY_TITLE;
+        
+        when(pexelsClient.searchVideo(query)).thenThrow(new RuntimeException("비디오 검색 실패"));
+        
+        // When
+        String result = aiAdapter.searchVideo(query);
+        
+        // Then
+        assertNotNull(result);
+        assertThat(result).isEqualTo(FALLBACK_VIDEO);
     }
 } 

@@ -1,10 +1,9 @@
 package com.j30n.stoblyx.adapter.out.persistence.ranking;
 
-import com.j30n.stoblyx.application.port.out.RankingAchievementPort;
+import com.j30n.stoblyx.application.port.out.ranking.RankingAchievementPort;
 import com.j30n.stoblyx.domain.enums.AchievementStatus;
 import com.j30n.stoblyx.domain.model.RankingAchievement;
 import com.j30n.stoblyx.domain.repository.RankingAchievementRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +17,16 @@ import java.util.Optional;
 @Component
 public class RankingAchievementAdapter implements RankingAchievementPort {
 
-    @Autowired
-    private RankingAchievementRepository rankingAchievementRepository;
+    private final RankingAchievementRepository rankingAchievementRepository;
+    
+    /**
+     * 생성자 주입
+     * 
+     * @param rankingAchievementRepository 랭킹 업적 리포지토리
+     */
+    public RankingAchievementAdapter(RankingAchievementRepository rankingAchievementRepository) {
+        this.rankingAchievementRepository = rankingAchievementRepository;
+    }
 
     /**
      * 업적 정보 저장

@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class UserController {
     private static final String RESULT_SUCCESS = "SUCCESS";
-    private static final String RESULT_ERROR = "ERROR";
+    private static final String ERROR_USER_NOT_AUTHENTICATED = "인증된 사용자 정보를 찾을 수 없습니다.";
 
     private final UserUseCase userUseCase;
     private final UserInterestUseCase userInterestUseCase;
@@ -41,7 +41,7 @@ public class UserController {
         @CurrentUser UserPrincipal userPrincipal
     ) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
         }
         
         UserProfileResponse profile = userUseCase.getCurrentUser(userPrincipal.getId());
@@ -61,7 +61,7 @@ public class UserController {
         @Valid @RequestBody UserUpdateRequest request
     ) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
         }
         
         UserProfileResponse updatedProfile = userUseCase.updateUser(userPrincipal.getId(), request);
@@ -79,7 +79,7 @@ public class UserController {
         @CurrentUser UserPrincipal userPrincipal
     ) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
         }
         
         userUseCase.deleteUser(userPrincipal.getId());
@@ -97,7 +97,7 @@ public class UserController {
         @CurrentUser UserPrincipal userPrincipal
     ) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
         }
         
         UserInterestResponse interestResponse = userInterestUseCase.getUserInterest(userPrincipal.getId());
@@ -117,7 +117,7 @@ public class UserController {
         @Valid @RequestBody UserInterestRequest request
     ) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
         }
         
         UserInterestResponse updatedInterest = userInterestUseCase.updateUserInterest(userPrincipal.getId(), request);
@@ -137,7 +137,7 @@ public class UserController {
         @RequestParam("image") MultipartFile image
     ) {
         if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
         }
         
         if (image.isEmpty()) {

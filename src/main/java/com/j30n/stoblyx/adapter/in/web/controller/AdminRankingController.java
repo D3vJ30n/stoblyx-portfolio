@@ -8,7 +8,6 @@ import com.j30n.stoblyx.application.port.in.admin.AdminRankingUseCase;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +26,14 @@ import java.util.List;
 @Slf4j
 public class AdminRankingController {
 
-    @Autowired
-    private AdminRankingUseCase adminRankingUseCase;
+    private static final String SUCCESS = "SUCCESS";
+    private static final String ERROR = "ERROR";
+    
+    private final AdminRankingUseCase adminRankingUseCase;
+    
+    public AdminRankingController(AdminRankingUseCase adminRankingUseCase) {
+        this.adminRankingUseCase = adminRankingUseCase;
+    }
 
     /**
      * 의심스러운 활동이 있는 사용자 목록 조회
@@ -41,11 +46,11 @@ public class AdminRankingController {
             @RequestParam(defaultValue = "100") int threshold) {
         try {
             List<AdminRankingScoreResponse> users = adminRankingUseCase.findUsersWithSuspiciousActivity(threshold);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "의심스러운 활동이 있는 사용자 목록을 조회했습니다.", users));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "의심스러운 활동이 있는 사용자 목록을 조회했습니다.", users));
         } catch (Exception e) {
             log.error("의심스러운 활동이 있는 사용자 목록 조회 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "의심스러운 활동이 있는 사용자 목록 조회 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "의심스러운 활동이 있는 사용자 목록 조회 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -65,11 +70,11 @@ public class AdminRankingController {
         try {
             List<AdminRankingActivityResponse> activities = adminRankingUseCase.findAbnormalActivityPatterns(
                     startDate, endDate, activityThreshold);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "비정상적인 활동 패턴 목록을 조회했습니다.", activities));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "비정상적인 활동 패턴을 조회했습니다.", activities));
         } catch (Exception e) {
-            log.error("비정상적인 활동 패턴 목록 조회 중 오류 발생", e);
+            log.error("비정상적인 활동 패턴 조회 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "비정상적인 활동 패턴 목록 조회 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "비정상적인 활동 패턴 조회 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -89,11 +94,11 @@ public class AdminRankingController {
         try {
             List<AdminRankingActivityResponse> activities = adminRankingUseCase.findActivitiesByIpAddress(
                     ipAddress, startDate, endDate);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "IP 주소별 활동 내역을 조회했습니다.", activities));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "IP 주소별 활동 내역을 조회했습니다.", activities));
         } catch (Exception e) {
             log.error("IP 주소별 활동 내역 조회 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "IP 주소별 활동 내역 조회 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "IP 주소별 활동 내역 조회 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -111,15 +116,15 @@ public class AdminRankingController {
         try {
             AdminRankingScoreResponse score = adminRankingUseCase.adjustUserScore(
                     userId, request.scoreAdjustment(), request.reason());
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 점수를 조정했습니다.", score));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "사용자 점수를 조정했습니다.", score));
         } catch (IllegalArgumentException e) {
             log.error("사용자 점수 조정 중 유효성 오류 발생", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                    .body(new ApiResponse<>(ERROR, e.getMessage(), null));
         } catch (Exception e) {
             log.error("사용자 점수 조정 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "사용자 점수 조정 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "사용자 점수 조정 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -136,15 +141,15 @@ public class AdminRankingController {
             @RequestParam String reason) {
         try {
             AdminRankingScoreResponse score = adminRankingUseCase.suspendUserAccount(userId, reason);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 계정을 정지했습니다.", score));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "사용자 계정을 정지했습니다.", score));
         } catch (IllegalArgumentException e) {
             log.error("사용자 계정 정지 중 유효성 오류 발생", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                    .body(new ApiResponse<>(ERROR, e.getMessage(), null));
         } catch (Exception e) {
             log.error("사용자 계정 정지 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "사용자 계정 정지 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "사용자 계정 정지 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -159,15 +164,15 @@ public class AdminRankingController {
             @PathVariable Long userId) {
         try {
             AdminRankingScoreResponse score = adminRankingUseCase.unsuspendUserAccount(userId);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "사용자 계정 정지를 해제했습니다.", score));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "사용자 계정 정지를 해제했습니다.", score));
         } catch (IllegalArgumentException e) {
             log.error("사용자 계정 정지 해제 중 유효성 오류 발생", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                    .body(new ApiResponse<>(ERROR, e.getMessage(), null));
         } catch (Exception e) {
             log.error("사용자 계정 정지 해제 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "사용자 계정 정지 해제 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "사용자 계정 정지 해제 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -184,11 +189,11 @@ public class AdminRankingController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         try {
             AdminRankingStatisticsResponse statistics = adminRankingUseCase.getRankingStatistics(startDate, endDate);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "랭킹 시스템 통계를 조회했습니다.", statistics));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "랭킹 시스템 통계를 조회했습니다.", statistics));
         } catch (Exception e) {
             log.error("랭킹 시스템 통계 조회 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "랭킹 시스템 통계 조회 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "랭킹 시스템 통계 조회 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -205,15 +210,15 @@ public class AdminRankingController {
             @RequestParam String settingValue) {
         try {
             boolean updated = adminRankingUseCase.updateRankingSystemSetting(settingKey, settingValue);
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "랭킹 시스템 설정을 업데이트했습니다.", updated));
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "랭킹 시스템 설정을 업데이트했습니다.", updated));
         } catch (IllegalArgumentException e) {
             log.error("랭킹 시스템 설정 업데이트 중 유효성 오류 발생", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ApiResponse<>("ERROR", e.getMessage(), null));
+                    .body(new ApiResponse<>(ERROR, e.getMessage(), null));
         } catch (Exception e) {
             log.error("랭킹 시스템 설정 업데이트 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "랭킹 시스템 설정 업데이트 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "랭킹 시스템 설정 업데이트 중 오류가 발생했습니다.", null));
         }
     }
 } 

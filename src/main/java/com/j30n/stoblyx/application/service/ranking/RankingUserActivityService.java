@@ -7,8 +7,6 @@ import com.j30n.stoblyx.domain.enums.ActivityType;
 import com.j30n.stoblyx.domain.enums.RankType;
 import com.j30n.stoblyx.domain.model.RankingUserActivity;
 import com.j30n.stoblyx.domain.model.RankingUserScore;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,14 +20,20 @@ import java.util.Optional;
 @Service
 public class RankingUserActivityService implements RankingUserActivityUseCase {
 
-    @Autowired
-    private RankingUserActivityPort rankingUserActivityPort;
-
-    @Autowired
-    private RankingUserScorePort rankingUserScorePort;
-
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private final RankingUserActivityPort rankingUserActivityPort;
+    private final RankingUserScorePort rankingUserScorePort;
+    
+    /**
+     * 생성자 주입
+     * 
+     * @param rankingUserActivityPort 사용자 활동 포트
+     * @param rankingUserScorePort 사용자 점수 포트
+     */
+    public RankingUserActivityService(RankingUserActivityPort rankingUserActivityPort,
+                                     RankingUserScorePort rankingUserScorePort) {
+        this.rankingUserActivityPort = rankingUserActivityPort;
+        this.rankingUserScorePort = rankingUserScorePort;
+    }
 
     /**
      * 사용자 활동 기록 생성
@@ -60,9 +64,6 @@ public class RankingUserActivityService implements RankingUserActivityUseCase {
 
         // 사용자 점수 업데이트
         updateUserScore(userId, activityType.getScoreWeight());
-
-        // 활동 이벤트 발행
-        publishActivityEvent(savedActivity);
 
         return savedActivity;
     }
@@ -153,26 +154,17 @@ public class RankingUserActivityService implements RankingUserActivityUseCase {
         // 사용자 점수 정보 조회
         Optional<RankingUserScore> userScoreOpt = rankingUserScorePort.findByUserId(userId);
 
-        RankingUserScore userScore;
         if (userScoreOpt.isPresent()) {
-            userScore = userScoreOpt.get();
-
-            // 이전 랭크 저장
-            RankType previousRankType = userScore.getRankType();
+            RankingUserScore userScore = userScoreOpt.get();
 
             // 가중 이동 평균(EWMA) 알고리즘 적용
             userScore.updateScoreWithEWMA(scoreChange, 0.2);
 
             // 점수 업데이트 후 저장
-            userScore = rankingUserScorePort.saveUserScore(userScore);
-
-            // 랭크 변경 이벤트 발행
-            if (previousRankType != userScore.getRankType()) {
-                publishRankChangeEvent(userId, previousRankType, userScore.getRankType());
-            }
+            rankingUserScorePort.saveUserScore(userScore);
         } else {
             // 사용자 점수 정보가 없는 경우 새로 생성
-            userScore = RankingUserScore.builder()
+            RankingUserScore newUserScore = RankingUserScore.builder()
                 .userId(userId)
                 .currentScore(1000 + scoreChange) // 초기 점수 + 활동 점수
                 .previousScore(1000)
@@ -183,43 +175,7 @@ public class RankingUserActivityService implements RankingUserActivityUseCase {
                 .build();
 
             // 점수 정보 저장
-            userScore = rankingUserScorePort.saveUserScore(userScore);
-
-            // 신규 사용자 이벤트 발행
-            publishNewUserEvent(userId, userScore.getRankType());
+            rankingUserScorePort.saveUserScore(newUserScore);
         }
-    }
-
-    /**
-     * 활동 이벤트 발행
-     *
-     * @param activity 활동 기록
-     */
-    private void publishActivityEvent(RankingUserActivity activity) {
-        // 활동 이벤트 발행 로직
-        // eventPublisher.publishEvent(new ActivityEvent(activity));
-    }
-
-    /**
-     * 랭크 변경 이벤트 발행
-     *
-     * @param userId           사용자 ID
-     * @param previousRankType 이전 랭크 타입
-     * @param newRankType      새 랭크 타입
-     */
-    private void publishRankChangeEvent(Long userId, RankType previousRankType, RankType newRankType) {
-        // 랭크 변경 이벤트 발행 로직
-        // eventPublisher.publishEvent(new RankChangeEvent(userId, previousRankType, newRankType));
-    }
-
-    /**
-     * 신규 사용자 이벤트 발행
-     *
-     * @param userId   사용자 ID
-     * @param rankType 랭크 타입
-     */
-    private void publishNewUserEvent(Long userId, RankType rankType) {
-        // 신규 사용자 이벤트 발행 로직
-        // eventPublisher.publishEvent(new NewUserEvent(userId, rankType));
     }
 } 

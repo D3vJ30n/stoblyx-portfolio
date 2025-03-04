@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 댓글 관련 API를 처리하는 컨트롤러
  * 댓글의 생성, 조회, 수정, 삭제 기능을 제공합니다.
- * 모든 엔드포인트는 API 버전 v1을 사용합니다.
  * 인증된 사용자만 댓글 작성, 수정, 삭제가 가능합니다.
  */
 @RestController
@@ -26,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CommentController {
 
+    private static final String SUCCESS = "SUCCESS";
+    
     private final CommentService commentService;
 
     /**
@@ -46,7 +47,7 @@ public class CommentController {
     ) {
         CommentResponse response = commentService.createComment(quoteId, request, currentUser.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(new ApiResponse<>("SUCCESS", "댓글이 성공적으로 등록되었습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "댓글이 성공적으로 등록되었습니다.", response));
     }
 
     /**
@@ -62,7 +63,7 @@ public class CommentController {
     ) {
         CommentResponse response = commentService.getComment(id);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "댓글을 성공적으로 조회했습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "댓글을 성공적으로 조회했습니다.", response));
     }
 
     /**
@@ -80,7 +81,7 @@ public class CommentController {
     ) {
         Page<CommentResponse> response = commentService.getCommentsByQuote(quoteId, pageable);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "댓글 목록을 성공적으로 조회했습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "문구에 대한 댓글 목록을 성공적으로 조회했습니다.", response));
     }
 
     /**
@@ -98,7 +99,7 @@ public class CommentController {
     ) {
         Page<CommentResponse> response = commentService.getCommentsByUser(userId, pageable);
         return ResponseEntity.ok()
-            .body(new ApiResponse<>("SUCCESS", "댓글 목록을 성공적으로 조회했습니다.", response));
+            .body(new ApiResponse<>(SUCCESS, "사용자가 작성한 댓글 목록을 성공적으로 조회했습니다.", response));
     }
 
     /**
@@ -118,7 +119,7 @@ public class CommentController {
         @CurrentUser UserPrincipal currentUser
     ) {
         CommentResponse response = commentService.updateComment(commentId, request, currentUser.getId());
-        return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "댓글이 성공적으로 수정되었습니다.", response));
+        return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "댓글이 성공적으로 수정되었습니다.", response));
     }
 
     /**

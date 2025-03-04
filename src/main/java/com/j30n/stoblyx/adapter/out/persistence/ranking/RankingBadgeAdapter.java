@@ -1,10 +1,9 @@
 package com.j30n.stoblyx.adapter.out.persistence.ranking;
 
-import com.j30n.stoblyx.application.port.out.RankingBadgePort;
+import com.j30n.stoblyx.application.port.out.ranking.RankingBadgePort;
 import com.j30n.stoblyx.domain.enums.BadgeRarity;
 import com.j30n.stoblyx.domain.model.RankingBadge;
 import com.j30n.stoblyx.domain.repository.RankingBadgeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +17,16 @@ import java.util.Optional;
 @Component
 public class RankingBadgeAdapter implements RankingBadgePort {
 
-    @Autowired
-    private RankingBadgeRepository rankingBadgeRepository;
+    private final RankingBadgeRepository rankingBadgeRepository;
+    
+    /**
+     * 생성자 주입
+     * 
+     * @param rankingBadgeRepository 랭킹 뱃지 리포지토리
+     */
+    public RankingBadgeAdapter(RankingBadgeRepository rankingBadgeRepository) {
+        this.rankingBadgeRepository = rankingBadgeRepository;
+    }
 
     /**
      * 뱃지 정보 저장
@@ -44,7 +51,7 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     }
 
     /**
-     * 뱃지 ID로 뱃지 정보 조회
+     * ID로 뱃지 정보 조회
      *
      * @param badgeId 뱃지 ID
      * @return 뱃지 정보
@@ -89,9 +96,9 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     }
 
     /**
-     * 뱃지 희귀도로 뱃지 정보 목록 조회
+     * 희귀도로 뱃지 정보 목록 조회
      *
-     * @param rarity 뱃지 희귀도
+     * @param rarity 희귀도
      * @return 뱃지 정보 목록
      */
     @Override
@@ -100,7 +107,7 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     }
 
     /**
-     * 특정 기간 내에 획득한 뱃지 정보 목록 조회
+     * 획득 일시 범위로 뱃지 정보 목록 조회
      *
      * @param startDate 시작 일시
      * @param endDate   종료 일시
@@ -112,10 +119,10 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     }
 
     /**
-     * 가장 많이 획득한 뱃지 정보 목록 조회
+     * 가장 많이 획득된 뱃지 목록 조회
      *
-     * @param limit 조회할 뱃지 수
-     * @return 뱃지 정보 목록
+     * @param limit 조회 개수
+     * @return 뱃지 코드와 획득 횟수 목록
      */
     @Override
     public List<Object[]> findMostAcquiredBadges(int limit) {
@@ -123,10 +130,10 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     }
 
     /**
-     * 특정 뱃지를 획득한 사용자 수 조회
+     * 뱃지 코드로 획득 횟수 조회
      *
      * @param badgeCode 뱃지 코드
-     * @return 사용자 수
+     * @return 획득 횟수
      */
     @Override
     public Long countByBadgeCode(String badgeCode) {
@@ -134,11 +141,11 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     }
 
     /**
-     * 특정 사용자의 뱃지 획득률 조회
+     * 사용자의 뱃지 획득률 계산
      *
      * @param userId      사용자 ID
      * @param totalBadges 전체 뱃지 수
-     * @return 뱃지 획득률
+     * @return 획득률 (%)
      */
     @Override
     public Double calculateUserBadgeRate(Long userId, int totalBadges) {

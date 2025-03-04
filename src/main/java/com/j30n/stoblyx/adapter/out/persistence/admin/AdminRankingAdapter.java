@@ -7,12 +7,11 @@ import com.j30n.stoblyx.domain.model.RankingUserActivity;
 import com.j30n.stoblyx.domain.model.RankingUserScore;
 import com.j30n.stoblyx.domain.repository.RankingUserActivityRepository;
 import com.j30n.stoblyx.domain.repository.RankingUserScoreRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,11 +22,17 @@ import java.util.stream.Collectors;
 @Component
 public class AdminRankingAdapter implements AdminRankingPort {
 
-    @Autowired
-    private RankingUserScoreRepository rankingUserScoreRepository;
-
-    @Autowired
-    private RankingUserActivityRepository rankingUserActivityRepository;
+    private static final String ERROR_USER_SCORE_NOT_FOUND = "사용자 점수 정보를 찾을 수 없습니다: ";
+    private static final String ADMIN_IP_ADDRESS = "ADMIN";
+    
+    private final RankingUserScoreRepository rankingUserScoreRepository;
+    private final RankingUserActivityRepository rankingUserActivityRepository;
+    
+    public AdminRankingAdapter(RankingUserScoreRepository rankingUserScoreRepository, 
+                              RankingUserActivityRepository rankingUserActivityRepository) {
+        this.rankingUserScoreRepository = rankingUserScoreRepository;
+        this.rankingUserActivityRepository = rankingUserActivityRepository;
+    }
 
     /**
      * 의심스러운 활동이 있는 사용자 목록 조회
@@ -62,12 +67,12 @@ public class AdminRankingAdapter implements AdminRankingPort {
         List<Long> suspiciousUsers = userActivityCount.entrySet().stream()
                 .filter(entry -> entry.getValue() > activityThreshold)
                 .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
+                .toList();
         
         // 의심스러운 사용자의 활동만 반환
         return allActivities.stream()
                 .filter(activity -> suspiciousUsers.contains(activity.getUserId()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     /**
@@ -95,7 +100,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
     @Transactional
     public RankingUserScore adjustUserScore(Long userId, int scoreAdjustment, String reason) {
         RankingUserScore userScore = rankingUserScoreRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 점수 정보를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_USER_SCORE_NOT_FOUND + userId));
         
         // 이전 점수 저장
         userScore.setPreviousScore(userScore.getCurrentScore());
@@ -114,7 +119,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
         activity.setTargetType("USER_SCORE");
         activity.setActivityType(ActivityType.ADMIN_ADJUSTMENT);
         activity.setScoreChange(scoreAdjustment);
-        activity.setIpAddress("ADMIN");
+        activity.setIpAddress(ADMIN_IP_ADDRESS);
         activity.setCreatedAt(LocalDateTime.now());
         
         // 활동 기록 저장
@@ -135,7 +140,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
     @Transactional
     public RankingUserScore suspendUserAccount(Long userId, String reason) {
         RankingUserScore userScore = rankingUserScoreRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 점수 정보를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_USER_SCORE_NOT_FOUND + userId));
         
         // 계정 정지 처리
         userScore.setAccountSuspended(true);
@@ -147,7 +152,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
         activity.setTargetType("USER_ACCOUNT");
         activity.setActivityType(ActivityType.ADMIN_SUSPENSION);
         activity.setScoreChange(0);
-        activity.setIpAddress("ADMIN");
+        activity.setIpAddress(ADMIN_IP_ADDRESS);
         activity.setCreatedAt(LocalDateTime.now());
         
         // 활동 기록 저장
@@ -167,7 +172,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
     @Transactional
     public RankingUserScore unsuspendUserAccount(Long userId) {
         RankingUserScore userScore = rankingUserScoreRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자 점수 정보를 찾을 수 없습니다: " + userId));
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_USER_SCORE_NOT_FOUND + userId));
         
         // 계정 정지 해제
         userScore.setAccountSuspended(false);
@@ -179,7 +184,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
         activity.setTargetType("USER_ACCOUNT");
         activity.setActivityType(ActivityType.ADMIN_UNSUSPENSION);
         activity.setScoreChange(0);
-        activity.setIpAddress("ADMIN");
+        activity.setIpAddress(ADMIN_IP_ADDRESS);
         activity.setCreatedAt(LocalDateTime.now());
         
         // 활동 기록 저장
@@ -196,7 +201,7 @@ public class AdminRankingAdapter implements AdminRankingPort {
      */
     @Override
     public Map<RankType, Long> getRankDistributionStatistics() {
-        Map<RankType, Long> result = new HashMap<>();
+        Map<RankType, Long> result = new EnumMap<>(RankType.class);
         
         for (RankType rankType : RankType.values()) {
             long count = rankingUserScoreRepository.countByRankType(rankType);

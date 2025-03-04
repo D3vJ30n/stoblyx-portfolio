@@ -5,15 +5,14 @@ import com.j30n.stoblyx.domain.enums.RankType;
 import com.j30n.stoblyx.domain.enums.RewardType;
 import com.j30n.stoblyx.domain.model.GamificationReward;
 import com.j30n.stoblyx.domain.repository.GamificationRewardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.EnumMap;
 
 /**
  * 관리자의 게이미피케이션 시스템 관리를 위한 아웃 어댑터 구현체
@@ -21,8 +20,11 @@ import java.util.stream.Collectors;
 @Component
 public class AdminGamificationAdapter implements AdminGamificationPort {
 
-    @Autowired
-    private GamificationRewardRepository gamificationRewardRepository;
+    private final GamificationRewardRepository gamificationRewardRepository;
+    
+    public AdminGamificationAdapter(GamificationRewardRepository gamificationRewardRepository) {
+        this.gamificationRewardRepository = gamificationRewardRepository;
+    }
 
     /**
      * 특정 사용자의 보상 내역 조회
@@ -180,7 +182,7 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
         GamificationReward reward = gamificationRewardRepository.findById(rewardId)
                 .orElseThrow(() -> new IllegalArgumentException("보상 내역을 찾을 수 없습니다: " + rewardId));
         
-        if (reward.getIsClaimed()) {
+        if (reward.getIsClaimed() == true) {
             throw new IllegalStateException("이미 지급된 보상입니다: " + rewardId);
         }
         
@@ -205,7 +207,11 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
         List<GamificationReward> rewards = gamificationRewardRepository.findByCreatedAtBetween(startDate, endDate);
         
         return rewards.stream()
-                .collect(Collectors.groupingBy(GamificationReward::getRewardType, Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                    GamificationReward::getRewardType, 
+                    () -> new EnumMap<>(RewardType.class), 
+                    Collectors.counting()
+                ));
     }
 
     /**
@@ -220,7 +226,11 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
         List<GamificationReward> rewards = gamificationRewardRepository.findByCreatedAtBetween(startDate, endDate);
         
         return rewards.stream()
-                .collect(Collectors.groupingBy(GamificationReward::getRankType, Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                    GamificationReward::getRankType, 
+                    () -> new EnumMap<>(RankType.class), 
+                    Collectors.counting()
+                ));
     }
 
     /**
