@@ -128,12 +128,9 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 
 ### 시스템 구성 및 계층 설명
 
-<details>
-<summary>시스템 아키텍처 다이어그램</summary>
 <div align="center">
   <img src="src/docs/diagrams/architecture.png" alt="시스템 아키텍처" style="max-width: 800px; width: 100%; height: auto;">
 </div>
-</details>
 
 #### 설명
 
@@ -144,12 +141,9 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 
 ### 시스템 흐름도
 
-<details>
-<summary>시스템 흐름 다이어그램</summary>
 <div align="center">
   <img src="src/docs/diagrams/flowchart.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
 </div>
-</details>
 
 ### AI 서비스 통합 아키텍처
 
@@ -313,12 +307,9 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 
 ### 주요 테이블 및 관계
 
-<details>
-<summary>ERD (Entity Relationship Diagram)</summary>
 <div align="center">
   <img src="src/docs/diagrams/erd.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
 </div>
-</details>
 
 ### 공통 기본 클래스
 
@@ -751,12 +742,9 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 
 ### 시퀀스 다이어그램
 
-<details>
-<summary>API 시퀀스 다이어그램</summary>
 <div align="center">
   <img src="src/docs/diagrams/sequence.png" alt="시퀀스 다이어그램" width="800">
 </div>
-</details>
 
 ### AI 추천 영상 생성 API
 
@@ -1012,7 +1000,7 @@ src/
 
 이 프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) 라이센스 하에 배포됩니다.
 
-이 라이센스는 다음을 의미합니다:
+이 라이센스는 다음을 의미합니다.
 
 - **저작자 표시(BY)**: 원저작자를 반드시 표시해야 합니다.
 - **비영리(NC)**: 상업적 목적으로 사용할 수 없습니다.
