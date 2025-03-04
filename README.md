@@ -102,7 +102,9 @@
 
 ```java
 // 가중 이동 평균(EWMA) 알고리즘 적용
-currentScore = (int) Math.round(alpha * newActivityScore + (1 - alpha) * currentScore);
+currentScore =(int)Math.
+
+round(alpha *newActivityScore+(1-alpha) *currentScore);
 ```
 
 - **알파값(α):** 0.2 (최근 활동에 20% 가중치 부여)
@@ -112,7 +114,9 @@ currentScore = (int) Math.round(alpha * newActivityScore + (1 - alpha) * current
 
 ```java
 // 비활동 사용자 점수 감소 알고리즘
-currentScore = (int) Math.round(currentScore * (1 - decayFactor));
+currentScore =(int)Math.
+
+round(currentScore *(1-decayFactor));
 ```
 
 - **감소 계수:** 0.05 (7일마다 5% 감소)
@@ -142,7 +146,7 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 ### 시스템 흐름도
 
 <div align="center">
-  <img src="src/docs/diagrams/flowchart.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/flowchart%20.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 ### AI 서비스 통합 아키텍처
@@ -723,7 +727,123 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 
 ---
 
-## 7. API 문서
+## 7. 시스템 프로세스 흐름도
+
+### 사용자 인증 및 권한 부여 흐름
+
+<div align="center">
+  <img src="src/docs/diagrams/auth_flow.png" alt="사용자 인증 및 권한 부여 흐름" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자 로그인 요청 및 인증
+- JWT 액세스 및 리프레시 토큰 발급
+- 토큰 검증 및 리소스 접근 권한 부여
+- 토큰 만료 시 리프레시 토큰을 통한 재인증
+- 보안 감사 및 로깅
+
+### 사용자 콘텐츠 생성 및 승인 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/content_approval.png" alt="사용자 콘텐츠 생성 및 승인 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자의 새 콘텐츠 제출
+- 시스템의 콘텐츠 임시 저장 및 관리자 알림
+- 관리자의 콘텐츠 승인 또는 거부
+- 승인/거부에 따른 콘텐츠 상태 업데이트
+- 사용자에게 결과 알림
+
+### 검색 기록 기반 추천 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/search_recommendation.png" alt="검색 기록 기반 추천 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자의 도서 및 인용구 검색
+- 검색 쿼리 로깅 및 저장
+- 주기적인 검색 기록 분석
+- 추천 엔진의 개인화된 추천 생성
+- 사용자에게 맞춤형 추천 제공
+
+### 협업 필터링 알고리즘 실행 시퀀스
+
+<div align="center">
+  <img src="src/docs/diagrams/collaborative_filtering.png" alt="협업 필터링 알고리즘 실행 시퀀스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자의 콘텐츠 상호작용(좋아요, 저장, 검색) 기록
+- 사용자 간 유사성 점수 계산
+- 사용자별 유사성 매트릭스 업데이트
+- 유사 사용자 기반 도서 및 인용구 추천
+- 지속적인 추천 업데이트
+
+### 트렌딩 피드 요청 및 응답 시퀀스
+
+<div align="center">
+  <img src="src/docs/diagrams/trending_feed.png" alt="트렌딩 피드 요청 및 응답 시퀀스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자의 트렌딩 콘텐츠 요청
+- 인기 콘텐츠(좋아요, 저장, 댓글 기준) 검색
+- 참여도 점수 기반 콘텐츠 정렬
+- 빠른 접근을 위한 인기 콘텐츠 캐싱
+- 사용자에게 트렌딩 콘텐츠 제공
+
+### 랭킹 시스템 업데이트 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/ranking_update.png" alt="랭킹 시스템 업데이트 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자 활동(좋아요, 저장, 댓글) 기록
+- EWMA 공식을 사용한 새로운 랭킹 점수 계산
+- 랭크 변경 감지 및 사용자 알림
+- 비활성 사용자 점수 주기적 감소
+- 분석 데이터 업데이트
+
+### 게이미피케이션 보상 배포 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/gamification_reward.png" alt="게이미피케이션 보상 배포 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자의 새 랭크 달성 감지
+- 보상 자격 확인 및 처리
+- 보상 정보 저장 및 사용자 알림
+- 사용자의 보상 청구 및 상태 업데이트
+- 만료된 보상 자동 제거 및 로깅
+
+### 사용자 랭크 변경 알림 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/rank_notification.png" alt="사용자 랭크 변경 알림 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 시스템의 사용자 랭크 변경 감지
+- 데이터베이스에서 랭크 변경 확인
+- 알림 서비스를 통한 사용자 알림
+- 보상 자격 확인 및 보상 배포 프로세스 시작
+- 랭크 변경 이벤트 로깅
+
+---
+
+## 8. API 문서
 
 ### 공통 사항
 
@@ -739,12 +859,6 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
   "timestamp": "2025-02-23T10:15:30Z"
 }
 ```
-
-### 시퀀스 다이어그램
-
-<div align="center">
-  <img src="src/docs/diagrams/sequence.png" alt="시퀀스 다이어그램" width="800">
-</div>
 
 ### AI 추천 영상 생성 API
 
@@ -773,7 +887,7 @@ currentScore = (int) Math.round(currentScore * (1 - decayFactor));
 
 ---
 
-## 8. 개발 환경 설정
+## 9. 개발 환경 설정
 
 ### .env.example
 
@@ -789,7 +903,7 @@ JWT_EXPIRATION=86400000  # 24시간
 
 ---
 
-## 9. 보안 및 확장성 고려 사항
+## 10. 보안 및 확장성 고려 사항
 
 ### 보안 강화 방안
 
@@ -801,7 +915,7 @@ JWT_EXPIRATION=86400000  # 24시간
 
 ---
 
-## 10. 트러블슈팅
+## 11. 트러블슈팅
 
 ### 문제: 텍스트 감정 분석의 정확도 향상
 
@@ -813,7 +927,7 @@ JWT_EXPIRATION=86400000  # 24시간
 
 ---
 
-## 11. 프로젝트 구조
+## 12. 프로젝트 구조
 
 헥사고날 아키텍처 (포트와 어댑터 아키텍처)
 
@@ -870,36 +984,6 @@ src/
 - 프레임워크나 데이터베이스 등 기술적 선택이 비즈니스 로직에 영향을 주지 않습니다
 - 인프라스트럭처 계층의 변경이 도메인 로직에 영향을 미치지 않습니다
 
-### **아키텍처 구조**
-
-#### 1. **도메인 계층 (Domain Layer)**
-
-- 비즈니스 엔티티와 로직을 포함
-- 외부 의존성이 없는 순수한 도메인 모델
-- 도메인 이벤트와 예외 정의
-
-#### 2. **애플리케이션 계층 (Application Layer)**
-
-- 유스케이스 구현
-- 포트 인터페이스 정의 (입력/출력)
-- 도메인 객체의 라이프사이클 관리
-
-#### 3. **어댑터 계층 (Adapter Layer)**
-
-- 입력 어댑터 (Inbound)
-  - REST API 컨트롤러
-  - 메시지 컨슈머
-- 출력 어댑터 (Outbound)
-  - 데이터베이스 리포지토리 구현
-  - 외부 API 클라이언트
-
-#### 4. **인프라스트럭처 계층 (Infrastructure Layer)**
-
-- 기술적인 구현 제공
-- 보안 설정
-- 데이터베이스 설정
-- 외부 서비스 통합
-
 ### **결론**
 
 스토블릭스는 다양한 외부 시스템과의 통합이 필요한 서비스이므로
@@ -941,7 +1025,7 @@ src/
 
 ---
 
-## 12. 성능 최적화 및 모니터링
+## 13. 성능 최적화 및 모니터링
 
 ### 캐시 및 데이터 처리
 
@@ -957,7 +1041,7 @@ src/
 
 ---
 
-## 13. 테스트 및 품질 관리
+## 14. 테스트 및 품질 관리
 
 ### 테스트 피라미드 및 커버리지 목표
 
@@ -967,7 +1051,7 @@ src/
 
 ---
 
-## 14. 배포 및 운영 전략
+## 15. 배포 및 운영 전략
 
 ### Koyeb 배포 단계
 
@@ -977,7 +1061,7 @@ src/
 
 ---
 
-## 15. 개발자 노트
+## 16. 개발자 노트
 
 - **도전 과제**
   - AI API 통합 시 타임아웃 최소화
@@ -994,11 +1078,13 @@ src/
 
 ---
 
-## 16. 라이선스
+## 17. 라이선스
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
-이 프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) 라이센스 하에 배포됩니다.
+이
+프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+라이센스 하에 배포됩니다.
 
 이 라이센스는 다음을 의미합니다.
 
