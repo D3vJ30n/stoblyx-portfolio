@@ -6,25 +6,47 @@
 
 책 속 문장 하나하나가 디지털 기념비(Obelisk)처럼 기억되고, AI를 통해 숏폼 영상으로 재탄생하는 곳. 과거, 현재, 미래를 잇는 독서의 타임캡슐.
 
+![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)
+
 ---
 
 ## 1. 프로젝트 개요
 
 **프로젝트명:** 스토블릭스 (Stoblyx)  
-**개발 기간:** 1개월 (2025년 2월 ~ 2025년 3월)
+**개발 기간:** ![Timeline](https://img.shields.io/badge/Timeline-2025.02~2025.03-informational?style=flat-square)
 
 ### 기술 스택
 
-- **Backend:** Java 17, Spring Boot 3.3.9
-- **Database:** MySQL 8.0.41
-- **Cache:** Redis 7.0.15
-- **Security:** JWT, Spring Security
-- **AI Integration:**
-  - KoBART (텍스트 요약)
-  - TTS (텍스트-음성 변환) - Python 스크립트 연동을 통한 고품질 음성 생성
-  - BGM 선택 (텍스트 감정 분석에 기반한 자동 배경음악 선택 시스템)
-  - Pexels API (이미지/비디오 검색) - 키워드 기반, API 속도 제한 및 캐싱 최적화
-- **Deployment:** Koyeb + GitHub Actions + Docker
+#### Backend
+
+![Java 17](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.9-6DB33F?style=flat-square&logo=spring-boot)
+![Gradle](https://img.shields.io/badge/Gradle-8.5-02303A?style=flat-square&logo=gradle)
+
+#### Database
+
+![MySQL](https://img.shields.io/badge/MySQL-8.0.41-4479A1?style=flat-square&logo=mysql)
+![Redis](https://img.shields.io/badge/Redis-7.0.15-DC382D?style=flat-square&logo=redis)
+![JPA](https://img.shields.io/badge/Spring_Data_JPA-3.3.9-6DB33F?style=flat-square&logo=spring)
+
+#### Security
+
+![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=flat-square&logo=json-web-tokens)
+![Spring Security](https://img.shields.io/badge/Spring_Security-3.3.9-6DB33F?style=flat-square&logo=spring-security)
+
+#### AI Integration
+
+![KoBART](https://img.shields.io/badge/KoBART-Text_Summary-FF6F00?style=flat-square&logo=tensorflow)
+![TTS](https://img.shields.io/badge/TTS-Text_to_Speech-4285F4?style=flat-square&logo=google)
+![BGM](https://img.shields.io/badge/BGM-Emotion_Analysis-1DB954?style=flat-square&logo=spotify)
+![Pexels API](https://img.shields.io/badge/Pexels_API-Image_Search-05A081?style=flat-square&logo=pexels)
+
+#### Deployment
+
+![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat-square&logo=docker)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
+![Koyeb](https://img.shields.io/badge/Koyeb-Hosting-121212?style=flat-square&logo=koyeb)
 
 ---
 
@@ -32,18 +54,18 @@
 
 ### 문제 인식
 
-- MZ세대의 독서율 감소 및 숏폼 콘텐츠 소비 증가
-- 책 속의 의미 있는 문장이 잊혀지는 현실
+![Problem](https://img.shields.io/badge/Problem-MZ세대_독서율_감소-critical?style=flat-square)
+![Trend](https://img.shields.io/badge/Trend-숏폼_콘텐츠_증가-critical?style=flat-square)
 
 ### 해결 방안
 
-- AI 기술로 문장을 현대적 콘텐츠로 재해석
-- 사용자 참여 유도를 위한 게이미피케이션 적용
+![Solution](https://img.shields.io/badge/Solution-AI_기반_콘텐츠_변환-success?style=flat-square)
+![Approach](https://img.shields.io/badge/Approach-게이미피케이션-success?style=flat-square)
 
 ### 기대 효과
 
-- 독서 문화 활성화 및 세대 간 문화 격차 해소
-- 지식 공유 플랫폼으로 성장
+![Effect](https://img.shields.io/badge/Effect-독서_문화_활성화-informational?style=flat-square)
+![Growth](https://img.shields.io/badge/Growth-지식_공유_플랫폼-informational?style=flat-square)
 
 ---
 
@@ -951,7 +973,9 @@ src/
 
 ### 테스트 피라미드 및 커버리지 목표
 
-- **목표:** 코드 커버리지 85% 이상
+![Coverage Goal](https://img.shields.io/badge/Coverage_Goal-85%25+-success?style=flat-square)
+![Unit Tests](https://img.shields.io/badge/Unit_Tests-JUnit5-25A162?style=flat-square&logo=junit5)
+![Integration Tests](https://img.shields.io/badge/Integration_Tests-Spring_Test-6DB33F?style=flat-square&logo=spring)
 
 ---
 
@@ -988,7 +1012,7 @@ src/
 
 이 프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) 라이센스 하에 배포됩니다.
 
-이 라이센스는 다음을 의미합니다.
+이 라이센스는 다음을 의미합니다:
 
 - **저작자 표시(BY)**: 원저작자를 반드시 표시해야 합니다.
 - **비영리(NC)**: 상업적 목적으로 사용할 수 없습니다.
@@ -996,4 +1020,4 @@ src/
 
 자세한 내용은 [LICENSE.md](LICENSE.md) 파일을 참조하세요.
 
-© 2025 Stoblyx. All rights reserved.
+![Copyright](https://img.shields.io/badge/©_2025-Stoblyx-blue?style=flat-square)
