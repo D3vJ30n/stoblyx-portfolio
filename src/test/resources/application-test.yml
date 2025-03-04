@@ -1,0 +1,80 @@
+spring:
+  application:
+    name: stoblyx
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  sql:
+    init:
+      mode: never
+
+  data:
+    redis:
+      enabled: false
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: test-client-id
+            client-secret: test-client-secret
+    user:
+      name: test
+      password: test
+
+  jackson:
+    date-format: yyyy-MM-dd
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+      accept-empty-string-as-null-object: true
+
+jwt:
+  secret: test_jwt_secret_key_for_testing_purposes_only
+  access-token-validity-in-seconds: 3600
+  refresh-token-validity-in-seconds: 86400
+
+kobart:
+  api:
+    url: http://localhost:5000
+
+server:
+  port: 0
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
+    com.j30n.stoblyx: debug
+    org.springframework.test: debug
