@@ -48,6 +48,18 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
 ![Koyeb](https://img.shields.io/badge/Koyeb-Hosting-121212?style=flat-square&logo=koyeb)
 
+인공지능 및 미디어 처리
+자연어 처리: KoBART, KoGPT
+음성 합성: KoSpeech TTS
+이미지 검색: Pexels API
+감정 분석: 자체 개발 감정 분석 알고리즘
+개발 도구
+IDE: IntelliJ IDEA
+버전 관리: Git, GitHub
+CI/CD: GitHub Actions
+코드 품질: SonarQube
+테스트: JUnit 5, Mockito
+
 ---
 
 ## 2. Why Stoblyx?
@@ -102,9 +114,7 @@
 
 ```java
 // 가중 이동 평균(EWMA) 알고리즘 적용
-currentScore =(int)Math.
-
-round(alpha *newActivityScore+(1-alpha) *currentScore);
+currentScore =(int)Math.round(alpha *newActivityScore+(1-alpha) *currentScore);
 ```
 
 - **알파값(α):** 0.2 (최근 활동에 20% 가중치 부여)
@@ -114,9 +124,7 @@ round(alpha *newActivityScore+(1-alpha) *currentScore);
 
 ```java
 // 비활동 사용자 점수 감소 알고리즘
-currentScore =(int)Math.
-
-round(currentScore *(1-decayFactor));
+currentScore =(int)Math.round(currentScore *(1-decayFactor));
 ```
 
 - **감소 계수:** 0.05 (7일마다 5% 감소)
@@ -141,12 +149,12 @@ round(currentScore *(1-decayFactor));
 - **Adapter Layer:** 외부 요청 처리 (REST API), AI 서비스 호출, 메시징 시스템 통합
 - **Application Layer:** 비즈니스 유스케이스 처리 및 트랜잭션 관리
 - **Domain Layer:** 핵심 도메인 로직 및 엔티티 관리
-- **비동기 처리:** RabbitMQ를 통한 작업 큐 처리로 확장성과 안정성 확보
+- **비동기 처리:** @Async 어노테이션을 통한 백그라운드 처리로 확장성과 안정성 확보 (비동기 처리 위해 향후 RabbitMQ 구현 예정)
 
 ### 시스템 흐름도
 
 <div align="center">
-  <img src="src/docs/diagrams/flowchart%20.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/flowchart .png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 ### AI 서비스 통합 아키텍처
@@ -257,7 +265,7 @@ round(currentScore *(1-decayFactor));
 - **랭킹 시스템 통계:** 랭크별 사용자 분포, 점수 분포, 활동 패턴 분석
 - **이상 활동 탐지:** 비정상적인 점수 증가 패턴 모니터링 및 알림
 
-#### 4. 시스템 설정 관리
+#### 4. 시스템 설정 관리 (구현 예정)
 
 - **API 키 관리:** Pexels API 키 등 외부 서비스 연동 키 관리
 - **리소스 경로 설정:** 미디어 파일 저장 경로 등 시스템 설정 관리
@@ -265,45 +273,13 @@ round(currentScore *(1-decayFactor));
 - **랭킹 시스템 설정:** 점수 계산 알고리즘 파라미터 조정 기능
 - **게이미피케이션 설정:** 랭크별 혜택 및 조건 설정 기능
 
-#### 5. 로그 모니터링
+#### 5. 로그 모니터링 (구현 예정)
 
 - **오류 로그 실시간 조회:** 시스템 오류 실시간 모니터링
 - **사용자 행동 로그 분석:** 사용자 활동 패턴 분석 도구
 - **AI 서비스 통합 로그:** AI 서비스 응답 시간 및 성공률 모니터링
 - **랭킹 변동 로그:** 사용자 랭크 변경 및 점수 변동 이력 추적
 - **의심 활동 로그:** 비정상적인 점수 증가 및 활동 패턴 로그
-
-### 관리자 기능
-
-#### 1. 콘텐츠 관리
-
-- **콘텐츠 승인/반려 시스템:** 생성된 콘텐츠 검토 및 상태 관리 기능
-- **콘텐츠 삭제 및 복구:** 부적절한 콘텐츠 관리 기능
-- **콘텐츠 일괄 처리:** 다중 콘텐츠 상태 변경 기능
-
-#### 2. 사용자 관리
-
-- **사용자 정보 조회:** 전체 사용자 목록 및 상세 정보 조회 기능
-- **권한 관리:** 사용자 역할(USER, ADMIN, EDITOR, WRITER) 관리 기능
-- **활동 내역 조회:** 사용자별 활동 로그 확인 기능
-
-#### 3. 통계 대시보드
-
-- **콘텐츠 생성 현황:** 일별/주별/월별 콘텐츠 생성 통계
-- **사용자 활동 분석:** 신규 가입, 로그인, 콘텐츠 생성 등의 활동 분석
-- **시스템 리소스 모니터링:** CPU, 메모리, 디스크 사용량 실시간 모니터링
-
-#### 4. 시스템 설정 관리
-
-- **API 키 관리:** Pexels API 키 등 외부 서비스 연동 키 관리
-- **리소스 경로 설정:** 미디어 파일 저장 경로 등 시스템 설정 관리
-- **캐시 관리:** Redis 캐시 수동 갱신 및 TTL 설정 기능
-
-#### 5. 로그 모니터링
-
-- **오류 로그 실시간 조회:** 시스템 오류 실시간 모니터링
-- **사용자 행동 로그 분석:** 사용자 활동 패턴 분석 도구
-- **AI 서비스 통합 로그:** AI 서비스 응답 시간 및 성공률 모니터링
 
 ---
 
@@ -495,9 +471,7 @@ round(currentScore *(1-decayFactor));
     - likeCount: Integer - 좋아요 수, default = 0
     - tags: List<String> - 태그 목록, @ElementCollection
     - user: User - 게시물 작성자, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **ShortFormContent (숏폼 콘텐츠)**
+  - 상속: BaseEntity- **ShortFormContent (숏폼 콘텐츠)**
 
   - 필드
     - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -975,12 +949,26 @@ round(currentScore *(1-decayFactor));
 
 ```properties
 # DB 설정
-DB_URL=jdbc:mysql://localhost:3306/stoblyx
-DB_USER=root
-DB_PASS=encrypted_password
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+
 # JWT 설정
-JWT_SECRET=your_256bit_secret
-JWT_EXPIRATION=86400000  # 24시간
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRATION=86400
+
+# Redis 설정
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# JPA 설정
+JPA_DDL_AUTO=update
+SHOW_SQL=true
+
+# Pexels API 설정
+PEXELS_API_KEY=your_pexels_api_key
 ```
 
 ---
@@ -1037,11 +1025,18 @@ src/
 │   │   │   ├── model/               # 도메인 모델
 │   │   │   └── repository/          # 리포지토리 인터페이스
 │   │   └── infrastructure/          # 인프라스트럭처 계층
-│   │       ├── annotation/          # 커스텀 어노테이션
-│   │       └── security/            # 보안 관련 클래스
-│   └── resources/                   # 리소스 파일
-│       ├── application.yml          # 애플리케이션 설정               # 정적 리소스
+│   │       ├── annotation/          #
+│   │       ├── config/
+│   │       └── security/            # 보안 관련 인프라
+│   └── resources/
+│       ├── application.yml          # 애플리케이션 설정
+│       ├── static/                  # 정적 리소스
+│       └── templates/               # 템플릿 파일
 └── test/                            # 테스트 코드
+    └── java/com/j30n/stoblyx/
+        ├── adapter/                 # 어댑터 테스트
+        ├── application/             # 애플리케이션 테스트
+        └── domain/                  # 도메인 테스트
 ```
 
 ### **헥사고날 아키텍처를 선택한 이유**
@@ -1123,13 +1118,18 @@ src/
 
 ---
 
-## 14. 테스트 및 품질 관리
-
-### 테스트 피라미드 및 커버리지 목표
-
-![Coverage Goal](https://img.shields.io/badge/Coverage_Goal-85%25+-success?style=flat-square)
-![Unit Tests](https://img.shields.io/badge/Unit_Tests-JUnit5-25A162?style=flat-square&logo=junit5)
-![Integration Tests](https://img.shields.io/badge/Integration_Tests-Spring_Test-6DB33F?style=flat-square&logo=spring)
+14. 성능 최적화
+    캐싱 전략
+    Redis 캐싱: 인기 콘텐츠, 추천 결과, 랭킹 데이터 캐싱
+    @Cacheable 적용: 자주 접근하는 데이터에 Spring Cache 적용
+    캐시 무효화 전략: 데이터 변경 시 자동 캐시 갱신
+    데이터베이스 최적화
+    인덱싱: 자주 조회되는 필드에 인덱스 적용
+    페이징 처리: 대용량 데이터 조회 시 페이징 적용
+    N+1 문제 해결: @EntityGraph 사용으로 연관 엔티티 조회 최적화
+    API 요청 제한
+    Rate Limiting: 사용자별 API 요청 제한 구현
+    Throttling: 외부 API 호출 시 요청 제한 준수 (throttleRequest 메서드)
 
 ---
 
@@ -1160,13 +1160,35 @@ src/
 
 ---
 
-## 17. 라이선스
+17. 기여 가이드라인
+
+- 코드 기여 방법
+- 이슈 생성 또는 기존 이슈 선택
+- 포크 및 브랜치 생성
+- 코드 작성 및 테스트
+- 풀 리퀘스트 제출
+- 코드 스타일
+- Google Java Style Guide 준수
+- 메서드 및 클래스에 JavaDoc 주석 작성
+- 테스트 코드 포함
+
+18. 연락처
+
+- 프로젝트 관련 문의는 아래 연락처로 부탁드립니다.
+- 이메일: domyoung.jeon@gmail.com
+
+19. 감사의 글
+    이 프로젝트는 다음과 같은 오픈소스 프로젝트와 리소스의 도움을 받았습니다.
+
+- Spring Boot 및 관련 프로젝트
+- KoBART, KoGPT, KoSpeech 등의 한국어 AI 모델
+- Pexels API
+
+## 20. 라이선스
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
-이
-프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-라이센스 하에 배포됩니다.
+이 프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/) 라이센스 하에 배포됩니다.
 
 이 라이센스는 다음을 의미합니다.
 

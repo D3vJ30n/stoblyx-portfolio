@@ -15,14 +15,14 @@ spring:
 
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -62,8 +62,8 @@ spring:
 
 jwt:
   secret: test_jwt_secret_key_for_testing_purposes_only
-  access-token-validity-in-seconds: 3600
-  refresh-token-validity-in-seconds: 86400
+  expiration: 3600
+  refresh-expiration: 86400
 
 kobart:
   api:
@@ -76,5 +76,11 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
-    com.j30n.stoblyx: debug
+    com.j30n.stoblyx: DEBUG
     org.springframework.test: debug
+
+xss:
+  filter:
+    exclusions:
+      - /auth/.*
+      - /docs/.*

@@ -214,4 +214,18 @@ public class ContentService implements ContentUseCase {
         return contentPort.findPopularContents(pageable)
             .map(content -> ContentResponse.from(content, false, false));
     }
+
+    /**
+     * 상태별 콘텐츠 목록을 조회합니다.
+     *
+     * @param status 콘텐츠 상태
+     * @param pageable 페이징 정보
+     * @return 콘텐츠 목록
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ContentResponse> getContentsByStatus(String status, Pageable pageable) {
+        return contentPort.findByStatus(ContentStatus.valueOf(status.toUpperCase()), pageable)
+            .map(content -> ContentResponse.from(content, false, false));
+    }
 }

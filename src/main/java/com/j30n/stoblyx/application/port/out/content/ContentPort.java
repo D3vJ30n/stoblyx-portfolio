@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.application.port.out.content;
 
+import com.j30n.stoblyx.domain.enums.ContentStatus;
 import com.j30n.stoblyx.domain.model.ShortFormContent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,12 @@ public interface ContentPort {
     Page<ShortFormContent> findRecommendedContents(Long userId, Pageable pageable);
     boolean isLikedByUser(Long contentId, Long userId);
     void updateStatus(Long id, String status);
+    /**
+     * 상태별 콘텐츠 목록을 조회합니다.
+     *
+     * @param status 콘텐츠 상태
+     * @param pageable 페이징 정보
+     * @return 콘텐츠 목록
+     */
+    Page<ShortFormContent> findByStatus(ContentStatus status, Pageable pageable);
 }

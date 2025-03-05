@@ -4,6 +4,7 @@ import com.j30n.stoblyx.adapter.in.web.dto.book.BookResponse;
 import com.j30n.stoblyx.application.service.book.BookService;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
+import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +37,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,64 +48,64 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("도서 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class})
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class})
 class BookControllerTest {
 
     private MockMvc mockMvc;
 
     @Autowired
     private WebApplicationContext context;
-    
+
     @MockBean
     private BookService bookService;
-    
+
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .operationPreprocessors()
-                        .withRequestDefaults(Preprocessors.prettyPrint())
-                        .withResponseDefaults(Preprocessors.prettyPrint()))
-                .apply(springSecurity())
-                .build();
+            .webAppContextSetup(context)
+            .apply(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(Preprocessors.prettyPrint())
+                .withResponseDefaults(Preprocessors.prettyPrint()))
+            .apply(springSecurity())
+            .build();
     }
-    
+
     @Test
     @DisplayName("도서 상세 조회 API가 정상적으로 동작해야 한다")
     void getBookDetail() throws Exception {
         // given
         Long bookId = 1L;
         LocalDateTime now = LocalDateTime.now();
-        
+
         BookResponse response = BookResponse.builder()
-                .id(bookId)
-                .title("테스트 도서")
-                .author("테스트 작가")
-                .publisher("테스트 출판사")
-                .isbn("1234567890123")
-                .thumbnailUrl("https://example.com/image.jpg")
-                .description("도서 설명")
-                .publicationYear(2023)
-                .totalPages(300)
-                .createdAt(now)
-                .build();
-                
+            .id(bookId)
+            .title("테스트 도서")
+            .author("테스트 작가")
+            .publisher("테스트 출판사")
+            .isbn("1234567890123")
+            .thumbnailUrl("https://example.com/image.jpg")
+            .description("도서 설명")
+            .publicationYear(2023)
+            .totalPages(300)
+            .createdAt(now)
+            .build();
+
         when(bookService.getBook(eq(bookId))).thenReturn(response);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/books/{bookId}", bookId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.id").value(bookId))
-                .andExpect(jsonPath("$.data.title").value("테스트 도서"))
-                .andDo(document("book/get-book-detail",
-                    pathParameters(
-                        parameterWithName("bookId").description("도서 ID")
-                    ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.", 
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.id").value(bookId))
+            .andExpect(jsonPath("$.data.title").value("테스트 도서"))
+            .andDo(document("book/get-book-detail",
+                pathParameters(
+                    parameterWithName("bookId").description("도서 ID")
+                ),
+                responseFields(
+                    RestDocsUtils.getCommonResponseFieldsWithData())
+                    .andWithPrefix("data.",
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("도서 ID"),
                         fieldWithPath("title").type(JsonFieldType.STRING).description("도서 제목"),
                         fieldWithPath("author").type(JsonFieldType.STRING).description("저자"),
@@ -115,17 +117,17 @@ class BookControllerTest {
                         fieldWithPath("totalPages").type(JsonFieldType.NUMBER).optional().description("총 페이지 수"),
                         fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일")
                     )
-                ));
-                
+            ));
+
         verify(bookService).getBook(bookId);
     }
-    
+
     @Test
     @DisplayName("도서 목록 조회 API가 정상적으로 동작해야 한다")
     void getBooks() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.now();
-        
+
         List<BookResponse> books = List.of(
             BookResponse.builder()
                 .id(1L)
@@ -152,29 +154,29 @@ class BookControllerTest {
                 .createdAt(now)
                 .build()
         );
-        
+
         Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "id"));
         PageImpl<BookResponse> page = new PageImpl<>(books, pageable, books.size());
-        
+
         when(bookService.getAllBooks(any())).thenReturn(page);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/books")
-                    .param("page", "0")
-                    .param("size", "10")
-                    .param("sort", "id,desc"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content[0].id").value(1))
-                .andDo(document("book/get-books",
-                    queryParameters(
-                        parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
-                        parameterWithName("size").description("페이지 크기").optional(),
-                        parameterWithName("sort").description("정렬 방식 (예: id,desc)").optional()
-                    ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.content[].", 
+                .param("page", "0")
+                .param("size", "10")
+                .param("sort", "id,desc"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content[0].id").value(1))
+            .andDo(document("book/get-books",
+                queryParameters(
+                    parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
+                    parameterWithName("size").description("페이지 크기").optional(),
+                    parameterWithName("sort").description("정렬 방식 (예: id,desc)").optional()
+                ),
+                responseFields(
+                    RestDocsUtils.getCommonResponseFieldsWithData())
+                    .andWithPrefix("data.content[].",
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("도서 ID"),
                         fieldWithPath("title").type(JsonFieldType.STRING).description("도서 제목"),
                         fieldWithPath("author").type(JsonFieldType.STRING).description("저자"),
@@ -210,8 +212,8 @@ class BookControllerTest {
                         fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 요소 수"),
                         fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지 결과 존재 여부")
                     )
-                ));
-                
+            ));
+
         verify(bookService).getAllBooks(any());
     }
 } 

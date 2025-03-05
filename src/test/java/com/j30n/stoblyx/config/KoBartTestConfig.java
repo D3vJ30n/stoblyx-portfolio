@@ -44,14 +44,17 @@ public class KoBartTestConfig {
     @Primary
     public BGMClient bgmClient() {
         return new BGMClient() {
+            @Override
             public String selectBGM() {
                 return "http://example.com/test-bgm.mp3";
             }
 
+            @Override
             public String selectBGMByMood(String mood) {
                 return "http://example.com/test-bgm.mp3";
             }
 
+            @Override
             public String getRandomBGM() {
                 return "http://example.com/test-bgm.mp3";
             }

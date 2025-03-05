@@ -24,6 +24,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import com.j30n.stoblyx.application.port.in.admin.AdminRankingUseCase;
 import com.j30n.stoblyx.application.port.out.gamification.GamificationRewardPort;
 import org.mockito.Mockito;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 @EnableMethodSecurity
 @Primary
 @Order(1)
+@ActiveProfiles("test")
 public class SecurityTestConfig {
 
     @Bean
@@ -101,5 +103,15 @@ public class SecurityTestConfig {
     @Bean
     public GamificationRewardPort gamificationRewardPort() {
         return Mockito.mock(GamificationRewardPort.class);
+    }
+    
+    @Bean
+    public com.j30n.stoblyx.domain.repository.RankingUserActivityRepository rankingUserActivityRepository() {
+        return Mockito.mock(com.j30n.stoblyx.domain.repository.RankingUserActivityRepository.class);
+    }
+    
+    @Bean
+    public com.j30n.stoblyx.domain.repository.RankingUserScoreRepository rankingUserScoreRepository() {
+        return Mockito.mock(com.j30n.stoblyx.domain.repository.RankingUserScoreRepository.class);
     }
 }

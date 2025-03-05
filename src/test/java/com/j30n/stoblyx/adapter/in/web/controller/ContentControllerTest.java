@@ -4,6 +4,7 @@ import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
 import com.j30n.stoblyx.application.service.content.ContentService;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.ContextTestConfig;
+import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.domain.enums.ContentStatus;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ContentController.class)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class})
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class})
 @DisplayName("ContentController 테스트")
 class ContentControllerTest {
 

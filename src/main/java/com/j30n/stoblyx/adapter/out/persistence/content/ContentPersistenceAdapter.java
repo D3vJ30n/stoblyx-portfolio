@@ -82,4 +82,9 @@ public class ContentPersistenceAdapter implements ContentPort {
             contentRepository.save(content);
         });
     }
+
+    @Override
+    public Page<ShortFormContent> findByStatus(ContentStatus status, Pageable pageable) {
+        return contentRepository.findByStatusAndDeletedFalse(status, pageable);
+    }
 }

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.navercorp.com/lucy-xss-servlet">
+    <defenders>
+        <!-- XSS 필터링 처리 대상 URL 설정 -->
+        <defender>
+            <name>xssFilterDefender</name>
+            <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssFilterDefender</class>
+            <init-param>
+                <param-value>lucy-xss.xml</param-value>
+                <param-value>false</param-value>
+            </init-param>
+        </defender>
+    </defenders>
+
+    <!-- 필터링 대상 URL 설정 -->
+    <default>
+        <defender>xssFilterDefender</defender>
+    </default>
+
+    <!-- 필터링 예외 URL 설정 -->
+    <url-rule-set>
+        <!-- 관리자 페이지 예외 처리 -->
+        <url-rule>
+            <url>/admin/</url>
+            <url-pattern>/admin/*</url-pattern>
+            <defender>xssFilterDefender</defender>
+        </url-rule>
+        
+        <!-- 정적 리소스 예외 처리 -->
+        <url-rule>
+            <url>/resources/</url>
+            <url-pattern>/resources/*</url-pattern>
+            <defender>passDefender</defender>
+        </url-rule>
+        
+        <!-- 이미지 업로드 예외 처리 -->
+        <url-rule>
+            <url>/uploads/</url>
+            <url-pattern>/uploads/*</url-pattern>
+            <defender>passDefender</defender>
+        </url-rule>
+    </url-rule-set>
+</config> 

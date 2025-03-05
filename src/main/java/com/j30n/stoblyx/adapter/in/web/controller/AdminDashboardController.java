@@ -46,4 +46,74 @@ public class AdminDashboardController {
     public String bookManagement() {
         return "admin/books";
     }
+    
+    /**
+     * 콘텐츠 관리 페이지를 반환합니다.
+     *
+     * @return 콘텐츠 관리 뷰 이름
+     */
+    @GetMapping("/contents")
+    public String contentManagement() {
+        return "admin/contents";
+    }
+    
+    /**
+     * 통계 대시보드 페이지를 반환합니다.
+     *
+     * @return 통계 대시보드 뷰 이름
+     */
+    @GetMapping("/statistics")
+    public String statisticsDashboard() {
+        return "admin/statistics";
+    }
+    
+    /**
+     * 콘텐츠 생성 통계 페이지를 반환합니다.
+     *
+     * @return 콘텐츠 생성 통계 뷰 이름
+     */
+    @GetMapping("/statistics/content")
+    public String contentStatistics() {
+        return "admin/statistics/content";
+    }
+    
+    /**
+     * 사용자 활동 통계 페이지를 반환합니다.
+     *
+     * @return 사용자 활동 통계 뷰 이름
+     */
+    @GetMapping("/statistics/user-activity")
+    public String userActivityStatistics() {
+        return "admin/statistics/user-activity";
+    }
+    
+    /**
+     * 시스템 리소스 모니터링 페이지를 반환합니다.
+     *
+     * @return 시스템 리소스 모니터링 뷰 이름
+     */
+    @GetMapping("/statistics/system-resources")
+    public String systemResourcesMonitoring() {
+        return "admin/statistics/system-resources";
+    }
+    
+    /**
+     * 랭킹 시스템 통계 페이지를 반환합니다.
+     *
+     * @return 랭킹 시스템 통계 뷰 이름
+     */
+    @GetMapping("/statistics/ranking")
+    public String rankingStatistics() {
+        return "admin/statistics/ranking";
+    }
+    
+    /**
+     * 이상 활동 탐지 페이지를 반환합니다.
+     *
+     * @return 이상 활동 탐지 뷰 이름
+     */
+    @GetMapping("/statistics/anomaly-detection")
+    public String anomalyDetection() {
+        return "admin/statistics/anomaly-detection";
+    }
 } 

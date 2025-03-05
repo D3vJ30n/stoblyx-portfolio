@@ -5,6 +5,7 @@ import com.j30n.stoblyx.adapter.in.web.dto.search.SearchResponse;
 import com.j30n.stoblyx.application.port.in.search.SearchUseCase;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.ContextTestConfig;
+import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.domain.model.Search;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SearchController.class)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class})
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class})
 @DisplayName("SearchController 테스트")
 class SearchControllerTest {
 

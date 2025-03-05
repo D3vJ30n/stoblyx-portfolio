@@ -56,6 +56,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 
+    // XSS 방지를 위한 Lucy-XSS-Filter 추가
+    implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1'
+    implementation 'com.navercorp.lucy:lucy-xss:1.6.3'
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+
     // JSR-305 for annotations
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
@@ -68,7 +73,6 @@ dependencies {
 
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'com.h2database:h2'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -94,6 +98,9 @@ dependencies {
 
     // 캐싱을 위한 Caffeine 캐시 추가
     implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    // 서블릿 API 의존성 추가
+    implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 }
 
 testing {

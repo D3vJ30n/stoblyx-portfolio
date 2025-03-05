@@ -97,4 +97,19 @@ public interface RankingUserActivityRepository extends JpaRepository<RankingUser
     List<RankingUserActivity> findByCreatedAtBetween(
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 특정 기간 내에 점수가 급격히 증가한 의심스러운 활동을 조회합니다.
+     *
+     * @param startDate 시작 날짜
+     * @param threshold 점수 증가 임계값
+     * @return 의심스러운 활동 목록 [userId, totalScoreChange, activityCount, lastActivityTime]
+     */
+    @Query("SELECT a.userId, SUM(a.scoreChange) as totalScoreChange, COUNT(a) as activityCount, MAX(a.createdAt) as lastActivityTime " +
+           "FROM RankingUserActivity a " +
+           "WHERE a.createdAt >= :startDate " +
+           "GROUP BY a.userId " +
+           "HAVING SUM(a.scoreChange) >= :threshold " +
+           "ORDER BY totalScoreChange DESC")
+    List<Object[]> findSuspiciousActivities(@Param("startDate") LocalDateTime startDate, @Param("threshold") int threshold);
 } 

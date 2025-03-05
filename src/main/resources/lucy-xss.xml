@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="http://www.navercorp.com/lucy-xss">
+    <defenders>
+        <!-- XSS 필터링 규칙 정의 -->
+        <defender>
+            <name>xssFilterDefender</name>
+            <class>com.navercorp.lucy.security.xss.defender.XssFilterDefender</class>
+        </defender>
+    </defenders>
+
+    <!-- 필터링 규칙 설정 -->
+    <default>
+        <defender>xssFilterDefender</defender>
+    </default>
+
+    <!-- XSS 필터링 예외 태그 및 속성 설정 -->
+    <elementRule>
+        <element name="p"/>
+        <element name="a">
+            <attribute name="href" useDefender="true"/>
+            <attribute name="target" useDefender="true"/>
+        </element>
+        <element name="img">
+            <attribute name="src" useDefender="true"/>
+            <attribute name="alt" useDefender="true"/>
+            <attribute name="title" useDefender="true"/>
+            <attribute name="width" useDefender="false"/>
+            <attribute name="height" useDefender="false"/>
+        </element>
+        <element name="br"/>
+        <element name="strong"/>
+        <element name="em"/>
+        <element name="ul"/>
+        <element name="ol"/>
+        <element name="li"/>
+        <element name="blockquote"/>
+        <element name="h1"/>
+        <element name="h2"/>
+        <element name="h3"/>
+        <element name="h4"/>
+        <element name="h5"/>
+        <element name="h6"/>
+        <element name="pre"/>
+        <element name="code"/>
+        <element name="table"/>
+        <element name="thead"/>
+        <element name="tbody"/>
+        <element name="tr"/>
+        <element name="th"/>
+        <element name="td"/>
+    </elementRule>
+</config> 

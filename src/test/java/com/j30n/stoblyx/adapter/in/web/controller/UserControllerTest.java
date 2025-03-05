@@ -10,11 +10,13 @@ import com.j30n.stoblyx.application.port.in.user.UserUseCase;
 import com.j30n.stoblyx.common.exception.GlobalExceptionHandler;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
+import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import com.j30n.stoblyx.support.docs.RestDocsConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +33,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.restdocs.RestDocumentationExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -47,10 +50,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {UserController.class, GlobalExceptionHandler.class})
-@Import({SecurityTestConfig.class, ContextTestConfig.class, RestDocsConfig.class})
+@DisplayName("사용자 컨트롤러 테스트")
+@ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-@DisplayName("UserController 테스트")
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, RestDocsConfig.class})
 class UserControllerTest {
 
     @Autowired

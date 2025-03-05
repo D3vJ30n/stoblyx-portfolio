@@ -26,7 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
         ControllerTestAdvice.class,
         RestTemplateTestConfig.class,
         JacksonTestConfig.class,
-        RandomTestConfig.class
+        RandomTestConfig.class,
+        XssTestConfig.class
     }
 )
 @ActiveProfiles("test")
@@ -47,7 +48,10 @@ import org.springframework.transaction.annotation.Transactional;
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
         "spring.datasource.password=",
-        "spring.main.web-application-type=none"
+        "spring.main.web-application-type=none",
+        "jwt.secret=test_jwt_secret_key_for_testing_purposes_only",
+        "jwt.access-token-validity-in-seconds=3600",
+        "jwt.refresh-token-validity-in-seconds=86400"
     }
 )
 @Transactional
