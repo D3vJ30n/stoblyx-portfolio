@@ -21,6 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
+import com.j30n.stoblyx.application.port.in.admin.AdminRankingUseCase;
+import com.j30n.stoblyx.application.port.out.gamification.GamificationRewardPort;
+import org.mockito.Mockito;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -88,5 +91,15 @@ public class SecurityTestConfig {
         provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
+    }
+
+    @Bean
+    public AdminRankingUseCase adminRankingUseCase() {
+        return Mockito.mock(AdminRankingUseCase.class);
+    }
+    
+    @Bean
+    public GamificationRewardPort gamificationRewardPort() {
+        return Mockito.mock(GamificationRewardPort.class);
     }
 }

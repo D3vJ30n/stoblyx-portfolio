@@ -18,22 +18,28 @@ public class Book extends BaseEntity {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private final List<Quote> quotes = new ArrayList<>();
+
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private final List<Summary> summaries = new ArrayList<>();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String title;
+
     @Column(nullable = false)
     private String author;
+
     @Column(unique = true)
     private String isbn;
+
     @Column(length = 2000)
     private String description;
     private String publisher;
     private LocalDate publishDate;
     private String thumbnailUrl;
+
     @ElementCollection
     @CollectionTable(name = "book_genres", joinColumns = @JoinColumn(name = "book_id"))
     @Column(name = "genre")

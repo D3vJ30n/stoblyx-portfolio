@@ -59,6 +59,8 @@ dependencies {
     // JSR-305 for annotations
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
+    implementation 'org.jetbrains:annotations:24.0.0'
+
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -89,7 +91,7 @@ dependencies {
 
     // 환경변수 로드를 위한 의존성 추가
     implementation 'me.paulschwarz:spring-dotenv:2.5.4'
-    
+
     // 캐싱을 위한 Caffeine 캐시 추가
     implementation 'com.github.ben-manes.caffeine:caffeine'
 }
@@ -122,7 +124,7 @@ bootJar {
 
 tasks.withType(JavaExec) {
     jvmArgs += [
-        '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED',
-        '--add-opens', 'java.base/java.io=ALL-UNNAMED'
+            '--add-opens', 'java.base/sun.nio.ch=ALL-UNNAMED',
+            '--add-opens', 'java.base/java.io=ALL-UNNAMED'
     ]
 }

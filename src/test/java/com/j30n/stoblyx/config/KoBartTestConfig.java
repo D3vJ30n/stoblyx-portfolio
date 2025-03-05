@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Random;
 
 @TestConfiguration
 public class KoBartTestConfig {
@@ -14,7 +16,7 @@ public class KoBartTestConfig {
     @Bean
     @Primary
     public PexelsClient pexelsClient() {
-        return new PexelsClient("test-api-key", new RestTemplate()) {
+        return new PexelsClient("test-api-key", new RestTemplate(), new Random(42), new ObjectMapper()) {
             @Override
             public String searchImage(String query) {
                 return "http://example.com/test-image.jpg";

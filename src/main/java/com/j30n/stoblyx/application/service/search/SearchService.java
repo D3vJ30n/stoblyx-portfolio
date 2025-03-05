@@ -3,6 +3,7 @@ package com.j30n.stoblyx.application.service.search;
 import com.j30n.stoblyx.adapter.in.web.dto.search.SearchRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.search.SearchResponse;
 import com.j30n.stoblyx.application.port.in.search.SearchUseCase;
+import com.j30n.stoblyx.application.port.out.recommendation.RecommendationPort;
 import com.j30n.stoblyx.application.port.out.search.SearchPort;
 import com.j30n.stoblyx.domain.model.Search;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SearchService implements SearchUseCase {
     private final SearchPort searchPort;
+    private final RecommendationPort recommendationPort;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,7 +37,11 @@ public class SearchService implements SearchUseCase {
         
         // 검색 결과가 있고 사용자가 로그인한 경우 검색 기록 저장
         if (request.userId() != null && result.getTotalElements() > 0) {
-            saveSearchHistory(request.keyword(), request.category(), request.userId(), (int) result.getTotalElements());
+            // 검색 기록 저장
+            searchPort.saveSearch(request.keyword(), request.category(), request.userId(), (int) result.getTotalElements());
+            
+            // 검색어 프로필 저장 (추천 시스템용)
+            recommendationPort.saveSearchTermProfile(request.userId(), request.keyword());
         }
         
         return result;

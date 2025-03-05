@@ -1,4 +1,4 @@
-package com.j30n.stoblyx.adapter.out.persistence.ai;
+package com.j30n.stoblyx.adapter.in.web.dto.book;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookMultimediaDTO {
+public class BookMediaResponse {
     private String imageUrl;
     private String videoUrl;
     private String audioUrl;

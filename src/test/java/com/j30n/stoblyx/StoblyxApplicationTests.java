@@ -24,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
         DataTestConfig.class,
         KoBartTestConfig.class,
         ControllerTestAdvice.class,
-        RestTemplateTestConfig.class
+        RestTemplateTestConfig.class,
+        JacksonTestConfig.class,
+        RandomTestConfig.class
     }
 )
 @ActiveProfiles("test")
@@ -44,7 +46,8 @@ import org.springframework.transaction.annotation.Transactional;
         "spring.datasource.url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
-        "spring.datasource.password="
+        "spring.datasource.password=",
+        "spring.main.web-application-type=none"
     }
 )
 @Transactional

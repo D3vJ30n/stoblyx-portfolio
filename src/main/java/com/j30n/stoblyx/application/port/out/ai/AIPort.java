@@ -1,6 +1,7 @@
 package com.j30n.stoblyx.application.port.out.ai;
 
-import com.j30n.stoblyx.adapter.out.persistence.ai.BookMultimediaDTO;
+import com.j30n.stoblyx.adapter.in.web.dto.book.BookMediaResponse;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -38,7 +39,7 @@ public interface AIPort {
      * @return 선택된 BGM의 URL
      */
     String selectBGM();
-    
+
     /**
      * 텍스트 분석을 통해 적절한 BGM을 선택합니다.
      *
@@ -46,14 +47,14 @@ public interface AIPort {
      * @return 선택된 BGM의 URL
      */
     String selectBGMByText(String text);
-    
+
     /**
      * 책 데이터를 기반으로 멀티미디어 요소를 생성합니다.
      * 비동기 처리됩니다.
      *
-     * @param title 책 제목
+     * @param title       책 제목
      * @param description 책 설명
      * @return 생성된 멀티미디어 요소를 담은 DTO
      */
-    CompletableFuture<BookMultimediaDTO> generateBookMultimedia(String title, String description);
+    CompletableFuture<BookMediaResponse> generateBookMultimedia(String title, String description);
 }

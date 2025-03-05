@@ -19,6 +19,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Random;
+
 @ExtendWith(MockitoExtension.class)
 class PexelsClientTest {
 
@@ -38,7 +41,7 @@ class PexelsClientTest {
     
     @BeforeEach
     void setUp() {
-        pexelsClient = new PexelsClient(API_KEY, restTemplate);
+        pexelsClient = new PexelsClient(API_KEY, restTemplate, new Random(42), new ObjectMapper());
     }
     
     @Test

@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.adapter.out.persistence.ai;
 
+import com.j30n.stoblyx.adapter.in.web.dto.book.BookMediaResponse;
 import com.j30n.stoblyx.application.port.out.ai.AIPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,18 +21,16 @@ import java.util.concurrent.TimeoutException;
 @RequiredArgsConstructor
 public class AIAdapter implements AIPort {
 
-    private final PexelsClient pexelsClient;
-    private final TTSClient ttsClient;
-    private final BGMClient bgmClient;
-    
     // 비동기 작업 타임아웃 설정
     private static final long ASYNC_TIMEOUT_SECONDS = 10;
-
     // 폴백 리소스 메서드 대신 상수 선언
     private static final String FALLBACK_IMAGE = "static/images/fallback/book-cover.jpg";
     private static final String FALLBACK_VIDEO = "static/videos/fallback/book-animation.mp4";
     private static final String FALLBACK_AUDIO = "static/audio/fallback/default-narration.mp3";
     private static final String FALLBACK_BGM = "static/bgm/neutral.mp3";
+    private final PexelsClient pexelsClient;
+    private final TTSClient ttsClient;
+    private final BGMClient bgmClient;
 
     /**
      * 텍스트 기반 이미지 검색
@@ -40,7 +39,7 @@ public class AIAdapter implements AIPort {
     @Override
     public String searchImage(String query) {
         log.info("이미지 검색 요청: {}", query);
-        
+
         try {
             return CompletableFuture.supplyAsync(() -> {
                 try {
@@ -71,7 +70,7 @@ public class AIAdapter implements AIPort {
     @Override
     public String searchVideo(String query) {
         log.info("비디오 검색 요청: {}", query);
-        
+
         try {
             return CompletableFuture.supplyAsync(() -> {
                 try {
@@ -102,7 +101,7 @@ public class AIAdapter implements AIPort {
     @Override
     public String generateSpeech(String text) {
         log.info("음성 생성 요청: {}", text.substring(0, Math.min(50, text.length())));
-        
+
         try {
             return CompletableFuture.supplyAsync(() -> {
                 try {
@@ -130,7 +129,7 @@ public class AIAdapter implements AIPort {
     @Override
     public String selectBGM() {
         log.info("기본 BGM 선택 요청");
-        
+
         try {
             return bgmClient.selectBGM();
         } catch (Exception e) {
@@ -138,14 +137,14 @@ public class AIAdapter implements AIPort {
             return FALLBACK_BGM;
         }
     }
-    
+
     /**
      * 텍스트 분석 기반 BGM 선택
      */
     @Override
     public String selectBGMByText(String text) {
         log.info("텍스트 기반 BGM 선택 요청: {}", text.substring(0, Math.min(50, text.length())));
-        
+
         try {
             return bgmClient.selectBGMByText(text);
         } catch (Exception e) {
@@ -153,37 +152,37 @@ public class AIAdapter implements AIPort {
             return FALLBACK_BGM;
         }
     }
-    
+
     /**
      * 모든 AI 기능을 통합 - 책 데이터 기반 멀티미디어 생성
      */
     @Async
     @Override
-    public CompletableFuture<BookMultimediaDTO> generateBookMultimedia(String title, String description) {
+    public CompletableFuture<BookMediaResponse> generateBookMultimedia(String title, String description) {
         log.info("책 멀티미디어 생성 요청: {}", title);
-        
+
         // 병렬 처리를 위한 CompletableFuture 생성
-        CompletableFuture<String> imageFuture = CompletableFuture.supplyAsync(() -> 
+        CompletableFuture<String> imageFuture = CompletableFuture.supplyAsync(() ->
             searchImage(title + " " + description.substring(0, Math.min(50, description.length())))
         );
-        
-        CompletableFuture<String> videoFuture = CompletableFuture.supplyAsync(() -> 
+
+        CompletableFuture<String> videoFuture = CompletableFuture.supplyAsync(() ->
             searchVideo(title)
         );
-        
-        CompletableFuture<String> audioFuture = CompletableFuture.supplyAsync(() -> 
+
+        CompletableFuture<String> audioFuture = CompletableFuture.supplyAsync(() ->
             generateSpeech(description)
         );
-        
-        CompletableFuture<String> bgmFuture = CompletableFuture.supplyAsync(() -> 
+
+        CompletableFuture<String> bgmFuture = CompletableFuture.supplyAsync(() ->
             selectBGMByText(description)
         );
-        
+
         // 모든 Future를 결합하여 결과 생성
         return CompletableFuture.allOf(imageFuture, videoFuture, audioFuture, bgmFuture)
             .thenApply(v -> {
                 try {
-                    return new BookMultimediaDTO(
+                    return new BookMediaResponse(
                         imageFuture.get(2, TimeUnit.SECONDS),
                         videoFuture.get(2, TimeUnit.SECONDS),
                         audioFuture.get(2, TimeUnit.SECONDS),
@@ -200,24 +199,24 @@ public class AIAdapter implements AIPort {
                 }
             });
     }
-    
+
     /**
      * 일부 요청이 실패했을 때 부분적 결과 생성
      */
-    private BookMultimediaDTO createPartialResult(
-            CompletableFuture<String> imageFuture,
-            CompletableFuture<String> videoFuture,
-            CompletableFuture<String> audioFuture,
-            CompletableFuture<String> bgmFuture) {
-        
+    private BookMediaResponse createPartialResult(
+        CompletableFuture<String> imageFuture,
+        CompletableFuture<String> videoFuture,
+        CompletableFuture<String> audioFuture,
+        CompletableFuture<String> bgmFuture) {
+
         String image = safeGetFuture(imageFuture, this::getFallbackImage);
         String video = safeGetFuture(videoFuture, this::getFallbackVideo);
         String audio = safeGetFuture(audioFuture, this::getFallbackAudio);
         String bgm = safeGetFuture(bgmFuture, this::getFallbackBGM);
-        
-        return new BookMultimediaDTO(image, video, audio, bgm);
+
+        return new BookMediaResponse(image, video, audio, bgm);
     }
-    
+
     /**
      * Future에서 안전하게 결과 가져오기 (실패 시 폴백 사용)
      */
@@ -232,20 +231,20 @@ public class AIAdapter implements AIPort {
             return fallback.get();
         }
     }
-    
+
     // 폴백 리소스 메서드들
     private String getFallbackImage() {
         return FALLBACK_IMAGE;
     }
-    
+
     private String getFallbackVideo() {
         return FALLBACK_VIDEO;
     }
-    
+
     private String getFallbackAudio() {
         return FALLBACK_AUDIO;
     }
-    
+
     private String getFallbackBGM() {
         return FALLBACK_BGM;
     }

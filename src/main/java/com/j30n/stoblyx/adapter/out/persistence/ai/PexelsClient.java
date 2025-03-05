@@ -49,12 +49,14 @@ public class PexelsClient {
     // API 키를 application.properties에서 로드
     public PexelsClient(
             @Value("${pexels.api.key:}") String apiKey,  // 빈 기본값 사용
-            RestTemplate restTemplate) {
+            RestTemplate restTemplate,
+            Random random,
+            ObjectMapper objectMapper) {
         // 빈 값이면 DUMMY_API_KEY 사용
         this.apiKey = (apiKey == null || apiKey.isEmpty()) ? DUMMY_API_KEY : apiKey;
         this.restTemplate = restTemplate;
-        this.random = new Random();
-        this.objectMapper = new ObjectMapper();
+        this.random = random;
+        this.objectMapper = objectMapper;
         
         if (DUMMY_API_KEY.equals(this.apiKey)) {
             log.warn("Pexels API 키가 설정되지 않았습니다. 폴백 이미지/비디오가 사용됩니다.");
