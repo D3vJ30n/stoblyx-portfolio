@@ -3,7 +3,6 @@ package com.j30n.stoblyx.infrastructure.security;
 import com.j30n.stoblyx.infrastructure.config.XssExclusionConfig;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -18,8 +17,11 @@ import java.io.IOException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class XssFilter implements Filter {
 
-    @Autowired
-    private XssExclusionConfig xssExclusionConfig;
+    private final XssExclusionConfig xssExclusionConfig;
+    
+    public XssFilter(XssExclusionConfig xssExclusionConfig) {
+        this.xssExclusionConfig = xssExclusionConfig;
+    }
 
     /**
      * XSS 필터 초기화

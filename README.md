@@ -37,10 +37,11 @@
 
 #### AI Integration
 
-![KoBART](https://img.shields.io/badge/KoBART-Text_Summary-FF6F00?style=flat-square&logo=tensorflow)
-![TTS](https://img.shields.io/badge/TTS-Text_to_Speech-4285F4?style=flat-square&logo=google)
-![BGM](https://img.shields.io/badge/BGM-Emotion_Analysis-1DB954?style=flat-square&logo=spotify)
-![Pexels API](https://img.shields.io/badge/Pexels_API-Image_Search-05A081?style=flat-square&logo=pexels)
+![KoBART](https://img.shields.io/badge/KoBART-자연어_처리-FF6F00?style=flat-square&logo=tensorflow)
+![KoGPT](https://img.shields.io/badge/KoGPT-자연어_생성-FF6F00?style=flat-square&logo=tensorflow)
+![pyttsx3](https://img.shields.io/badge/pyttsx3-감사-3776AB?style=flat-square&logo=python)
+![Pexels API](https://img.shields.io/badge/Pexels_API-이미지_검색-05A081?style=flat-square&logo=pexels)
+![감정 분석](https://img.shields.io/badge/감정_분석-자체_개발_알고리즘-1DB954?style=flat-square&logo=spotify)
 
 #### Deployment
 
@@ -48,20 +49,15 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
 ![Koyeb](https://img.shields.io/badge/Koyeb-Hosting-121212?style=flat-square&logo=koyeb)
 
-## 인공지능 및 미디어 처리
-
-- 자연어 처리: KoBART, KoGPT
-- 음성 합성: KoSpeech TTS
-- 이미지 검색: Pexels API
-- 감정 분석: 자체 개발 감정 분석 알고리즘
-
 ## 개발 도구
 
-- IDE: IntelliJ IDEA
-- 버전 관리: Git, GitHub
-- CI/CD: GitHub Actions
-- 코드 품질: SonarQube
-- 테스트: JUnit 5, Mockito
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-IDE-000000?style=flat-square&logo=intellij-idea)
+![Git](https://img.shields.io/badge/Git-버전_관리-F05032?style=flat-square&logo=git)
+![GitHub](https://img.shields.io/badge/GitHub-협업_도구-181717?style=flat-square&logo=github)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
+![SonarQube](https://img.shields.io/badge/SonarQube-코드_품질-4E9BCD?style=flat-square&logo=sonarqube)
+![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
+![Mockito](https://img.shields.io/badge/Mockito-테스트_목업-C5D9E8?style=flat-square)
 
 ---
 
@@ -69,18 +65,21 @@
 
 ### 문제 인식
 
-![Problem](https://img.shields.io/badge/Problem-MZ세대_독서율_감소-critical?style=flat-square)
-![Trend](https://img.shields.io/badge/Trend-숏폼_콘텐츠_증가-critical?style=flat-square)
+- MZ세대의 독서율 감소 현상
+- 숏폼 콘텐츠 소비 증가 추세
+- 기존 독서 플랫폼의 젊은 세대 유입 한계
 
 ### 해결 방안
 
-![Solution](https://img.shields.io/badge/Solution-AI_기반_콘텐츠_변환-success?style=flat-square)
-![Approach](https://img.shields.io/badge/Approach-게이미피케이션-success?style=flat-square)
+- AI 기반 독서 콘텐츠의 숏폼 변환 기술 도입
+- 게이미피케이션을 통한 독서 동기 부여
+- 소셜 기능을 통한 독서 커뮤니티 형성
 
 ### 기대 효과
 
-![Effect](https://img.shields.io/badge/Effect-독서_문화_활성화-informational?style=flat-square)
-![Growth](https://img.shields.io/badge/Growth-지식_공유_플랫폼-informational?style=flat-square)
+- 독서 문화의 디지털 전환 및 활성화
+- 지식 공유 플랫폼으로서의 성장 가능성
+- 세대 간 독서 격차 해소 및 독서 습관 형성
 
 ---
 
@@ -295,7 +294,7 @@ round(currentScore *(1-decayFactor));
 ### 주요 테이블 및 관계
 
 <div align="center">
-  <img src="src/docs/diagrams/erd.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/erd_V2.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 ### 공통 기본 클래스
@@ -1171,14 +1170,14 @@ src/
 ## 17. 기여 가이드라인
 
 - 코드 기여 방법
-- 이슈 생성 또는 기존 이슈 선택
-- 포크 및 브랜치 생성
-- 코드 작성 및 테스트
-- 풀 리퀘스트 제출
+    - 이슈 생성 또는 기존 이슈 선택
+    - 포크 및 브랜치 생성
+    - 코드 작성 및 테스트
+    - 풀 리퀘스트 제출
 - 코드 스타일
-- Google Java Style Guide 준수
-- 메서드 및 클래스에 JavaDoc 주석 작성
-- 테스트 코드 포함
+    - Google Java Style Guide 준수
+    - 메서드 및 클래스에 JavaDoc 주석 작성
+    - 테스트 코드 포함
 
 ## 18. 연락처
 
@@ -1196,10 +1195,6 @@ src/
 ## 20. 라이선스
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-
-이
-프로젝트는 [Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-라이센스 하에 배포됩니다.
 
 이 라이센스는 다음을 의미합니다.
 

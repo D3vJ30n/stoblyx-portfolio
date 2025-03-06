@@ -26,7 +26,11 @@ import java.util.*;
 public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    // 랭크 타입 상수
+    
+    private static final String PERIOD_DAILY = "daily";
+    private static final String PERIOD_WEEKLY = "weekly";
+    private static final String PERIOD_MONTHLY = "monthly";
+    
     private static final String RANK_BRONZE = "BRONZE";
     private static final String RANK_SILVER = "SILVER";
     private static final String RANK_GOLD = "GOLD";
@@ -92,26 +96,25 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
         // 기간 설정
         if (startDate == null || endDate == null) {
             LocalDate now = LocalDate.now();
-            if ("daily".equals(period)) {
+            if (PERIOD_DAILY.equals(period)) {
                 startDate = now.minusDays(30);
                 endDate = now;
-            } else if ("weekly".equals(period)) {
+            } else if (PERIOD_WEEKLY.equals(period)) {
                 startDate = now.minusWeeks(12);
                 endDate = now;
-            } else if ("monthly".equals(period)) {
+            } else if (PERIOD_MONTHLY.equals(period)) {
                 startDate = now.minusMonths(12);
                 endDate = now;
             } else {
                 startDate = now.minusDays(30);
                 endDate = now;
-                period = "daily";
+                period = PERIOD_DAILY;
             }
         }
         
         // 콘텐츠 생성 시계열 데이터 (임시 데이터)
         List<ContentStatsResponse.TimeSeriesDataPoint> contentCreationStats = new ArrayList<>();
         LocalDate current = startDate;
-        Random random = new Random();
         
         while (!current.isAfter(endDate)) {
             contentCreationStats.add(
@@ -121,9 +124,9 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
                     .build()
             );
             
-            if ("daily".equals(period)) {
+            if (PERIOD_DAILY.equals(period)) {
                 current = current.plusDays(1);
-            } else if ("weekly".equals(period)) {
+            } else if (PERIOD_WEEKLY.equals(period)) {
                 current = current.plusWeeks(1);
             } else {
                 current = current.plusMonths(1);
@@ -174,19 +177,19 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
         // 기간 설정
         if (startDate == null || endDate == null) {
             LocalDate now = LocalDate.now();
-            if ("daily".equals(period)) {
+            if (PERIOD_DAILY.equals(period)) {
                 startDate = now.minusDays(30);
                 endDate = now;
-            } else if ("weekly".equals(period)) {
+            } else if (PERIOD_WEEKLY.equals(period)) {
                 startDate = now.minusWeeks(12);
                 endDate = now;
-            } else if ("monthly".equals(period)) {
+            } else if (PERIOD_MONTHLY.equals(period)) {
                 startDate = now.minusMonths(12);
                 endDate = now;
             } else {
                 startDate = now.minusDays(30);
                 endDate = now;
-                period = "daily";
+                period = PERIOD_DAILY;
             }
         }
         
@@ -196,7 +199,6 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
         List<UserActivityStatsResponse.TimeSeriesDataPoint> contentCreationStats = new ArrayList<>();
         
         LocalDate current = startDate;
-        Random random = new Random();
         
         while (!current.isAfter(endDate)) {
             String dateStr = current.format(DATE_FORMATTER);
@@ -222,9 +224,9 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
                     .build()
             );
             
-            if ("daily".equals(period)) {
+            if (PERIOD_DAILY.equals(period)) {
                 current = current.plusDays(1);
-            } else if ("weekly".equals(period)) {
+            } else if (PERIOD_WEEKLY.equals(period)) {
                 current = current.plusWeeks(1);
             } else {
                 current = current.plusMonths(1);
@@ -283,7 +285,6 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
         List<SystemResourcesResponse.ResourceTimeSeriesData> diskHistory = new ArrayList<>();
         
         LocalDateTime now = LocalDateTime.now();
-        Random random = new Random();
         
         for (int i = 24; i >= 0; i--) {
             LocalDateTime timestamp = now.minusHours(i);
