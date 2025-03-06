@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/api/admin/stats")
+@RequestMapping("/admin/stats")
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class AdminDashboardStatsRestController {

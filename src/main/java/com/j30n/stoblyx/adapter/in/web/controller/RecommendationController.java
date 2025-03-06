@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * 검색어 기반 사용자 추천 시스템 API를 처리하는 컨트롤러
  */
 @RestController
-@RequestMapping("/api/recommendations")
+@RequestMapping("/recommendations")
 @RequiredArgsConstructor
 public class RecommendationController {
     private static final String RESULT_SUCCESS = "SUCCESS";

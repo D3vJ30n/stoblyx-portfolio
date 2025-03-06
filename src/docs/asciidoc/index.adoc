@@ -1,469 +1,1253 @@
-= 스토블릭스 API 문서 v1.0
+= Stoblyx API 문서
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
-:toc-title: 목차
+:toclevels: 3
 :sectlinks:
-:sectnums:
-:docinfo: shared
+:operation-curl-request-title: 요청 예시
+:operation-http-response-title: 응답 예시
 
-== 1. 개요
+== 소개
 
-스토블릭스(Stoblyx)는 책 속 문장을 디지털 기념비(Obelisk)처럼 기억하고, AI를 통해 숏폼 영상으로 재탄생시키는 플랫폼입니다.
-이 문서는 스토블릭스 API의 사용 방법과 세부 명세를 제공합니다.
+=== 개요
+Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 생성하는 지식 플랫폼입니다.
 
-=== 1.1 기술 스택
+=== 기술 스택
+* Backend: Spring Boot 3.3.9, Java 17
+* Database: MySQL, Redis
+* AI 모델: KoBART, GPT 기반 모델
+* 인증: JWT (JSON Web Token)
 
-* Spring Boot 3.3.9 / Java 17
-* MySQL 8.0.41 / Redis 7.0.15
-* Spring Data JPA
-* Spring Security + JWT
-* AI 통합: KoBART, pyttsx3, Pexels API
+== API 엔드포인트 목록
 
-== 2. 인증 및 권한
+=== 인증 API
+* `POST /auth/signup` - 회원가입
+* `POST /auth/login` - 로그인
+* `POST /auth/refresh` - 토큰 갱신
+* `POST /auth/logout` - 로그아웃
 
-=== 2.1 인증 방식
+=== 사용자 API
+* `GET /users/me` - 현재 사용자 정보 조회
+* `PUT /users/me` - 사용자 정보 수정
+* `DELETE /users/me` - 회원 탈퇴
+* `POST /users/me/profile-image` - 프로필 이미지 업로드
+* `GET /users/me/interests` - 사용자 관심사 조회
+* `PUT /users/me/interests` - 사용자 관심사 수정
 
-스토블릭스 API는 JWT(JSON Web Token) 기반의 인증 방식을 사용합니다.
+=== 책 API
+* `GET /books` - 책 목록 조회
+* `GET /books/{id}` - 책 상세 조회
+* `POST /books` - 책 등록 (관리자)
+* `PUT /books/{id}` - 책 정보 수정 (관리자)
+* `DELETE /books/{id}` - 책 삭제 (관리자)
 
-==== 2.1.1 토큰 발급
+=== 문구 API
+* `POST /quotes` - 문구 생성
+* `GET /quotes/{id}` - 문구 조회
+* `GET /quotes` - 문구 목록 조회
+* `PUT /quotes/{id}` - 문구 수정
+* `DELETE /quotes/{id}` - 문구 삭제
+* `POST /quotes/{quoteId}/save` - 문구 저장
+* `DELETE /quotes/{quoteId}/save` - 문구 저장 취소
+* `GET /quotes/saved` - 저장한 문구 목록 조회
+* `GET /quotes/{id}/summary` - 문구 요약 조회
 
-[source,http]
+=== 좋아요 API
+* `POST /likes/quotes/{quoteId}` - 문구 좋아요
+* `DELETE /likes/quotes/{quoteId}` - 문구 좋아요 취소
+* `GET /likes/quotes/{quoteId}/status` - 문구 좋아요 상태 조회
+* `GET /likes/quotes/{quoteId}/count` - 문구 좋아요 수 조회
+* `GET /likes/quotes` - 현재 사용자가 좋아요한 문구 ID 목록 조회
+* `GET /likes/users/{userId}/quotes` - 특정 사용자가 좋아요한 문구 ID 목록 조회
+
+=== 콘텐츠 API
+* `GET /contents/trending` - 트렌딩 콘텐츠 조회
+* `GET /contents/recommended` - 추천 콘텐츠 조회
+* `GET /contents/books/{bookId}` - 책별 콘텐츠 조회
+* `GET /contents/search` - 콘텐츠 검색
+* `GET /contents/{id}` - 콘텐츠 상세 조회
+* `POST /contents/{id}/like` - 콘텐츠 좋아요 토글
+* `POST /contents/{id}/bookmark` - 콘텐츠 북마크 토글
+* `POST /contents/quotes/{quoteId}` - 문구로부터 콘텐츠 생성
+
+=== 콘텐츠 댓글 API
+* `POST /comments/contents/{contentId}` - 콘텐츠 댓글 작성
+* `PUT /comments/{commentId}` - 콘텐츠 댓글 수정
+* `DELETE /comments/{commentId}` - 콘텐츠 댓글 삭제
+* `GET /comments/contents/{contentId}` - 콘텐츠 댓글 목록 조회
+* `GET /comments/{commentId}/replies` - 댓글 답글 목록 조회
+* `GET /comments/users/{userId}` - 사용자 댓글 목록 조회
+
+=== 검색 API
+* `GET /search` - 통합 검색
+* `GET /search/history/{userId}` - 검색 기록 조회
+* `DELETE /search/history/{searchId}` - 검색 기록 삭제
+* `DELETE /search/history/user/{userId}` - 모든 검색 기록 삭제
+
+=== 추천 API
+* `GET /recommendations/users/{userId}` - 사용자 추천 목록 조회
+* `POST /recommendations/collaborative-filtering` - 협업 필터링 알고리즘 실행 (관리자)
+* `POST /recommendations/users/{userId}/update` - 사용자 추천 정보 갱신
+* `GET /recommendations/popular-terms` - 인기 검색어 목록 조회
+* `POST /recommendations/popular-terms/update` - 인기 검색어 분석 실행 (관리자)
+
+=== 책 요약 API
+* `POST /books/{bookId}/summaries` - 책 요약 생성
+* `GET /books/{bookId}/summaries/{summaryId}` - 책 요약 조회
+* `GET /books/{bookId}/summaries` - 책 요약 목록 조회
+* `PUT /books/{bookId}/summaries/{summaryId}` - 책 요약 수정
+* `DELETE /books/{bookId}/summaries/{summaryId}` - 책 요약 삭제
+
+=== 관리자 페이지 API
+* `GET /admin` - 관리자 대시보드
+* `GET /admin/users` - 사용자 관리
+* `GET /admin/books` - 책 관리
+* `GET /admin/contents` - 콘텐츠 관리
+* `GET /admin/statistics` - 통계 대시보드
+* `GET /admin/stats/summary` - 대시보드 요약 통계
+* `GET /admin/stats/content` - 콘텐츠 생성 통계
+* `GET /admin/stats/user-activity` - 사용자 활동 통계
+* `GET /admin/stats/system-resources` - 시스템 리소스 모니터링
+* `GET /admin/stats/ranking` - 랭킹 시스템 통계
+* `GET /admin/stats/anomaly-detection` - 이상 활동 탐지
+
+=== 관리자 랭킹 API
+* `GET /admin/ranking/suspicious` - 의심스러운 활동이 있는 사용자 목록 조회
+* `GET /admin/ranking/abnormal-activities` - 비정상적인 활동 패턴 조회
+* `GET /admin/ranking/activities/ip/{ipAddress}` - IP 주소별 활동 내역 조회
+* `POST /admin/ranking/users/{userId}/adjust-score` - 사용자 점수 수동 조정
+* `POST /admin/ranking/users/{userId}/suspend` - 사용자 계정 정지
+* `POST /admin/ranking/users/{userId}/unsuspend` - 사용자 계정 정지 해제
+* `GET /admin/ranking/statistics` - 랭킹 시스템 통계 조회
+* `POST /admin/ranking/settings/{settingKey}` - 랭킹 시스템 설정 업데이트
+
+== 인증
+
+=== 인증 방식
+API 요청 시 JWT 토큰을 사용하여 인증합니다. 토큰은 `Authorization` 헤더에 `Bearer {token}` 형식으로 전달합니다.
+
+=== 토큰 발급 및 갱신
+* 토큰 발급: `POST /auth/login`
+* 토큰 갱신: `POST /auth/refresh`
+* 로그아웃: `POST /auth/logout`
+
+=== 사용자 역할
+* USER: 일반 사용자
+* EDITOR: 에디터 권한
+* WRITER: 작가 권한
+* ADMIN: 관리자 권한
+
+== 인증 API
+
+=== 회원가입
+`POST /auth/signup`
+
+사용자 계정을 생성합니다.
+
+==== 요청 필드
+* `email`: 이메일 (필수)
+* `password`: 비밀번호 (필수)
+* `name`: 이름 (필수)
+* `nickname`: 닉네임 (필수)
+
+==== 응답 필드
+* `userId`: 생성된 사용자 ID
+
+=== 로그인
+`POST /auth/login`
+
+사용자 인증을 수행하고 JWT 토큰을 발급합니다.
+
+==== 요청 필드
+* `email`: 이메일 (필수)
+* `password`: 비밀번호 (필수)
+
+==== 응답 필드
+* `accessToken`: 액세스 토큰
+* `refreshToken`: 리프레시 토큰
+* `expiresIn`: 액세스 토큰 만료 시간 (초)
+
+=== 토큰 갱신
+`POST /auth/refresh`
+
+리프레시 토큰으로 새로운 액세스 토큰을 발급합니다.
+
+==== 요청 필드
+* `refreshToken`: 리프레시 토큰 (필수)
+
+==== 응답 필드
+* `accessToken`: 새로운 액세스 토큰
+* `expiresIn`: 액세스 토큰 만료 시간 (초)
+
+=== 로그아웃
+`POST /auth/logout`
+
+현재 세션을 종료하고 토큰을 무효화합니다.
+
+==== 요청 필드
+없음 (헤더에 액세스 토큰 필요)
+
+==== 응답 필드
+없음 (성공 메시지만 반환)
+
+== 사용자 API
+
+=== 현재 사용자 정보 조회
+`GET /users/me`
+
+현재 인증된 사용자의 정보를 조회합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+
+==== 응답 필드
+[source,json]
 ----
-POST /api/auth/login HTTP/1.1
-Content-Type: application/json
-
-{
-  "username": "user123",
-  "password": "yourpassword"
-}
-----
-
-[source,http]
-----
-HTTP/1.1 200 OK
-Content-Type: application/json
-
 {
   "result": "SUCCESS",
-  "message": "로그인 성공",
+  "message": "사용자 정보 조회에 성공했습니다.",
   "data": {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "tokenType": "Bearer",
-    "expiresIn": 86400
+    "id": 1,
+    "email": "user@example.com",
+    "name": "홍길동",
+    "nickname": "bookLover",
+    "profileImage": "https://example.com/profiles/user1.jpg",
+    "bio": "책을 사랑하는 서재지기입니다.",
+    "role": "USER",
+    "joinDate": "2023-10-15T14:30:45"
   }
 }
 ----
 
-==== 2.1.2 토큰 갱신
+=== 사용자 정보 수정
+`PUT /users/me`
 
-[source,http]
+현재 사용자의 정보를 수정합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+* `Content-Type`: application/json
+
+==== 요청 필드
+[source,json]
 ----
-POST /api/auth/refresh HTTP/1.1
-Content-Type: application/json
-
 {
-  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "name": "홍길동",
+  "nickname": "newNickname",
+  "bio": "수정된 자기소개입니다."
 }
 ----
 
-=== 2.2 권한 등급
-
-[cols="1,3,3"]
-|===
-|권한 |설명 |접근 가능 리소스
-
-|USER
-|일반 사용자
-|기본 콘텐츠 열람, 문구 저장, 좋아요, 댓글
-
-|EDITOR
-|편집자
-|콘텐츠 생성, 수정, 관리
-
-|WRITER
-|작가
-|고급 콘텐츠 제작, 전문 카테고리 접근
-
-|ADMIN
-|관리자
-|모든 시스템 리소스, 사용자 관리
-|===
-
-== 3. 사용자 API (User API)
-
-=== 3.1 사용자 등록
-
-[source,http]
+==== 응답 필드
+[source,json]
 ----
-POST /api/users/register HTTP/1.1
-Content-Type: application/json
-
-{
-  "username": "newuser",
-  "password": "securepassword",
-  "email": "user@example.com",
-  "nickname": "사용자닉네임"
-}
-----
-
-=== 3.2 사용자 프로필 조회
-
-[source,http]
-----
-GET /api/users/profile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 3.3 사용자 정보 수정
-
-[source,http]
-----
-PUT /api/users/profile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
-{
-  "nickname": "새닉네임",
-  "profileImageUrl": "https://example.com/images/profile.jpg"
-}
-----
-
-== 4. 문구 API (Quote API)
-
-=== 4.1 문구 생성
-
-[source,http]
-----
-POST /api/quotes HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
-{
-  "content": "책 속의 한 문장은 사라지지 않는다. 그것은 오벨리스크처럼 남아, 사람들에게 영감을 준다.",
-  "bookId": 123,
-  "page": 45,
-  "memo": "인상적인 문장"
-}
-----
-
-=== 4.2 문구 목록 조회
-
-[source,http]
-----
-GET /api/quotes?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 4.3 특정 문구 조회
-
-[source,http]
-----
-GET /api/quotes/{quoteId} HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 4.4 문구 수정
-
-[source,http]
-----
-PUT /api/quotes/{quoteId} HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
-{
-  "content": "수정된 문구 내용",
-  "page": 46,
-  "memo": "수정된 메모"
-}
-----
-
-=== 4.5 문구 삭제
-
-[source,http]
-----
-DELETE /api/quotes/{quoteId} HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-== 5. AI 숏폼 생성 API (Short-form Content API)
-
-=== 5.1 숏폼 콘텐츠 생성 요청
-
-[source,http]
-----
-POST /api/quotes/{quoteId}/generate-video HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
-{
-  "style": "minimalist",
-  "bgmType": "calm"
-}
-----
-
-[source,http]
-----
-HTTP/1.1 201 Created
-Content-Type: application/json
-
 {
   "result": "SUCCESS",
-  "message": "숏폼 콘텐츠 생성 요청이 접수되었습니다",
+  "message": "사용자 정보가 성공적으로 수정되었습니다.",
   "data": {
-    "contentId": "a1b2c3d4",
-    "status": "PROCESSING",
-    "estimatedCompletionTime": 45
+    "id": 1,
+    "email": "user@example.com",
+    "name": "홍길동",
+    "nickname": "newNickname",
+    "profileImage": "https://example.com/profiles/user1.jpg",
+    "bio": "수정된 자기소개입니다.",
+    "role": "USER",
+    "joinDate": "2023-10-15T14:30:45"
   }
 }
 ----
 
-=== 5.2 숏폼 콘텐츠 상태 확인
+=== 회원 탈퇴
+`DELETE /users/me`
 
-[source,http]
-----
-GET /api/contents/status/{contentId} HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
+현재 사용자 계정을 삭제합니다.
 
-[source,http]
-----
-HTTP/1.1 200 OK
-Content-Type: application/json
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
 
+==== 응답 필드
+[source,json]
+----
 {
   "result": "SUCCESS",
-  "message": "콘텐츠 상태 조회 성공",
+  "message": "회원 탈퇴가 완료되었습니다.",
+  "data": null
+}
+----
+
+=== 프로필 이미지 업로드
+`POST /users/me/profile-image`
+
+사용자 프로필 이미지를 업로드합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+* `Content-Type`: multipart/form-data
+
+==== 요청 필드
+* `image`: 이미지 파일 (multipart/form-data)
+
+==== 응답 필드
+[source,json]
+----
+{
+  "result": "SUCCESS",
+  "message": "프로필 이미지가 성공적으로 업로드되었습니다.",
   "data": {
-    "contentId": "a1b2c3d4",
-    "status": "COMPLETED",
-    "previewUrl": "https://cdn.stoblyx.com/previews/a1b2c3d4.mp4",
-    "completedAt": "2025-02-23T14:30:45Z"
+    "imageUrl": "https://example.com/profiles/user1_new.jpg"
   }
 }
 ----
 
-=== 5.3 숏폼 콘텐츠 목록 조회
+=== 사용자 관심사 조회
+`GET /users/me/interests`
 
-[source,http]
+현재 사용자의 관심사를 조회합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+
+==== 응답 필드
+[source,json]
 ----
-GET /api/contents?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 5.4 특정 숏폼 콘텐츠 조회
-
-[source,http]
-----
-GET /api/contents/{contentId} HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-== 6. 소셜 기능 API (Social API)
-
-=== 6.1 좋아요 추가/취소
-
-[source,http]
-----
-POST /api/quotes/{quoteId}/like HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 6.2 댓글 작성
-
-[source,http]
-----
-POST /api/quotes/{quoteId}/comments HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
 {
-  "content": "정말 인상적인 문구네요!"
+  "result": "SUCCESS",
+  "message": "관심사 조회에 성공했습니다.",
+  "data": {
+    "interests": ["소설", "역사", "과학", "철학"]
+  }
 }
 ----
 
-=== 6.3 댓글 목록 조회
+=== 사용자 관심사 수정
+`PUT /users/me/interests`
 
-[source,http]
+현재 사용자의 관심사를 수정합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+* `Content-Type`: application/json
+
+==== 요청 필드
+[source,json]
 ----
-GET /api/quotes/{quoteId}/comments?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 6.4 문구 저장
-
-[source,http]
-----
-POST /api/quotes/{quoteId}/save HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
 {
-  "note": "나중에 다시 읽어보기"
+  "interests": ["소설", "시", "경제", "심리학"]
 }
 ----
 
-== 7. 검색 API (Search API)
-
-=== 7.1 문구 검색
-
-[source,http]
+==== 응답 필드
+[source,json]
 ----
-GET /api/search/quotes?keyword=오벨리스크&page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 7.2 책 검색
-
-[source,http]
-----
-GET /api/search/books?title=미래의&author=알랭&page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 7.3 인기 검색어 조회
-
-[source,http]
-----
-GET /api/search/popular?limit=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-== 8. 랭킹 및 게이미피케이션 API (Ranking API)
-
-=== 8.1 전체 랭킹 조회
-
-[source,http]
-----
-GET /api/rankings/global?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 8.2 친구 랭킹 조회
-
-[source,http]
-----
-GET /api/rankings/friends?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 8.3 사용자 점수 조회
-
-[source,http]
-----
-GET /api/rankings/score HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 8.4 보상 목록 조회
-
-[source,http]
-----
-GET /api/rewards?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-=== 8.5 보상 수령
-
-[source,http]
-----
-POST /api/rewards/{rewardId}/claim HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-== 9. 관리자 API (Admin API)
-
-=== 9.1 콘텐츠 관리
-
-==== 9.1.1 콘텐츠 승인
-
-[source,http]
-----
-PUT /api/admin/contents/{contentId}/approve HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-==== 9.1.2 콘텐츠 거부
-
-[source,http]
-----
-PUT /api/admin/contents/{contentId}/reject HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
 {
-  "reason": "부적절한 내용이 포함되어 있습니다"
+  "result": "SUCCESS",
+  "message": "관심사가 성공적으로 수정되었습니다.",
+  "data": {
+    "interests": ["소설", "시", "경제", "심리학"]
+  }
 }
 ----
 
-=== 9.2 사용자 관리
+== 책 API
 
-==== 9.2.1 사용자 목록 조회
+=== 책 목록 조회
+`GET /books`
 
-[source,http]
+책 목록을 페이지네이션하여 조회합니다.
+
+==== 요청 파라미터
+* `genre`: 장르 필터 (선택)
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+[source,json]
 ----
-GET /api/admin/users?page=0&size=10 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-==== 9.2.2 사용자 권한 변경
-
-[source,http]
-----
-PUT /api/admin/users/{userId}/role HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
 {
-  "role": "EDITOR"
+  "result": "SUCCESS",
+  "message": "책 목록 조회에 성공했습니다.",
+  "data": {
+    "content": [
+      {
+        "id": 1,
+        "title": "데미안",
+        "author": "헤르만 헤세",
+        "publisher": "민음사",
+        "isbn": "9788937460449",
+        "publicationYear": 2009,
+        "description": "자아의 발견과 성장을 다룬 헤르만 헤세의 대표작",
+        "genre": "소설",
+        "coverImage": "https://example.com/covers/demian.jpg",
+        "createdAt": "2023-09-15T10:30:00",
+        "updatedAt": "2023-09-15T10:30:00"
+      },
+      // ... more books ...
+    ],
+    "pageable": {
+      "pageNumber": 0,
+      "pageSize": 20,
+      "sort": {
+        "empty": false,
+        "sorted": true,
+        "unsorted": false
+      },
+      "offset": 0,
+      "paged": true,
+      "unpaged": false
+    },
+    "totalElements": 150,
+    "totalPages": 8,
+    "last": false,
+    "size": 20,
+    "number": 0,
+    "sort": {
+      "empty": false,
+      "sorted": true,
+      "unsorted": false
+    },
+    "first": true,
+    "numberOfElements": 20,
+    "empty": false
+  }
 }
 ----
 
-==== 9.2.3 사용자 계정 비활성화
+=== 책 상세 조회
+`GET /books/{id}`
 
-[source,http]
+특정 책의 상세 정보를 조회합니다.
+
+==== 응답 필드
+[source,json]
 ----
-PUT /api/admin/users/{userId}/deactivate HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
 {
-  "reason": "사용자 요청에 의한 비활성화"
+  "result": "SUCCESS",
+  "message": "책 조회에 성공했습니다.",
+  "data": {
+    "id": 1,
+    "title": "데미안",
+    "author": "헤르만 헤세",
+    "publisher": "민음사",
+    "isbn": "9788937460449",
+    "publicationYear": 2009,
+    "description": "자아의 발견과 성장을 다룬 헤르만 헤세의 대표작",
+    "genre": "소설",
+    "coverImage": "https://example.com/covers/demian.jpg",
+    "createdAt": "2023-09-15T10:30:00",
+    "updatedAt": "2023-09-15T10:30:00"
+  }
 }
 ----
 
-=== 9.3 통계 대시보드
+=== 책 등록 (관리자)
+`POST /books`
 
-==== 9.3.1 콘텐츠 생성 통계
+새로운 책을 등록합니다. 관리자 권한이 필요합니다.
 
-[source,http]
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+* `Content-Type`: application/json
+
+==== 요청 필드
+[source,json]
 ----
-GET /api/admin/stats/contents?period=daily HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-==== 9.3.2 사용자 활동 통계
-
-[source,http]
-----
-GET /api/admin/stats/users?period=weekly HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-----
-
-==== 9.3.3 시스템 리소스 모니터링
-
-[source,http]
-----
-GET /api/admin/stats/system HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+{
+  "title": "사피엔스",
+  "author": "유발 하라리",
+  "publisher": "김영사",
+  "isbn": "9788934972464",
+  "publicationYear": 2015,
+  "description": "인류의 역사와 미래에 대한 통찰",
+  "genre": "역사/인문",
+  "coverImage": "https://example.com/covers/sapiens.jpg"
+}
 ----
 
-== 10. 오류 코드 및 응답
+==== 응답 필드
+[source,json]
+----
+{
+  "result": "SUCCESS",
+  "message": "책이 성공적으로 등록되었습니다.",
+  "data": {
+    "id": 151,
+    "title": "사피엔스",
+    "author": "유발 하라리",
+    "publisher": "김영사",
+    "isbn": "9788934972464",
+    "publicationYear": 2015,
+    "description": "인류의 역사와 미래에 대한 통찰",
+    "genre": "역사/인문",
+    "coverImage": "https://example.com/covers/sapiens.jpg",
+    "createdAt": "2023-11-05T14:20:30",
+    "updatedAt": "2023-11-05T14:20:30"
+  }
+}
+----
 
-=== 10.1 표준 오류 응답 형식
+=== 책 정보 수정 (관리자)
+`PUT /books/{id}`
 
+특정 책의 정보를 수정합니다. 관리자 권한이 필요합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+* `Content-Type`: application/json
+
+==== 요청 필드
+[source,json]
+----
+{
+  "title": "사피엔스: 유인원에서 사이보그까지",
+  "description": "인류의 역사와 미래에 대한 깊은 통찰과 분석",
+  "genre": "역사/인문/과학"
+}
+----
+
+==== 응답 필드
+[source,json]
+----
+{
+  "result": "SUCCESS",
+  "message": "책이 성공적으로 수정되었습니다.",
+  "data": {
+    "id": 151,
+    "title": "사피엔스: 유인원에서 사이보그까지",
+    "author": "유발 하라리",
+    "publisher": "김영사",
+    "isbn": "9788934972464",
+    "publicationYear": 2015,
+    "description": "인류의 역사와 미래에 대한 깊은 통찰과 분석",
+    "genre": "역사/인문/과학",
+    "coverImage": "https://example.com/covers/sapiens.jpg",
+    "createdAt": "2023-11-05T14:20:30",
+    "updatedAt": "2023-11-05T14:45:12"
+  }
+}
+----
+
+=== 책 삭제 (관리자)
+`DELETE /books/{id}`
+
+특정 책을 삭제합니다. 관리자 권한이 필요합니다.
+
+==== 요청 헤더
+* `Authorization`: Bearer {access_token}
+
+==== 응답 필드
+[source,json]
+----
+{
+  "result": "SUCCESS",
+  "message": "책이 성공적으로 삭제되었습니다.",
+  "data": null
+}
+----
+
+== 문구 API
+
+=== 문구 생성
+`POST /quotes`
+
+새로운 문구를 생성합니다.
+
+==== 요청 필드
+* `bookId`: 책 ID (필수)
+* `content`: 문구 내용 (필수)
+* `page`: 페이지 번호 (선택)
+* `chapter`: 챕터 정보 (선택)
+* `isPublic`: 공개 여부 (기본값: true)
+
+==== 응답 필드
+생성된 문구 정보
+
+=== 문구 조회
+`GET /quotes/{id}`
+
+특정 문구를 조회합니다.
+
+==== 응답 필드
+* `id`: 문구 ID
+* `content`: 문구 내용
+* `page`: 페이지 번호
+* `chapter`: 챕터 정보
+* `book`: 책 정보
+* `user`: 작성자 정보
+* `likeCount`: 좋아요 수
+* `commentCount`: 댓글 수
+* `createdAt`: 생성일시
+* `isPublic`: 공개 여부
+
+=== 문구 목록 조회
+`GET /quotes`
+
+문구 목록을 페이지네이션하여 조회합니다.
+
+==== 요청 파라미터
+* `userId`: 특정 사용자의 문구만 조회 (선택)
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 문구 목록
+
+=== 문구 수정
+`PUT /quotes/{id}`
+
+특정 문구를 수정합니다. 작성자만 수정 가능합니다.
+
+==== 요청 필드
+* `content`: 문구 내용 (선택)
+* `page`: 페이지 번호 (선택)
+* `chapter`: 챕터 정보 (선택)
+* `isPublic`: 공개 여부 (선택)
+
+==== 응답 필드
+수정된 문구 정보
+
+=== 문구 삭제
+`DELETE /quotes/{id}`
+
+특정 문구를 삭제합니다. 작성자만 삭제 가능합니다.
+
+=== 문구 좋아요
+`POST /likes/quotes/{quoteId}`
+
+특정 문구에 좋아요를 표시합니다.
+
+==== 응답 필드
+* `true`: 좋아요 성공
+
+=== 문구 좋아요 취소
+`DELETE /likes/quotes/{quoteId}`
+
+특정 문구의 좋아요를 취소합니다.
+
+==== 응답 필드
+* `false`: 좋아요 취소 성공
+
+=== 문구 좋아요 상태 조회
+`GET /likes/quotes/{quoteId}/status`
+
+현재 사용자가 특정 문구에 좋아요를 했는지 확인합니다.
+
+==== 응답 필드
+* `true`/`false`: 좋아요 여부
+
+=== 문구 좋아요 수 조회
+`GET /likes/quotes/{quoteId}/count`
+
+특정 문구의 좋아요 수를 조회합니다.
+
+==== 응답 필드
+* 좋아요 수 (정수)
+
+=== 문구 저장
+`POST /quotes/{quoteId}/save`
+
+특정 문구를 사용자의 저장 목록에 추가합니다.
+
+=== 문구 저장 취소
+`DELETE /quotes/{quoteId}/save`
+
+특정 문구를 사용자의 저장 목록에서 제거합니다.
+
+=== 저장한 문구 목록 조회
+`GET /quotes/saved`
+
+사용자가 저장한 문구 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 저장된 문구 목록
+
+=== 문구 요약 조회
+`GET /quotes/{id}/summary`
+
+특정 문구의 요약을 KoBART 모델을 통해 조회합니다.
+
+==== 응답 필드
+* `quoteId`: 문구 ID
+* `originalContent`: 원본 문구 내용
+* `summary`: 요약된 내용
+
+== 콘텐츠 API
+
+=== 트렌딩 콘텐츠 조회
+`GET /contents/trending`
+
+트렌딩 콘텐츠 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 트렌딩 콘텐츠 목록
+
+=== 추천 콘텐츠 조회
+`GET /contents/recommended`
+
+사용자에게 추천되는 콘텐츠 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 추천 콘텐츠 목록
+
+=== 책별 콘텐츠 조회
+`GET /contents/books/{bookId}`
+
+특정 책과 관련된 콘텐츠 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 책별 콘텐츠 목록
+
+=== 콘텐츠 검색
+`GET /contents/search`
+
+키워드로 콘텐츠를 검색합니다.
+
+==== 요청 파라미터
+* `keyword`: 검색 키워드 (필수)
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 검색 결과 콘텐츠 목록
+
+=== 콘텐츠 상세 조회
+`GET /contents/{id}`
+
+특정 콘텐츠의 상세 정보를 조회합니다.
+
+==== 응답 필드
+* `id`: 콘텐츠 ID
+* `title`: 제목
+* `videoUrl`: 비디오 URL
+* `thumbnailUrl`: 썸네일 URL
+* `createdAt`: 생성일시
+* `viewCount`: 조회수
+* `likeCount`: 좋아요 수
+* `quote`: 원본 문구 정보
+* `creator`: 생성자 정보
+
+=== 콘텐츠 좋아요 토글
+`POST /contents/{id}/like`
+
+특정 콘텐츠에 좋아요를 토글합니다.
+
+=== 콘텐츠 북마크 토글
+`POST /contents/{id}/bookmark`
+
+특정 콘텐츠를 북마크에 추가/제거합니다.
+
+=== 콘텐츠 생성
+`POST /contents/quotes/{quoteId}`
+
+특정 문구를 기반으로 새로운 동영상 콘텐츠를 생성합니다.
+
+==== 응답 필드
+생성된 콘텐츠 정보
+
+=== 콘텐츠 댓글 작성
+`POST /comments/contents/{contentId}`
+
+특정 콘텐츠에 댓글을 작성합니다.
+
+==== 요청 필드
+* `content`: 댓글 내용 (필수)
+* `parentId`: 부모 댓글 ID (대댓글인 경우)
+
+==== 응답 필드
+생성된 댓글 정보
+
+=== 콘텐츠 댓글 수정
+`PUT /comments/{commentId}`
+
+특정 댓글을 수정합니다.
+
+==== 요청 필드
+* `content`: 수정할 댓글 내용 (필수)
+
+==== 응답 필드
+수정된 댓글 정보
+
+=== 콘텐츠 댓글 삭제
+`DELETE /comments/{commentId}`
+
+특정 댓글을 삭제합니다.
+
+=== 콘텐츠 댓글 목록 조회
+`GET /comments/contents/{contentId}`
+
+특정 콘텐츠의 최상위 댓글 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 10)
+
+==== 응답 필드
+페이지네이션된 댓글 목록
+
+=== 댓글 답글 목록 조회
+`GET /comments/{commentId}/replies`
+
+특정 댓글의 답글 목록을 조회합니다.
+
+==== 응답 필드
+답글 목록
+
+=== 사용자 댓글 목록 조회
+`GET /comments/users/{userId}`
+
+특정 사용자가 작성한 댓글 목록을 조회합니다.
+
+== 검색 API
+
+=== 통합 검색
+`GET /search`
+
+문구와 책을 동시에 검색합니다.
+
+==== 요청 파라미터
+* `query`: 검색어 (필수)
+* `type`: 검색 유형 (all, quote, book) (기본값: all)
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 검색 결과
+
+=== 검색 기록 조회
+`GET /search/history/{userId}`
+
+사용자의 검색 기록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 10)
+
+==== 응답 필드
+페이지네이션된 검색 기록 목록
+
+=== 검색 기록 삭제
+`DELETE /search/history/{searchId}`
+
+특정 검색 기록을 삭제합니다.
+
+=== 모든 검색 기록 삭제
+`DELETE /search/history/user/{userId}`
+
+사용자의 모든 검색 기록을 삭제합니다.
+
+== 추천 API
+
+=== 사용자 추천 목록 조회
+`GET /recommendations/users/{userId}`
+
+특정 사용자에게 추천되는 사용자 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 10)
+
+==== 응답 필드
+페이지네이션된 추천 사용자 목록
+
+=== 협업 필터링 알고리즘 실행 (관리자)
+`POST /recommendations/collaborative-filtering`
+
+협업 필터링 알고리즘을 실행하여 사용자 추천 정보를 갱신합니다.
+
+==== 요청 필드
+* `targetUserCount`: 처리할 사용자 수 (선택)
+* `similarityThreshold`: 유사도 임계값 (선택)
+
+==== 응답 필드
+* 갱신된 추천 수
+
+=== 사용자 추천 정보 갱신
+`POST /recommendations/users/{userId}/update`
+
+특정 사용자의 추천 정보를 갱신합니다.
+
+==== 응답 필드
+* 갱신된 추천 수
+
+=== 인기 검색어 목록 조회
+`GET /recommendations/popular-terms`
+
+인기 검색어 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 인기 검색어 목록
+
+=== 인기 검색어 분석 실행 (관리자)
+`POST /recommendations/popular-terms/update`
+
+인기 검색어 분석을 실행하여 결과를 갱신합니다.
+
+==== 응답 필드
+* 갱신된 인기 검색어 수
+
+== 책 요약 API
+
+=== 책 요약 생성
+`POST /books/{bookId}/summaries`
+
+특정 책에 대한 요약을 생성합니다.
+
+==== 요청 필드
+* `title`: 요약 제목 (필수)
+* `content`: 요약 내용 (필수)
+* `chapterInfo`: 챕터 정보 (선택)
+
+==== 응답 필드
+생성된 책 요약 정보
+
+=== 책 요약 조회
+`GET /books/{bookId}/summaries/{summaryId}`
+
+특정 책의 특정 요약을 조회합니다.
+
+==== 응답 필드
+* `id`: 요약 ID
+* `title`: 요약 제목
+* `content`: 요약 내용
+* `chapterInfo`: 챕터 정보
+* `book`: 책 정보
+* `user`: 작성자 정보
+* `createdAt`: 생성일시
+
+=== 책 요약 목록 조회
+`GET /books/{bookId}/summaries`
+
+특정 책의 요약 목록을 조회합니다.
+
+==== 요청 파라미터
+* `page`: 페이지 번호 (기본값: 0)
+* `size`: 페이지 크기 (기본값: 20)
+
+==== 응답 필드
+페이지네이션된 책 요약 목록
+
+=== 책 요약 수정
+`PUT /books/{bookId}/summaries/{summaryId}`
+
+특정 책의 특정 요약을 수정합니다.
+
+==== 요청 필드
+* `title`: 요약 제목 (선택)
+* `content`: 요약 내용 (선택)
+* `chapterInfo`: 챕터 정보 (선택)
+
+==== 응답 필드
+수정된 책 요약 정보
+
+=== 책 요약 삭제
+`DELETE /books/{bookId}/summaries/{summaryId}`
+
+특정 책의 특정 요약을 삭제합니다.
+
+== 관리자 API
+
+=== 관리자 대시보드
+`GET /admin`
+
+관리자 대시보드 페이지를 반환합니다.
+
+=== 사용자 관리
+`GET /admin/users`
+
+사용자 관리 페이지를 반환합니다.
+
+=== 책 관리
+`GET /admin/books`
+
+책 관리 페이지를 반환합니다.
+
+=== 콘텐츠 관리
+`GET /admin/contents`
+
+콘텐츠 관리 페이지를 반환합니다.
+
+=== 통계 대시보드
+`GET /admin/statistics`
+
+통계 대시보드 페이지를 반환합니다.
+
+=== 통계 데이터 API
+
+==== 대시보드 요약 통계
+`GET /admin/stats/summary`
+
+대시보드 요약 통계를 조회합니다.
+
+==== 응답 필드
+* 요약 통계 정보
+
+==== 콘텐츠 생성 통계
+`GET /admin/stats/content`
+
+콘텐츠 생성 통계를 조회합니다.
+
+==== 요청 파라미터
+* `period`: 기간 (daily, weekly, monthly)
+* `startDate`: 시작일 (선택)
+* `endDate`: 종료일 (선택)
+
+==== 응답 필드
+* 콘텐츠 생성 통계 정보
+
+==== 사용자 활동 통계
+`GET /admin/stats/user-activity`
+
+사용자 활동 통계를 조회합니다.
+
+==== 요청 파라미터
+* `period`: 기간 (daily, weekly, monthly)
+* `startDate`: 시작일 (선택)
+* `endDate`: 종료일 (선택)
+
+==== 응답 필드
+* 사용자 활동 통계 정보
+
+==== 시스템 리소스 모니터링
+`GET /admin/stats/system-resources`
+
+시스템 리소스 모니터링 정보를 조회합니다.
+
+==== 응답 필드
+* 시스템 리소스 정보
+
+==== 랭킹 시스템 통계
+`GET /admin/stats/ranking`
+
+랭킹 시스템 통계 정보를 조회합니다.
+
+==== 응답 필드
+* 랭킹 시스템 통계 정보
+
+==== 이상 활동 탐지
+`GET /admin/stats/anomaly-detection`
+
+이상 활동 탐지 정보를 조회합니다.
+
+==== 요청 파라미터
+* `days`: 조회 기간 (일 단위, 기본값: 7)
+
+==== 응답 필드
+* 이상 활동 탐지 정보 목록
+
+=== 관리자 랭킹 API
+
+==== 의심스러운 활동이 있는 사용자 목록 조회
+`GET /admin/ranking/suspicious`
+
+의심스러운 활동이 있는 사용자 목록을 조회합니다.
+
+==== 요청 파라미터
+* `threshold`: 점수 변화 임계값 (기본값: 100)
+
+==== 응답 필드
+의심스러운 활동이 있는 사용자 목록
+
+==== 비정상적인 활동 패턴 조회
+`GET /admin/ranking/abnormal-activities`
+
+특정 기간 내 비정상적인 활동 패턴을 조회합니다.
+
+==== 요청 파라미터
+* `startDate`: 시작 일시 (필수)
+* `endDate`: 종료 일시 (필수)
+* `activityThreshold`: 활동 횟수 임계값 (기본값: 50)
+
+==== 응답 필드
+비정상적인 활동 패턴 목록
+
+==== IP 주소별 활동 내역 조회
+`GET /admin/ranking/activities/ip/{ipAddress}`
+
+특정 IP 주소의 활동 내역을 조회합니다.
+
+==== 요청 파라미터
+* `startDate`: 시작 일시 (필수)
+* `endDate`: 종료 일시 (필수)
+
+==== 응답 필드
+활동 내역 목록
+
+==== 사용자 점수 수동 조정
+`POST /admin/ranking/users/{userId}/adjust-score`
+
+사용자 점수를 수동으로 조정합니다.
+
+==== 요청 필드
+* `scoreAdjustment`: 점수 조정량 (필수)
+* `reason`: 조정 사유 (필수)
+
+==== 응답 필드
+조정된 사용자 점수 정보
+
+==== 사용자 계정 정지
+`POST /admin/ranking/users/{userId}/suspend`
+
+사용자 계정을 정지 처리합니다.
+
+==== 요청 파라미터
+* `reason`: 정지 사유 (필수)
+
+==== 응답 필드
+정지된 사용자 점수 정보
+
+==== 사용자 계정 정지 해제
+`POST /admin/ranking/users/{userId}/unsuspend`
+
+사용자 계정의 정지를 해제합니다.
+
+==== 응답 필드
+정지 해제된 사용자 점수 정보
+
+==== 랭킹 시스템 통계 조회
+`GET /admin/ranking/statistics`
+
+랭킹 시스템 통계 정보를 조회합니다.
+
+==== 요청 파라미터
+* `startDate`: 시작 일시 (필수)
+* `endDate`: 종료 일시 (필수)
+
+==== 응답 필드
+랭킹 시스템 통계 정보
+
+==== 랭킹 시스템 설정 업데이트
+`POST /admin/ranking/settings/{settingKey}`
+
+랭킹 시스템 설정을 업데이트합니다.
+
+==== 요청 파라미터
+* `settingValue`: 설정 값 (필수)
+
+==== 응답 필드
+업데이트 성공 여부
+
+== 데이터 모델
+
+=== User 모델
+* `id`: Long - 사용자 ID
+* `email`: String - 이메일
+* `password`: String - 암호화된 비밀번호
+* `name`: String - 이름
+* `nickname`: String - 닉네임
+* `profileImage`: String - 프로필 이미지 URL
+* `role`: Enum - 사용자 역할 (USER, EDITOR, WRITER, ADMIN)
+* `bio`: String - 자기소개
+* `interests`: List<String> - 관심사
+* `joinDate`: LocalDateTime - 가입일시
+* `lastLoginDate`: LocalDateTime - 마지막 로그인 일시
+* `status`: Enum - 계정 상태 (ACTIVE, SUSPENDED, DELETED)
+
+=== Book 모델
+* `id`: Long - 책 ID
+* `title`: String - 제목
+* `author`: String - 저자
+* `publisher`: String - 출판사
+* `isbn`: String - ISBN
+* `publicationYear`: Integer - 출판연도
+* `description`: String - 설명
+* `genre`: String - 장르
+* `coverImage`: String - 표지 이미지 URL
+* `createdAt`: LocalDateTime - 등록일시
+* `updatedAt`: LocalDateTime - 수정일시
+
+=== Quote 모델
+* `id`: Long - 문구 ID
+* `content`: String - 문구 내용
+* `page`: Integer - 페이지 번호
+* `chapter`: String - 챕터 정보
+* `book`: Book - 연관된 책
+* `user`: User - 작성자
+* `isPublic`: Boolean - 공개 여부
+* `createdAt`: LocalDateTime - 생성일시
+* `updatedAt`: LocalDateTime - 수정일시
+
+=== Content 모델
+* `id`: Long - 콘텐츠 ID
+* `title`: String - 제목
+* `videoUrl`: String - 비디오 URL
+* `thumbnailUrl`: String - 썸네일 URL
+* `quote`: Quote - 원본 문구
+* `user`: User - 생성자
+* `viewCount`: Long - 조회수
+* `likeCount`: Long - 좋아요 수
+* `createdAt`: LocalDateTime - 생성일시
+
+=== Like 모델
+* `id`: Long - 좋아요 ID
+* `user`: User - 좋아요한 사용자
+* `quote`: Quote - 좋아요된 문구 (문구 좋아요인 경우)
+* `content`: Content - 좋아요된 콘텐츠 (콘텐츠 좋아요인 경우)
+* `createdAt`: LocalDateTime - 생성일시
+
+=== Comment 모델
+* `id`: Long - 댓글 ID
+* `content`: String - 댓글 내용
+* `user`: User - 작성자
+* `quote`: Quote - 연관된 문구 (문구 댓글인 경우)
+* `content`: Content - 연관된 콘텐츠 (콘텐츠 댓글인 경우)
+* `parentComment`: Comment - 부모 댓글 (대댓글인 경우)
+* `createdAt`: LocalDateTime - 생성일시
+* `updatedAt`: LocalDateTime - 수정일시
+
+=== Summary 모델
+* `id`: Long - 요약 ID
+* `title`: String - 요약 제목
+* `content`: String - 요약 내용
+* `chapterInfo`: String - 챕터 정보
+* `book`: Book - 연관된 책
+* `user`: User - 작성자
+* `createdAt`: LocalDateTime - 생성일시
+* `updatedAt`: LocalDateTime - 수정일시
+
+=== Ranking 모델
+* `id`: Long - 랭킹 ID
+* `user`: User - 사용자
+* `score`: Integer - 점수
+* `rank`: Integer - 순위
+* `level`: Integer - 레벨
+* `lastActivityAt`: LocalDateTime - 마지막 활동 일시
+* `updatedAt`: LocalDateTime - 갱신 일시
+
+== 표준 응답 형식
+
+모든 API는 다음과 같은 형식으로 응답합니다:
+
+=== 성공 응답
+[source,json]
+----
+{
+  "result": "SUCCESS",
+  "message": "성공 메시지",
+  "data": { ... } // 응답 데이터
+}
+----
+
+=== 오류 응답
 [source,json]
 ----
 {
@@ -473,318 +1257,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 }
 ----
 
-=== 10.2 HTTP 상태 코드
-
-[cols="1,3,3"]
-|===
-|상태 코드 |설명 |예시 상황
-
-|200 OK
-|요청이 성공적으로 처리됨
-|리소스 조회, 업데이트 성공
-
-|201 Created
-|리소스가 성공적으로 생성됨
-|새로운 사용자, 문구, 콘텐츠 생성
-
-|400 Bad Request
-|잘못된 요청 형식이나 유효하지 않은 데이터
-|필수 필드 누락, 유효하지 않은 파라미터
-
-|401 Unauthorized
-|인증이 필요함
-|유효하지 않거나 만료된 토큰
-
-|403 Forbidden
-|인증은 되었으나 리소스에 접근 권한이 없음
-|관리자 기능에 일반 사용자 접근 시도
-
-|404 Not Found
-|요청한 리소스가 존재하지 않음
-|존재하지 않는 ID 조회
-
-|409 Conflict
-|요청이 현재 서버 상태와 충돌
-|이미 존재하는 사용자명 중복 등록
-
-|500 Internal Server Error
-|서버 내부 오류
-|예상치 못한 시스템 오류
-|===
-
-== 11. 데이터 모델
-
-=== 11.1 User (사용자)
-
-[cols="1,1,3"]
-|===
-|필드 |타입 |설명
-
-|id
-|Long
-|사용자 고유 식별자
-
-|username
-|String
-|사용자 아이디 (50자 이내, 고유값)
-
-|password
-|String
-|암호화된 비밀번호 (255자 이내)
-
-|nickname
-|String
-|사용자 별명 (50자 이내)
-
-|email
-|String
-|이메일 주소 (100자 이내, 고유값)
-
-|profileImageUrl
-|String
-|프로필 이미지 경로 (255자 이내)
-
-|role
-|Enum
-|사용자 권한 (USER, ADMIN, EDITOR, WRITER)
-
-|accountStatus
-|String
-|계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
-
-|lastLoginAt
-|LocalDateTime
-|마지막 로그인 시간
-|===
-
-=== 11.2 Quote (문구)
-
-[cols="1,1,3"]
-|===
-|필드 |타입 |설명
-
-|id
-|Long
-|문구 고유 식별자
-
-|content
-|String
-|문구 내용 (1000자 이내)
-
-|page
-|Integer
-|페이지 번호
-
-|memo
-|String
-|사용자 메모 (500자 이내)
-
-|likeCount
-|Integer
-|좋아요 수
-
-|saveCount
-|Integer
-|저장 수
-
-|userId
-|Long
-|문구 등록자 ID
-
-|bookId
-|Long
-|문구가 속한 책 ID
-|===
-
-=== 11.3 ShortFormContent (숏폼 콘텐츠)
-
-[cols="1,1,3"]
-|===
-|필드 |타입 |설명
-
-|id
-|Long
-|콘텐츠 고유 식별자
-
-|title
-|String
-|콘텐츠 제목 (100자 이내)
-
-|description
-|String
-|콘텐츠 설명 (500자 이내)
-
-|status
-|Enum
-|콘텐츠 상태 (PROCESSING, COMPLETED, FAILED, PUBLISHED)
-
-|contentType
-|Enum
-|콘텐츠 유형 (VIDEO, AUDIO, IMAGE, TEXT, MIXED)
-
-|viewCount
-|Integer
-|조회수
-
-|likeCount
-|Integer
-|좋아요 수
-
-|shareCount
-|Integer
-|공유 수
-
-|commentCount
-|Integer
-|댓글 수
-
-|duration
-|Integer
-|콘텐츠 길이(초)
-
-|subtitles
-|String
-|자막 내용
-
-|videoUrl
-|String
-|비디오 URL
-
-|thumbnailUrl
-|String
-|썸네일 URL
-
-|audioUrl
-|String
-|오디오 URL
-
-|bookId
-|Long
-|연관된 책 ID
-
-|quoteId
-|Long
-|연관된 문구 ID
-|===
-
-== 12. 버전 관리
-
-API 버전은 URI 경로에 포함되지 않습니다.
-대신 Accept 헤더를 사용하여 API 버전을 지정합니다.
-
-[source,http]
-----
-Accept: application/vnd.stoblyx.v1+json
-----
-
-== 13. 제한 사항
-
-=== 13.1 요청 제한
-
-* 일반 사용자: 분당 60회 요청
-* 유료 사용자: 분당 120회 요청
-* 관리자: 제한 없음
-
-=== 13.2 콘텐츠 생성 제한
-
-[cols="1,1,3"]
-|===
-|랭크 |일일 콘텐츠 생성 제한 |설명
-
-|BRONZE
-|3회
-|기본 기능 사용 가능
-
-|SILVER
-|5회
-|일일 콘텐츠 생성 5회, 프리미엄 BGM
-
-|GOLD
-|10회
-|일일 콘텐츠 생성 10회, 고급 템플릿
-
-|PLATINUM
-|20회
-|AI 추천 영상 제작 가능, 고급 템플릿
-
-|DIAMOND
-|무제한
-|모든 혜택 + 콘텐츠 우선 노출
-|===
-
-== 14. 서비스 수준 계약 (SLA)
-
-* 서비스 가용성: 99.9%
-* 평균 응답 시간: 500ms 이하
-* 콘텐츠 생성 처리 시간: 평균 45초
-
-== 15. 부록
-
-=== 15.1 웹훅 (Webhook) 사용
-
-숏폼 콘텐츠 생성이 완료되면 웹훅을 통해 알림을 받을 수 있습니다.
-
-[source,http]
-----
-POST /api/webhooks/register HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-Content-Type: application/json
-
-{
-  "url": "https://your-service.com/callbacks/stoblyx",
-  "events": ["content.created", "content.failed"],
-  "secret": "your-secret-key"
-}
-----
-
-=== 15.2 샘플 코드
-
-.Java를 사용한 인증 예제
-[source,java]
-----
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
-
-public class StobyxApiClient {
-    private final String baseUrl = "https://api.stoblyx.com";
-    private String accessToken;
-    
-    public void login(String username, String password) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-        
-        String body = String.format("{\"username\":\"%s\",\"password\":\"%s\"}", username, password);
-        HttpEntity<String> entity = new HttpEntity<>(body, headers);
-        
-        ResponseEntity<LoginResponse> response = restTemplate.exchange(
-            baseUrl + "/api/auth/login",
-            HttpMethod.POST,
-            entity,
-            LoginResponse.class
-        );
-        
-        this.accessToken = response.getBody().getData().getAccessToken();
-    }
-    
-    public QuoteResponse getQuote(Long quoteId) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        
-        ResponseEntity<QuoteResponse> response = restTemplate.exchange(
-            baseUrl + "/api/quotes/" + quoteId,
-            HttpMethod.GET,
-            entity,
-            QuoteResponse.class
-        );
-        
-        return response.getBody();
-    }
-}
-----
+== 오류 코드
+
+=== 4xx 오류
+* 400 Bad Request: 잘못된 요청
+* 401 Unauthorized: 인증 실패
+* 403 Forbidden: 권한 없음
+* 404 Not Found: 리소스 없음
+* 409 Conflict: 리소스 충돌
+
+=== 5xx 오류
+* 500 Internal Server Error: 서버 내부 오류
+* 503 Service Unavailable: 서비스 일시 중단
