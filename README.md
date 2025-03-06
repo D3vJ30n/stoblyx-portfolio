@@ -309,7 +309,7 @@ round(currentScore *(1-decayFactor));
 
 - **BaseEntity**
     - BaseTimeEntity을 확장한 공통 기본 클래스
-    - 필드:
+    - 필드
         - isDeleted: Boolean - 삭제 여부, @Column(nullable = false, default = false)
     - 메서드: delete(), restore(), isDeleted(), updateModifiedAt()
 
