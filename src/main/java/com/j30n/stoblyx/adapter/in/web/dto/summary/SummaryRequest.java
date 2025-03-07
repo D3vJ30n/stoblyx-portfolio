@@ -18,7 +18,7 @@ public record SummaryRequest(
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("요약 내용은 필수입니다");
         }
-        if (content != null && content.length() > 2000) {
+        if (content.length() > 2000) {
             throw new IllegalArgumentException("요약 내용은 2000자를 초과할 수 없습니다");
         }
         if (chapter != null && chapter.length() > 100) {

@@ -42,7 +42,8 @@ class AIIntegrationTest {
 
     @Test
     @DisplayName("동기부여 책 멀티미디어 통합 생성 테스트")
-    void generateMotivationBookMultimediaIntegrationTest() throws ExecutionException, InterruptedException, TimeoutException {
+    void generateMotivationBookMultimediaIntegrationTest()
+            throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/motivation-image.jpg");
         when(pexelsClient.searchVideo(anyString())).thenReturn("https://example.com/motivation-video.mp4");
@@ -50,7 +51,8 @@ class AIIntegrationTest {
         when(bgmClient.selectBGMByText(anyString())).thenReturn("https://example.com/motivation-bgm.mp3");
 
         // When
-        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE, MOTIVATION_DESCRIPTION);
+        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE,
+                MOTIVATION_DESCRIPTION);
 
         // Then
         BookMediaResponse result = future.get(5, TimeUnit.SECONDS);
@@ -64,7 +66,8 @@ class AIIntegrationTest {
 
     @Test
     @DisplayName("철학 책 멀티미디어 통합 생성 테스트")
-    void generatePhilosophyBookMultimediaIntegrationTest() throws ExecutionException, InterruptedException, TimeoutException {
+    void generatePhilosophyBookMultimediaIntegrationTest()
+            throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/philosophy-image.jpg");
         when(pexelsClient.searchVideo(anyString())).thenReturn("https://example.com/philosophy-video.mp4");
@@ -72,7 +75,8 @@ class AIIntegrationTest {
         when(bgmClient.selectBGMByText(anyString())).thenReturn("https://example.com/philosophy-bgm.mp3");
 
         // When
-        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(PHILOSOPHY_TITLE, PHILOSOPHY_DESCRIPTION);
+        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(PHILOSOPHY_TITLE,
+                PHILOSOPHY_DESCRIPTION);
 
         // Then
         BookMediaResponse result = future.get(5, TimeUnit.SECONDS);
@@ -97,7 +101,8 @@ class AIIntegrationTest {
         long startTime = System.currentTimeMillis();
 
         // When
-        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE, MOTIVATION_DESCRIPTION);
+        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE,
+                MOTIVATION_DESCRIPTION);
 
         // Then
         BookMediaResponse result = future.get(5, TimeUnit.SECONDS);
@@ -129,7 +134,8 @@ class AIIntegrationTest {
         long startTime = System.currentTimeMillis();
 
         // When
-        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(PHILOSOPHY_TITLE, PHILOSOPHY_DESCRIPTION);
+        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(PHILOSOPHY_TITLE,
+                PHILOSOPHY_DESCRIPTION);
 
         // Then
         BookMediaResponse result = future.get(5, TimeUnit.SECONDS);
@@ -173,9 +179,11 @@ class AIIntegrationTest {
         assertThat(result.getBgmUrl()).isEqualTo("https://example.com/korean-bgm.mp3");
     }
 
+    // 기존 테스트는 그대로 유지
     @Test
     @DisplayName("멀티미디어 생성 중 일부 실패 시 폴백 리소스 반환 테스트")
-    void generateMultimedia_PartialFailure_ReturnsFallbacks() throws ExecutionException, InterruptedException, TimeoutException {
+    void generateMultimedia_PartialFailure_ReturnsFallbacks()
+            throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/image.jpg");
         when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("비디오 검색 실패"));
@@ -183,7 +191,8 @@ class AIIntegrationTest {
         when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("BGM 선택 실패"));
 
         // When
-        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE, MOTIVATION_DESCRIPTION);
+        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE,
+                MOTIVATION_DESCRIPTION);
 
         // Then
         BookMediaResponse result = future.get(5, TimeUnit.SECONDS);
@@ -194,4 +203,29 @@ class AIIntegrationTest {
         assertThat(result.getAudioUrl()).isEqualTo("https://example.com/speech.mp3");
         assertThat(result.getBgmUrl()).isEqualTo(FALLBACK_BGM);
     }
-} 
+
+    // 모든 API가 실패하는 테스트 추가
+    @Test
+    @DisplayName("모든 멀티미디어 생성 실패 시 모든 폴백 리소스 반환 테스트")
+    void generateMultimedia_AllFailure_ReturnsAllFallbacks()
+            throws ExecutionException, InterruptedException, TimeoutException {
+        // Given
+        when(pexelsClient.searchImage(anyString())).thenThrow(new RuntimeException("이미지 검색 실패"));
+        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("비디오 검색 실패"));
+        when(ttsClient.generateSpeech(anyString())).thenThrow(new RuntimeException("음성 생성 실패"));
+        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("BGM 선택 실패"));
+
+        // When
+        CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE,
+                MOTIVATION_DESCRIPTION);
+
+        // Then
+        BookMediaResponse result = future.get(5, TimeUnit.SECONDS);
+
+        assertNotNull(result);
+        assertThat(result.getImageUrl()).isEqualTo(FALLBACK_IMAGE);
+        assertThat(result.getVideoUrl()).isEqualTo(FALLBACK_VIDEO);
+        assertThat(result.getAudioUrl()).isEqualTo(FALLBACK_AUDIO);
+        assertThat(result.getBgmUrl()).isEqualTo(FALLBACK_BGM);
+    }
+}

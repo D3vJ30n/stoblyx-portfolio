@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/books/{bookId}/summaries")
 @RequiredArgsConstructor
 public class SummaryController {
+    private static final String SUCCESS = "SUCCESS";
     private final SummaryUseCase summaryUseCase;
 
     /**
@@ -34,7 +35,7 @@ public class SummaryController {
         @Valid @RequestBody SummaryRequest request
     ) {
         return ResponseEntity.ok(
-            new ApiResponse<>("SUCCESS", "요약이 생성되었습니다.",
+            new ApiResponse<>(SUCCESS, "요약이 생성되었습니다.",
                 summaryUseCase.createSummary(bookId, request))
         );
     }
@@ -52,7 +53,7 @@ public class SummaryController {
         @PathVariable Long summaryId
     ) {
         return ResponseEntity.ok(
-            new ApiResponse<>("SUCCESS", "요약 조회에 성공했습니다.",
+            new ApiResponse<>(SUCCESS, "요약 조회에 성공했습니다.",
                 summaryUseCase.getSummary(summaryId))
         );
     }
@@ -70,7 +71,7 @@ public class SummaryController {
         @PageableDefault(size = 20) Pageable pageable
     ) {
         return ResponseEntity.ok(
-            new ApiResponse<>("SUCCESS", "요약 목록 조회에 성공했습니다.",
+            new ApiResponse<>(SUCCESS, "요약 목록 조회에 성공했습니다.",
                 summaryUseCase.getSummaries(bookId, pageable))
         );
     }
@@ -90,7 +91,7 @@ public class SummaryController {
         @Valid @RequestBody SummaryRequest request
     ) {
         return ResponseEntity.ok(
-            new ApiResponse<>("SUCCESS", "요약이 수정되었습니다.",
+            new ApiResponse<>(SUCCESS, "요약이 수정되었습니다.",
                 summaryUseCase.updateSummary(summaryId, request))
         );
     }
@@ -109,7 +110,7 @@ public class SummaryController {
     ) {
         summaryUseCase.deleteSummary(summaryId);
         return ResponseEntity.ok(
-            new ApiResponse<>("SUCCESS", "요약이 삭제되었습니다.", null)
+            new ApiResponse<>(SUCCESS, "요약이 삭제되었습니다.", null)
         );
     }
 }

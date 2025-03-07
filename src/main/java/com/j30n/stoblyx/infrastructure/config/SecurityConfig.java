@@ -4,6 +4,7 @@ import com.j30n.stoblyx.domain.repository.UserRepository;
 import com.j30n.stoblyx.infrastructure.security.CustomUserDetailsService;
 import com.j30n.stoblyx.infrastructure.security.JwtAuthenticationFilter;
 import com.j30n.stoblyx.infrastructure.security.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -23,7 +24,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import lombok.RequiredArgsConstructor;
 
 import static org.springframework.http.HttpMethod.*;
 
@@ -90,13 +90,8 @@ public class SecurityConfig {
                     "/auth/**",
                     "/actuator/**",
                     "/error",
-                    "/favicon.ico",
-                    "/css/**",
-                    "/js/**",
                     "/images/**",
                     "/h2-console/**",
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
                     "/books/search",
                     "/books/{id}"
                 ).permitAll()

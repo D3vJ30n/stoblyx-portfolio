@@ -7,7 +7,6 @@ import com.j30n.stoblyx.application.port.in.recommendation.RecommendationUseCase
 import com.j30n.stoblyx.application.port.out.recommendation.RecommendationPort;
 import com.j30n.stoblyx.domain.model.SearchTermProfile;
 import com.j30n.stoblyx.domain.model.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -15,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -24,10 +24,16 @@ import java.util.stream.Collectors;
  * 검색어 기반 사용자 추천 시스템 서비스
  */
 @Service
-@RequiredArgsConstructor
 public class RecommendationService implements RecommendationUseCase {
 
     private final RecommendationPort recommendationPort;
+    private final RecommendationService self;
+    
+    public RecommendationService(RecommendationPort recommendationPort, 
+                                @Lazy RecommendationService self) {
+        this.recommendationPort = recommendationPort;
+        this.self = self;
+    }
     
     @Override
     @Transactional(readOnly = true)
@@ -52,15 +58,16 @@ public class RecommendationService implements RecommendationUseCase {
         
         // 추천 결과 저장
         int updatedCount = 0;
-        for (Long userId : similarityMatrix.keySet()) {
-            Map<Long, Double> similarities = similarityMatrix.get(userId);
+        for (Map.Entry<Long, Map<Long, Double>> entry : similarityMatrix.entrySet()) {
+            Long userId = entry.getKey();
+            Map<Long, Double> similarities = entry.getValue();
             
             // 유사도 임계값 이상인 사용자만 추천
             double threshold = request.similarityThreshold();
             
-            for (Map.Entry<Long, Double> entry : similarities.entrySet()) {
-                if (entry.getValue() >= threshold && !Objects.equals(userId, entry.getKey())) {
-                    recommendationPort.saveUserSimilarity(userId, entry.getKey(), entry.getValue());
+            for (Map.Entry<Long, Double> similarityEntry : similarities.entrySet()) {
+                if (similarityEntry.getValue() >= threshold && !Objects.equals(userId, similarityEntry.getKey())) {
+                    recommendationPort.saveUserSimilarity(userId, similarityEntry.getKey(), similarityEntry.getValue());
                     updatedCount++;
                 }
             }
@@ -94,13 +101,10 @@ public class RecommendationService implements RecommendationUseCase {
         
         // 각 사용자와의 유사도 계산 및 추천 저장
         for (User otherUser : allUsers) {
-            if (Objects.equals(otherUser.getId(), userId)) {
-                continue;
-            }
-            
+            // 자기 자신이거나 검색어가 없는 사용자는 건너뜀
             List<SearchTermProfile> otherUserTerms = recommendationPort.getUserSearchTerms(otherUser.getId());
             
-            if (otherUserTerms.isEmpty()) {
+            if (Objects.equals(otherUser.getId(), userId) || otherUserTerms.isEmpty()) {
                 continue;
             }
             
@@ -159,7 +163,7 @@ public class RecommendationService implements RecommendationUseCase {
      */
     @Scheduled(fixedRate = 3600000) // 1시간마다 실행
     public void scheduledPopularTermsUpdate() {
-        updatePopularTerms();
+        self.updatePopularTerms();
     }
     
     /**
@@ -168,7 +172,7 @@ public class RecommendationService implements RecommendationUseCase {
     @Scheduled(cron = "0 0 3 * * ?") // 매일 새벽 3시에 실행
     public void scheduledRecommendationsUpdate() {
         RecommendationRequest request = new RecommendationRequest(0.3, 10, false);
-        runCollaborativeFiltering(request);
+        self.runCollaborativeFiltering(request);
     }
     
     /**
@@ -229,9 +233,11 @@ public class RecommendationService implements RecommendationUseCase {
         
         // 두 벡터의 내적 계산
         double dotProduct = 0.0;
-        for (String term : vector1.keySet()) {
+        for (Map.Entry<String, Double> entry : vector1.entrySet()) {
+            String term = entry.getKey();
+            Double value1 = entry.getValue();
             if (vector2.containsKey(term)) {
-                dotProduct += vector1.get(term) * vector2.get(term);
+                dotProduct += value1 * vector2.get(term);
             }
         }
         

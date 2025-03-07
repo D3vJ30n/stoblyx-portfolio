@@ -255,4 +255,34 @@ class AIAdapterTest {
         assertNotNull(result);
         assertThat(result).isEqualTo(FALLBACK_VIDEO);
     }
+
+    @Test
+@DisplayName("오디오 생성 실패 시 폴백 오디오 반환 테스트")
+void generateSpeech_Failure_ReturnsFallback() {
+    // Given
+    String text = MOTIVATION_DESCRIPTION;
+    when(ttsClient.generateSpeech(text)).thenThrow(new RuntimeException("오디오 생성 실패"));
+    
+    // When
+    String result = aiAdapter.generateSpeech(text);
+    
+    // Then
+    assertNotNull(result);
+    assertThat(result).isEqualTo(FALLBACK_AUDIO);
+}
+
+@Test
+@DisplayName("BGM 선택 실패 시 폴백 BGM 반환 테스트")
+void selectBGM_Failure_ReturnsFallback() {
+    // Given
+        String text = PHILOSOPHY_DESCRIPTION;
+        when(bgmClient.selectBGMByText(text)).thenThrow(new RuntimeException("BGM 선택 실패"));
+
+        // When
+        String result = aiAdapter.selectBGMByText(text);
+
+        // Then
+        assertNotNull(result);
+        assertThat(result).isEqualTo(FALLBACK_BGM);
+    }
 } 
