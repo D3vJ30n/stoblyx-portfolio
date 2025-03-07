@@ -93,13 +93,15 @@ public class SecurityConfig {
                     "/images/**",
                     "/h2-console/**",
                     "/books/search",
-                    "/books/{id}"
+                    "/books/{id}",
+                    "/",
+                    "/admin/**"
                 ).permitAll()
                 .requestMatchers(GET, "/books").permitAll()
                 .requestMatchers(POST, "/books").hasRole(ROLE_ADMIN)
                 .requestMatchers(PUT, "/books/**").hasRole(ROLE_ADMIN)
                 .requestMatchers(DELETE, "/books/**").hasRole(ROLE_ADMIN)
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .authenticationProvider(authenticationProvider)
             .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)

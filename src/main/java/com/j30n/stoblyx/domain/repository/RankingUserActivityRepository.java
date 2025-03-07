@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 사용자 활동 정보 레포지토리
@@ -112,4 +113,28 @@ public interface RankingUserActivityRepository extends JpaRepository<RankingUser
            "HAVING SUM(a.scoreChange) >= :threshold " +
            "ORDER BY totalScoreChange DESC")
     List<Object[]> findSuspiciousActivities(@Param("startDate") LocalDateTime startDate, @Param("threshold") int threshold);
+
+    /**
+     * 특정 기간 내 시간대별 활동 수 조회
+     * 
+     * @param startDate 시작 일시
+     * @param endDate 종료 일시
+     * @return 시간대별 활동 수 목록 [hour, count]
+     */
+    @Query("SELECT HOUR(a.createdAt) as hour, COUNT(a) as count " +
+           "FROM RankingUserActivity a " +
+           "WHERE a.createdAt BETWEEN :startDate AND :endDate " +
+           "GROUP BY HOUR(a.createdAt)")
+    List<Object[]> countActivitiesByHourOfDay(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * 특정 사용자의 마지막 IP 주소 조회
+     * 
+     * @param userId 사용자 ID
+     * @return 마지막 IP 주소
+     */
+    @Query("SELECT a.ipAddress FROM RankingUserActivity a " +
+           "WHERE a.userId = :userId " +
+           "ORDER BY a.createdAt DESC")
+    Optional<String> findLastIpAddressByUserId(@Param("userId") Long userId);
 } 

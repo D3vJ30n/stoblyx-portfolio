@@ -36,7 +36,7 @@ public class AuthController {
      * @return 회원가입 결과
      */
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<?>> signUp(@Valid @RequestBody SignUpRequest request) {
+    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
         log.info("회원가입 요청: {}", request.email());
         authService.signUp(request);
         return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
@@ -77,7 +77,7 @@ public class AuthController {
      * @return 로그아웃 처리 결과
      */
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<?>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
         String accessToken = tokenExtractor.extractToken(bearerToken);
         authService.logout(accessToken);
         return ResponseEntity.ok(ApiResponse.success("로그아웃이 완료되었습니다."));

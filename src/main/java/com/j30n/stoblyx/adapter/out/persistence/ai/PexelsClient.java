@@ -48,12 +48,12 @@ public class PexelsClient {
     
     // API 키를 application.properties에서 로드
     public PexelsClient(
-            @Value("${pexels.api.key:}") String apiKey,  // 빈 기본값 사용
+            @Value("${PEXELS_API_KEY:}") String apiKey,  // 빈 기본값 사용
             RestTemplate restTemplate,
             Random random,
             ObjectMapper objectMapper) {
-        // 빈 값이면 DUMMY_API_KEY 사용
-        this.apiKey = (apiKey == null || apiKey.isEmpty()) ? DUMMY_API_KEY : apiKey;
+        // 빈 값이면 PexelsConfig의 하드코딩된 API 키 사용
+        this.apiKey = (apiKey == null || apiKey.isEmpty()) ? com.j30n.stoblyx.config.PexelsConfig.API_KEY : apiKey;
         this.restTemplate = restTemplate;
         this.random = random;
         this.objectMapper = objectMapper;

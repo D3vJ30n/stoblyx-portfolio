@@ -11,7 +11,7 @@ public class PexelsConfig {
     public static final String BASE_URL = "https://api.pexels.com/v1";
     
     @Bean
-    public RestTemplate restTemplate() {
+    public RestTemplate pexelsRestTemplate() {
         return new RestTemplate();
     }
 }

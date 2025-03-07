@@ -101,10 +101,10 @@ Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 
 
 === 관리자 페이지 API
 * `GET /admin` - 관리자 대시보드
-* `GET /admin/users` - 사용자 관리
-* `GET /admin/books` - 책 관리
-* `GET /admin/contents` - 콘텐츠 관리
-* `GET /admin/statistics` - 통계 대시보드
+* `GET /admin/users-view` - 사용자 관리
+* `GET /admin/books-view` - 책 관리
+* `GET /admin/contents-view` - 콘텐츠 관리
+* `GET /admin/statistics-view` - 통계 대시보드
 * `GET /admin/stats/summary` - 대시보드 요약 통계
 * `GET /admin/stats/content` - 콘텐츠 생성 통계
 * `GET /admin/stats/user-activity` - 사용자 활동 통계
@@ -972,22 +972,22 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다. 토큰은 `Authorizat
 관리자 대시보드 페이지를 반환합니다.
 
 === 사용자 관리
-`GET /admin/users`
+`GET /admin/users-view`
 
 사용자 관리 페이지를 반환합니다.
 
 === 책 관리
-`GET /admin/books`
+`GET /admin/books-view`
 
 책 관리 페이지를 반환합니다.
 
 === 콘텐츠 관리
-`GET /admin/contents`
+`GET /admin/contents-view`
 
 콘텐츠 관리 페이지를 반환합니다.
 
 === 통계 대시보드
-`GET /admin/statistics`
+`GET /admin/statistics-view`
 
 통계 대시보드 페이지를 반환합니다.
 

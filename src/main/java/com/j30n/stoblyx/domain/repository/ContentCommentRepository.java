@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,4 +56,12 @@ public interface ContentCommentRepository extends JpaRepository<ContentComment, 
      */
     @Query("SELECT COUNT(c) FROM ContentComment c WHERE c.content.id = :contentId AND c.isDeleted = false")
     long countByContentId(@Param("contentId") Long contentId);
+
+    List<ContentComment> findByContentId(Long contentId);
+
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    long countByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+
+    long countByUserId(Long userId);
 } 

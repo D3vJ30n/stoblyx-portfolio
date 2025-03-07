@@ -57,5 +57,6 @@ public class UserActivityStatsResponse {
         private final long commentCount;
         private final long loginCount;
         private final long totalScore;
+        private final long activityScore;
     }
 }

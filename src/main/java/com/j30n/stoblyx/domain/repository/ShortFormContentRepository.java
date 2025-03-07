@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -51,12 +52,6 @@ public interface ShortFormContentRepository extends JpaRepository<ShortFormConte
     @Query("SELECT s FROM ShortFormContent s " +
            "WHERE s.deleted = false " +
            "AND s.status = 'PUBLISHED' " +
-           "AND s.book.id = :bookId")
-    Page<ShortFormContent> findByBookId(@Param("bookId") Long bookId, Pageable pageable);
-
-    @Query("SELECT s FROM ShortFormContent s " +
-           "WHERE s.deleted = false " +
-           "AND s.status = 'PUBLISHED' " +
            "AND (s.book.title LIKE %:keyword% " +
            "OR s.quote.content LIKE %:keyword% " +
            "OR s.subtitles LIKE %:keyword%)")
@@ -87,4 +82,26 @@ public interface ShortFormContentRepository extends JpaRepository<ShortFormConte
      * 특정 유형의 콘텐츠 수를 조회합니다.
      */
     long countByContentType(ContentType contentType);
+
+    // 특정 기간 내 생성된 콘텐츠 조회
+    List<ShortFormContent> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    
+    // 특정 기간 내 생성된 콘텐츠 수 조회
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    
+    // 특정 사용자의 특정 기간 내 생성된 콘텐츠 수 조회
+    @Query("SELECT COUNT(c) FROM ShortFormContent c WHERE c.quote.user.id = :userId AND c.createdAt BETWEEN :start AND :end")
+    long countByUserIdAndCreatedAtBetween(@Param("userId") Long userId, @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    
+    /**
+     * 특정 사용자가 작성한 콘텐츠 수를 조회합니다.
+     * ShortFormContent 엔티티에 userId 필드가 없으므로 JPQL 쿼리로 구현합니다.
+     */
+    @Query("SELECT COUNT(c) FROM ShortFormContent c WHERE c.quote.user.id = :userId")
+    long countByUserId(@Param("userId") Long userId);
+    
+    // 특정 기간 내 일별 콘텐츠 생성 통계 조회
+    @Query("SELECT FUNCTION('DATE', c.createdAt) as date, COUNT(c) as count FROM ShortFormContent c " +
+           "WHERE c.createdAt BETWEEN :start AND :end GROUP BY FUNCTION('DATE', c.createdAt)")
+    List<Object[]> countContentsByDateBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 }
