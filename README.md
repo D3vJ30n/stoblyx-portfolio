@@ -38,7 +38,6 @@
 #### AI Integration
 
 ![KoBART](https://img.shields.io/badge/KoBART-자연어_처리-FF6F00?style=flat-square&logo=tensorflow)
-![KoGPT](https://img.shields.io/badge/KoGPT-자연어_생성-FF6F00?style=flat-square&logo=tensorflow)
 ![pyttsx3](https://img.shields.io/badge/pyttsx3-감사-3776AB?style=flat-square&logo=python)
 ![Pexels API](https://img.shields.io/badge/Pexels_API-이미지_검색-05A081?style=flat-square&logo=pexels)
 ![감정 분석](https://img.shields.io/badge/감정_분석-자체_개발_알고리즘-1DB954?style=flat-square&logo=spotify)
@@ -147,7 +146,7 @@ round(currentScore *(1-decayFactor));
 ### 시스템 구성 및 계층 설명
 
 <div align="center">
-  <img src="src/docs/diagrams/architecture.png" alt="시스템 아키텍처" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/architecture_V2.png" alt="시스템 아키텍처" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 #### 설명
@@ -160,7 +159,7 @@ round(currentScore *(1-decayFactor));
 ### 시스템 흐름도
 
 <div align="center">
-  <img src="src/docs/diagrams/flowchart .png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/flowchart_V2.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 ### AI 서비스 통합 아키텍처
@@ -236,7 +235,7 @@ round(currentScore *(1-decayFactor));
 - **텍스트 감정 분석 알고리즘:** 키워드 기반 감정 분석 시스템 구현
 - **4가지 감정 분류:** happy, sad, calm, neutral 감정 인식 및 점수화
 - **감정별 BGM 매핑:** 각 감정에 적합한 BGM 자동 선택
-- **한국어/영어 키워드 지원:** 다국어 감정 키워드 인식 시스템
+- **한국어/영어 키워드 지원:** 다국어 감정 키워드 인식 시스템(향후 구현 예정)
 
 #### 3. 숏폼 콘텐츠 생성 파이프라인
 
@@ -278,8 +277,21 @@ round(currentScore *(1-decayFactor));
 - **캐시 관리:** Redis 캐시 수동 갱신 및 TTL 설정 기능
 - **랭킹 시스템 설정:** 점수 계산 알고리즘 파라미터 조정 기능
 - **게이미피케이션 설정:** 랭크별 혜택 및 조건 설정 기능
+- **설정 일괄 관리:** 다중 설정 일괄 업데이트 기능
+- **설정 내보내기/가져오기:** 시스템 설정 백업 및 복원 기능
+- **카테고리별 설정 관리:** 설정을 카테고리별로 그룹화하여 관리
 
-#### 5. 로그 모니터링 (구현 예정)
+#### 5. 랭킹 사용자 점수 관리
+
+- **사용자 점수 조회:** 개별 및 전체 사용자 점수 조회 기능
+- **상위 랭킹 사용자 조회:** 최고 점수 사용자 목록 조회 기능
+- **최근 점수 변경 내역 조회:** 사용자 점수 변동 이력 추적 기능
+- **점수 수동 업데이트:** 관리자 권한으로 사용자 점수 조정 기능
+- **점수 재계산:** 전체 사용자 점수 일괄 재계산 기능
+- **의심 활동 모니터링:** 비정상적인 점수 증가 패턴 감지 기능
+- **계정 정지/해제 관리:** 부정 행위 사용자 계정 관리 기능
+
+#### 6. 로그 모니터링 (향후 구현 예정)
 
 - **오류 로그 실시간 조회:** 시스템 오류 실시간 모니터링
 - **사용자 행동 로그 분석:** 사용자 활동 패턴 분석 도구
@@ -294,7 +306,7 @@ round(currentScore *(1-decayFactor));
 ### 주요 테이블 및 관계
 
 <div align="center">
-  <img src="src/docs/diagrams/erd_V2.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/erd_V3.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 ### 공통 기본 클래스
@@ -565,7 +577,10 @@ round(currentScore *(1-decayFactor));
     - suspendedAt: LocalDateTime - 정지 일시
     - suspendedBy: Long - 정지 처리한 관리자 ID
     - reportCount: Integer - 신고 횟수, default = 0
+    - createdAt: LocalDateTime - 생성 일시
+    - updatedAt: LocalDateTime - 수정 일시
   - 상속: BaseEntity
+  - 메서드: updateScore(), suspendAccount(), unsuspendAccount(), markAsSuspicious(), calculateRankType()
 
 - **RankingUserActivity (사용자 랭킹 활동)**
 
@@ -609,6 +624,38 @@ round(currentScore *(1-decayFactor));
     - rankType: RankType - 랭크 타입 (ENUM)
     - lastUpdatedAt: LocalDateTime - 마지막 업데이트 시간
   - 상속: BaseEntity
+
+- **SystemSetting (시스템 설정)**
+
+  - 필드
+    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - key: String(100) - 설정 키, @Column(unique = true)
+    - value: String(1000) - 설정 값
+    - description: String(500) - 설정 설명
+    - category: SettingCategory - 설정 카테고리 (ENUM)
+    - encrypted: Boolean - 암호화 여부, default = false
+    - systemManaged: Boolean - 시스템 관리 여부, default = false
+    - defaultValue: String(1000) - 기본값
+    - createdAt: LocalDateTime - 생성 일시
+    - updatedAt: LocalDateTime - 수정 일시
+    - createdBy: Long - 생성자 ID
+    - updatedBy: Long - 수정자 ID
+  - 상속: BaseTimeEntity
+  - 메서드: resetToDefault(), isEncrypted(), isSystemManaged()
+
+- **SettingCategory (설정 카테고리 - ENUM)**
+
+  - GENERAL: 일반 설정
+  - SYSTEM: 시스템 설정
+  - SECURITY: 보안 설정
+  - USER: 사용자 설정
+  - CONTENT: 콘텐츠 설정
+  - RANKING: 랭킹 설정
+  - CACHE: 캐시 설정
+  - GAMIFICATION: 게이미피케이션 설정
+  - NOTIFICATION: 알림 설정
+  - STATISTICS: 통계 설정
+  - ETC: 기타 설정
 
 - **RankingBadge (랭킹 뱃지)**
 
@@ -903,6 +950,48 @@ round(currentScore *(1-decayFactor));
 - 보상 자격 확인 및 보상 배포 프로세스 시작
 - 랭크 변경 이벤트 로깅
 
+### 시스템 설정 관리 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/system_settings_management.png" alt="시스템 설정 관리 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 관리자의 시스템 설정 요청 처리
+- 설정 유효성 검증 및 카테고리 분류
+- 설정 변경 이력 기록 및 추적
+- 변경된 설정의 애플리케이션 적용
+- 설정 백업 및 복원 메커니즘
+
+### 랭킹 사용자 점수 관리 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/ranking_score_management.png" alt="랭킹 사용자 점수 관리 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 사용자 활동 기반 점수 계산 (EWMA 알고리즘)
+- 점수에 따른 랭크 타입 결정 및 변경
+- 비활동 사용자 점수 자동 감소
+- 의심스러운 활동 감지 및 플래그 처리
+- 관리자의 수동 점수 조정 및 계정 정지 관리
+
+### 랭킹 파라미터 설정 프로세스
+
+<div align="center">
+  <img src="src/docs/diagrams/ranking_parameter_setting.png" alt="랭킹 파라미터 설정 프로세스" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 주요 프로세스
+
+- 관리자의 랭킹 파라미터 설정 요청
+- 파라미터 유효성 검증 및 적용
+- 변경된 파라미터에 따른 점수 재계산
+- 랭크 분포 통계 업데이트
+- 파라미터 변경 이력 기록 및 모니터링
+
 ---
 
 ## 8. API 문서
@@ -921,6 +1010,105 @@ round(currentScore *(1-decayFactor));
   "timestamp": "2025-02-23T10:15:30Z"
 }
 ```
+
+### 주요 API 엔드포인트
+
+#### 인증 API
+
+- `POST /auth/signup` - 회원가입
+- `POST /auth/login` - 로그인
+- `POST /auth/refresh` - 토큰 갱신
+- `POST /auth/logout` - 로그아웃
+
+#### 사용자 API
+
+- `GET /users/me` - 현재 사용자 정보 조회
+- `PUT /users/me` - 사용자 정보 수정
+- `DELETE /users/me` - 회원 탈퇴
+- `POST /users/me/profile-image` - 프로필 이미지 업로드
+- `GET /users/me/interests` - 사용자 관심사 조회
+- `PUT /users/me/interests` - 사용자 관심사 수정
+
+#### 책 API
+
+- `GET /books` - 책 목록 조회
+- `GET /books/{id}` - 책 상세 조회
+- `POST /books` - 책 등록 (관리자)
+- `PUT /books/{id}` - 책 정보 수정 (관리자)
+- `DELETE /books/{id}` - 책 삭제 (관리자)
+
+#### 문구 API
+
+- `POST /quotes` - 문구 생성
+- `GET /quotes/{id}` - 문구 조회
+- `GET /quotes` - 문구 목록 조회
+- `PUT /quotes/{id}` - 문구 수정
+- `DELETE /quotes/{id}` - 문구 삭제
+- `POST /quotes/{quoteId}/save` - 문구 저장
+- `GET /quotes/saved` - 저장한 문구 목록 조회
+- `GET /quotes/{id}/summary` - 문구 요약 조회
+
+#### 좋아요 API
+
+- `POST /likes/quotes/{quoteId}` - 문구 좋아요
+- `DELETE /likes/quotes/{quoteId}` - 문구 좋아요 취소
+- `GET /likes/quotes/{quoteId}/status` - 문구 좋아요 상태 조회
+- `GET /likes/quotes/{quoteId}/count` - 문구 좋아요 수 조회
+
+#### 콘텐츠 API
+
+- `GET /contents/trending` - 트렌딩 콘텐츠 조회
+- `GET /contents/recommended` - 추천 콘텐츠 조회
+- `GET /contents/books/{bookId}` - 책별 콘텐츠 조회
+- `GET /contents/search` - 콘텐츠 검색
+- `GET /contents/{id}` - 콘텐츠 상세 조회
+- `POST /contents/{id}/like` - 콘텐츠 좋아요 토글
+- `POST /contents/{id}/bookmark` - 콘텐츠 북마크 토글
+- `POST /contents/quotes/{quoteId}` - 문구로부터 콘텐츠 생성
+
+#### 콘텐츠 댓글 API
+
+- `POST /comments/contents/{contentId}` - 콘텐츠 댓글 작성
+- `PUT /comments/{commentId}` - 콘텐츠 댓글 수정
+- `DELETE /comments/{commentId}` - 콘텐츠 댓글 삭제
+- `GET /comments/contents/{contentId}` - 콘텐츠 댓글 목록 조회
+
+#### 검색 API
+
+- `GET /search` - 통합 검색
+- `GET /search/history/{userId}` - 검색 기록 조회
+- `DELETE /search/history/{searchId}` - 검색 기록 삭제
+
+#### 추천 API
+
+- `GET /recommendations/users/{userId}` - 사용자 추천 목록 조회
+- `GET /recommendations/popular-terms` - 인기 검색어 목록 조회
+
+#### 관리자 설정 API
+
+- `GET /admin/settings` - 모든 시스템 설정 조회
+- `GET /admin/settings/category/{category}` - 카테고리별 시스템 설정 조회
+- `GET /admin/settings/{key}` - 특정 키의 시스템 설정 조회
+- `POST /admin/settings` - 시스템 설정 생성
+- `PUT /admin/settings/{key}` - 시스템 설정 수정
+- `DELETE /admin/settings/{key}` - 시스템 설정 삭제
+- `GET /admin/settings/search` - 키 패턴으로 시스템 설정 검색
+- `POST /admin/settings/{key}/reset` - 시스템 설정을 기본값으로 초기화
+- `PUT /admin/settings/batch` - 시스템 설정 일괄 업데이트
+- `GET /admin/settings/export` - 시스템 설정 내보내기
+- `POST /admin/settings/import` - 시스템 설정 가져오기
+
+#### 랭킹 API
+
+- `GET /admin/ranking/users/{userId}/score` - 사용자 점수 조회
+- `GET /admin/ranking/users/scores` - 모든 사용자 점수 조회
+- `GET /admin/ranking/users/scores/top` - 상위 랭킹 사용자 조회
+- `GET /admin/ranking/users/scores/recent-changes` - 최근 점수 변경 내역 조회
+- `POST /admin/ranking/users/{userId}/score/update` - 사용자 점수 업데이트
+- `POST /admin/ranking/users/scores/recalculate` - 모든 사용자 점수 재계산
+- `GET /admin/ranking/suspicious` - 의심스러운 활동이 있는 사용자 목록 조회
+- `POST /admin/ranking/users/{userId}/suspend` - 사용자 계정 정지
+- `POST /admin/ranking/users/{userId}/unsuspend` - 사용자 계정 정지 해제
 
 ### AI 추천 영상 생성 API
 

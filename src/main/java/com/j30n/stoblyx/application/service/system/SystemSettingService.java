@@ -11,8 +11,13 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * 시스템 설정 관리를 위한 서비스 구현 클래스
@@ -27,6 +32,327 @@ public class SystemSettingService implements SystemSettingUseCase {
     
     private final SystemSettingRepository systemSettingRepository;
     private final CacheManager cacheManager;
+    
+    // 유효한 캐시 이름 목록
+    private static final List<String> VALID_CACHE_NAMES = Arrays.asList(
+        "userCache", "contentCache", "settingCache", "quotesCache"
+    );
+    
+    // 유효한 랭킹 파라미터 이름 목록
+    private static final List<String> VALID_RANKING_PARAMS = Arrays.asList(
+        "score.weight.activity", "score.weight.engagement", 
+        "score.weight.content", "score.weight.retention",
+        "threshold.promotion", "threshold.demotion"
+    );
+    
+    // 유효한 랭크 이름 목록
+    private static final List<String> VALID_RANK_NAMES = Arrays.asList(
+        "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"
+    );
+
+    /**
+     * 주어진 설정 키가 시스템 중요 설정인지 확인합니다.
+     *
+     * @param key 설정 키
+     * @return 시스템 중요 설정 여부
+     */
+    public boolean isSystemCriticalSetting(String key) {
+        // 시스템 중요 설정 키 패턴 확인
+        return key.startsWith("system.") || 
+               key.startsWith("security.") || 
+               key.startsWith("core.");
+    }
+    
+    /**
+     * 캐시 이름이 유효한지 확인합니다.
+     *
+     * @param cacheName 캐시 이름
+     * @return 유효성 여부
+     */
+    public boolean isCacheNameValid(String cacheName) {
+        // 캐시 매니저에서 캐시 존재 여부 확인
+        if (cacheManager.getCache(cacheName) != null) {
+            return true;
+        }
+        
+        // 미리 정의된 유효한 캐시 이름 목록에서 확인
+        return VALID_CACHE_NAMES.contains(cacheName);
+    }
+    
+    /**
+     * 랭킹 파라미터 이름이 유효한지 확인합니다.
+     *
+     * @param paramName 파라미터 이름
+     * @return 유효성 여부
+     */
+    public boolean isValidRankingParameter(String paramName) {
+        return VALID_RANKING_PARAMS.contains(paramName);
+    }
+    
+    /**
+     * 랭킹 파라미터 값이 유효한지 확인합니다.
+     *
+     * @param paramName  파라미터 이름
+     * @param paramValue 파라미터 값
+     * @return 유효성 여부
+     */
+    public boolean isValidRankingParameterValue(String paramName, String paramValue) {
+        if (paramName.startsWith("score.weight.")) {
+            // 가중치 값은 0.0-1.0 사이의 소수여야 함
+            try {
+                double weight = Double.parseDouble(paramValue);
+                return weight >= 0.0 && weight <= 1.0;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else if (paramName.startsWith("threshold.")) {
+            // 임계값은 양의 정수여야 함
+            try {
+                int threshold = Integer.parseInt(paramValue);
+                return threshold > 0;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+        
+        // 알 수 없는 파라미터 타입
+        return false;
+    }
+    
+    /**
+     * 랭크 이름이 유효한지 확인합니다.
+     *
+     * @param rankName 랭크 이름
+     * @return 유효성 여부
+     */
+    public boolean isValidRankName(String rankName) {
+        return VALID_RANK_NAMES.contains(rankName);
+    }
+    
+    /**
+     * 혜택 JSON이 유효한지 확인합니다.
+     *
+     * @param benefitJson 혜택 JSON
+     * @return 유효성 여부
+     */
+    public boolean isValidBenefitJson(String benefitJson) {
+        if (benefitJson == null || benefitJson.trim().isEmpty()) {
+            return false;
+        }
+        
+        // 기본적인 JSON 형식 검증
+        if (!benefitJson.startsWith("{") || !benefitJson.endsWith("}")) {
+            return false;
+        }
+        
+        try {
+            // JSON 파싱 시도 (실제 구현에서는 Jackson 등의 라이브러리 사용)
+            // 여기서는 간단한 검증만 수행
+            return true;
+        } catch (Exception e) {
+            log.warn("혜택 JSON 파싱 실패: {}", e.getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * 설정을 일괄 업데이트합니다.
+     *
+     * @param settings 업데이트할 설정 맵 (키-값 쌍)
+     * @param adminId  관리자 ID
+     * @return 업데이트된 설정 목록
+     */
+    @Transactional
+    public List<SystemSettingDto> batchUpdateSettings(Map<String, String> settings, Long adminId) {
+        List<SystemSettingDto> updatedSettings = new ArrayList<>();
+        
+        for (Map.Entry<String, String> entry : settings.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            
+            // 기존 설정 조회
+            Optional<SystemSettingDto> existingSettingOpt = getSettingByKey(key);
+            
+            if (existingSettingOpt.isPresent()) {
+                // 기존 설정 업데이트
+                SystemSettingDto existingSetting = existingSettingOpt.get();
+                
+                // 시스템 관리 설정은 수정 불가
+                if (existingSetting.systemManaged()) {
+                    log.warn("시스템 관리 설정은 일괄 업데이트에서 제외됩니다: {}", key);
+                    continue;
+                }
+                
+                // 새 DTO 생성 (record는 불변이므로 새 인스턴스 생성)
+                SystemSettingDto updatedDto = new SystemSettingDto(
+                    existingSetting.id(),
+                    existingSetting.key(),
+                    value, // 새 값으로 업데이트
+                    existingSetting.description(),
+                    existingSetting.category(),
+                    existingSetting.encrypted(),
+                    existingSetting.systemManaged(),
+                    adminId, // 마지막 수정자 업데이트
+                    existingSetting.defaultValue(),
+                    existingSetting.validationPattern()
+                );
+                
+                // 업데이트 수행
+                SystemSettingDto updatedSetting = updateSetting(key, updatedDto, adminId);
+                updatedSettings.add(updatedSetting);
+            } else {
+                // 새 설정 생성 (카테고리는 기본값으로 GENERAL 사용)
+                SystemSettingDto newSetting = new SystemSettingDto(
+                    null, // ID는 저장 시 생성됨
+                    key,
+                    value,
+                    "일괄 생성된 설정",
+                    SettingCategory.GENERAL,
+                    false, // 암호화 안 함
+                    false, // 시스템 관리 아님
+                    adminId,
+                    null, // 기본값 없음
+                    null  // 유효성 검사 패턴 없음
+                );
+                
+                // 생성 수행
+                SystemSettingDto createdSetting = createSetting(newSetting, adminId);
+                updatedSettings.add(createdSetting);
+            }
+        }
+        
+        return updatedSettings;
+    }
+    
+    /**
+     * 설정을 내보냅니다.
+     *
+     * @param category 카테고리 필터 (선택사항)
+     * @return 내보낸 설정 데이터
+     */
+    @Transactional(readOnly = true)
+    public Map<String, Object> exportSettings(SettingCategory category) {
+        Map<String, Object> exportData = new HashMap<>();
+        List<SystemSettingDto> settings;
+        
+        if (category != null) {
+            settings = getSettingsByCategory(category);
+            exportData.put("category", category.name());
+        } else {
+            settings = getAllSettings();
+            exportData.put("category", "ALL");
+        }
+        
+        exportData.put("exportDate", java.time.LocalDateTime.now().toString());
+        exportData.put("count", settings.size());
+        
+        Map<String, Object> settingsMap = new HashMap<>();
+        for (SystemSettingDto setting : settings) {
+            // 민감한 설정은 내보내기에서 제외 (선택적)
+            if (setting.encrypted()) {
+                continue;
+            }
+            
+            settingsMap.put(setting.key(), setting);
+        }
+        exportData.put("settings", settingsMap);
+        
+        return exportData;
+    }
+    
+    /**
+     * 설정을 가져옵니다.
+     *
+     * @param settings  가져올 설정 데이터
+     * @param overwrite 기존 설정 덮어쓰기 여부
+     * @param adminId   관리자 ID
+     * @return 가져온 설정 목록
+     */
+    @Transactional
+    public List<SystemSettingDto> importSettings(Map<String, Object> settings, boolean overwrite, Long adminId) {
+        List<SystemSettingDto> importedSettings = new ArrayList<>();
+        
+        if (!settings.containsKey("settings")) {
+            throw new IllegalArgumentException("유효하지 않은 설정 데이터 형식입니다.");
+        }
+        
+        @SuppressWarnings("unchecked")
+        Map<String, Object> settingsMap = (Map<String, Object>) settings.get("settings");
+        
+        for (Map.Entry<String, Object> entry : settingsMap.entrySet()) {
+            String key = entry.getKey();
+            
+            // 기존 설정 확인
+            Optional<SystemSettingDto> existingSettingOpt = getSettingByKey(key);
+            
+            if (existingSettingOpt.isPresent() && !overwrite) {
+                // 덮어쓰기 옵션이 꺼져 있을 때 기존 설정 건너뛰기
+                log.info("설정 가져오기: 기존 설정 건너뛰기 - {}", key);
+                continue;
+            }
+            
+            // 시스템 관리 설정은 가져오기에서 제외
+            if (existingSettingOpt.isPresent() && existingSettingOpt.get().systemManaged()) {
+                log.warn("시스템 관리 설정은 가져오기에서 제외됩니다: {}", key);
+                continue;
+            }
+            
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> settingMap = (Map<String, Object>) entry.getValue();
+                
+                String value = settingMap.get("value").toString();
+                SettingCategory category = SettingCategory.valueOf(settingMap.get("category").toString());
+                String description = settingMap.getOrDefault("description", "").toString();
+                
+                // 기존 설정이 있으면 업데이트, 없으면 생성
+                if (existingSettingOpt.isPresent()) {
+                    SystemSettingDto existingSetting = existingSettingOpt.get();
+                    
+                    // 새 DTO 생성
+                    SystemSettingDto updatedDto = new SystemSettingDto(
+                        existingSetting.id(),
+                        key,
+                        value,
+                        description,
+                        category,
+                        existingSetting.encrypted(),
+                        existingSetting.systemManaged(),
+                        adminId,
+                        existingSetting.defaultValue(),
+                        existingSetting.validationPattern()
+                    );
+                    
+                    // 업데이트 수행
+                    SystemSettingDto updatedSetting = updateSetting(key, updatedDto, adminId);
+                    importedSettings.add(updatedSetting);
+                } else {
+                    // 새 설정 생성
+                    SystemSettingDto newSetting = new SystemSettingDto(
+                        null,
+                        key,
+                        value,
+                        description,
+                        category,
+                        false,
+                        false,
+                        adminId,
+                        null,
+                        null
+                    );
+                    
+                    // 생성 수행
+                    SystemSettingDto createdSetting = createSetting(newSetting, adminId);
+                    importedSettings.add(createdSetting);
+                }
+            } catch (Exception e) {
+                log.warn("설정 가져오기 중 오류 발생: {} - {}", key, e.getMessage());
+                // 오류가 발생해도 계속 진행
+            }
+        }
+        
+        return importedSettings;
+    }
 
     /**
      * 모든 시스템 설정을 조회합니다.

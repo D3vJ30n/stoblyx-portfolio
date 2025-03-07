@@ -122,6 +122,30 @@ Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 
 * `GET /admin/ranking/statistics` - 랭킹 시스템 통계 조회
 * `POST /admin/ranking/settings/{settingKey}` - 랭킹 시스템 설정 업데이트
 
+=== 시스템 설정 API
+* `GET /admin/settings` - 모든 시스템 설정 조회
+* `GET /admin/settings/category/{category}` - 카테고리별 시스템 설정 조회
+* `GET /admin/settings/{key}` - 특정 키의 시스템 설정 조회
+* `POST /admin/settings` - 시스템 설정 생성
+* `PUT /admin/settings/{key}` - 시스템 설정 수정
+* `DELETE /admin/settings/{key}` - 시스템 설정 삭제
+* `GET /admin/settings/search` - 키 패턴으로 시스템 설정 검색
+* `POST /admin/settings/{key}/reset` - 시스템 설정을 기본값으로 초기화
+* `POST /admin/settings/cache/{cacheName}/ttl` - 캐시 TTL 설정
+* `POST /admin/settings/ranking/param` - 랭킹 파라미터 설정
+* `POST /admin/settings/gamification/rank/benefit` - 랭크 혜택 설정
+* `PUT /admin/settings/batch` - 시스템 설정 일괄 업데이트
+* `GET /admin/settings/export` - 시스템 설정 내보내기
+* `POST /admin/settings/import` - 시스템 설정 가져오기
+
+=== 랭킹 사용자 점수 API
+* `GET /admin/ranking/users/{userId}/score` - 사용자 점수 조회
+* `GET /admin/ranking/users/scores` - 모든 사용자 점수 조회
+* `GET /admin/ranking/users/scores/top` - 상위 랭킹 사용자 조회
+* `GET /admin/ranking/users/scores/recent-changes` - 최근 점수 변경 내역 조회
+* `POST /admin/ranking/users/{userId}/score/update` - 사용자 점수 업데이트
+* `POST /admin/ranking/users/scores/recalculate` - 모든 사용자 점수 재계산
+
 == 인증
 
 === 인증 방식
@@ -1232,6 +1256,29 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다. 토큰은 `Authorizat
 * `level`: Integer - 레벨
 * `lastActivityAt`: LocalDateTime - 마지막 활동 일시
 * `updatedAt`: LocalDateTime - 갱신 일시
+
+=== SystemSetting 모델
+* `id`: Long - 설정 ID
+* `key`: String - 설정 키
+* `value`: String - 설정 값
+* `description`: String - 설정 설명
+* `category`: Enum - 설정 카테고리 (GENERAL, SYSTEM, SECURITY, USER, CONTENT, RANKING, CACHE, GAMIFICATION, NOTIFICATION, STATISTICS, ETC)
+* `encrypted`: Boolean - 암호화 여부
+* `systemManaged`: Boolean - 시스템 관리 여부
+* `defaultValue`: String - 기본값
+* `createdAt`: LocalDateTime - 생성일시
+* `updatedAt`: LocalDateTime - 수정일시
+* `createdBy`: Long - 생성자 ID
+* `updatedBy`: Long - 수정자 ID
+
+=== RankingUserScore 모델
+* `id`: Long - 점수 ID
+* `userId`: Long - 사용자 ID
+* `rankType`: String - 랭크 유형
+* `currentScore`: Integer - 현재 점수
+* `previousScore`: Integer - 이전 점수
+* `createdAt`: LocalDateTime - 생성일시
+* `updatedAt`: LocalDateTime - 수정일시
 
 == 표준 응답 형식
 
