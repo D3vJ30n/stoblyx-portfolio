@@ -1,4 +1,4 @@
-name: API 통합 테스트
+name: API-통합-테스트
 
 on:
   push:
@@ -19,10 +19,12 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: stoblyx_test
+          MYSQL_ROOT_PASSWORD: 6188
+          MYSQL_DATABASE: stoblyx_db
+          MYSQL_USER: stoblyx_user
+          MYSQL_PASSWORD: 6188
         ports:
-          - 3306:3306
+          - 3307:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
       # Redis 서비스 컨테이너
@@ -34,10 +36,10 @@ jobs:
 
     steps:
       - name: 코드 체크아웃
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: JDK 17 설정
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
@@ -49,9 +51,9 @@ jobs:
       - name: 환경 변수 설정
         run: |
           echo "SPRING_PROFILES_ACTIVE=test" >> $GITHUB_ENV
-          echo "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/stoblyx_test" >> $GITHUB_ENV
-          echo "SPRING_DATASOURCE_USERNAME=root" >> $GITHUB_ENV
-          echo "SPRING_DATASOURCE_PASSWORD=root" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3307/stoblyx_db" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=stoblyx_user" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=6188" >> $GITHUB_ENV
           echo "SPRING_REDIS_HOST=localhost" >> $GITHUB_ENV
           echo "SPRING_REDIS_PORT=6379" >> $GITHUB_ENV
           # 필요한 다른 환경 변수들도 여기에 추가
@@ -67,8 +69,8 @@ jobs:
           sleep 30
           cat app.log
 
-      - name: API 통합 테스트 실행을 위한 Node.js 설정
-        uses: actions/setup-node@v3
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
         with:
           node-version: "16"
 
@@ -315,13 +317,22 @@ jobs:
             -r cli,htmlextra \
             --reporter-htmlextra-export=newman/report.html
 
-      - name: API 통합 테스트 보고서 업로드
-        uses: actions/upload-artifact@v3
+      # 보고서 압축
+      - name: API 테스트 보고서 압축
+        run: |
+          mkdir -p artifacts
+          tar -czf artifacts/api-test-reports.tar.gz -C newman .
+          echo "Archived API test reports"
+        if: always()
+
+      # 간단한 업로드 방식 사용
+      - name: 아티팩트 업로드
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: api-test-report
-          path: newman/
-          retention-days: 7
+          name: api-reports
+          path: artifacts/*.tar.gz
+          retention-days: 90
 
       - name: 애플리케이션 종료
         if: always()

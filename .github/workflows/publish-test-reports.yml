@@ -1,8 +1,8 @@
-name: 테스트 보고서 게시
+name: 테스트-보고서-게시
 
 on:
   workflow_run:
-    workflows: ["API 테스트 자동화", "API 통합 테스트"]
+    workflows: ["API-테스트-자동화", "API-통합-테스트"]
     types:
       - completed
 
@@ -23,35 +23,37 @@ jobs:
 
     steps:
       - name: 아티팩트 다운로드
-        uses: dawidd6/action-download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          run_id: ${{ github.event.workflow_run.id }}
           path: artifacts
+          pattern: "*"
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: 보고서 디렉토리 설정
         run: |
-          mkdir -p reports
+          mkdir -p reports/unit-tests reports/coverage reports/api-tests
 
-          # 단위 테스트 보고서 복사
-          if [ -d "artifacts/test-reports" ]; then
-            mkdir -p reports/unit-tests
-            cp -r artifacts/test-reports/* reports/unit-tests/
+          # 테스트 디렉토리 탐색
+          find artifacts -type f -name "*.tar.gz" -ls
+
+          # 단위 테스트 보고서 압축 해제
+          if [ -f "$(find artifacts -name "test-reports.tar.gz" | head -n 1)" ]; then
+            tar -xzf $(find artifacts -name "test-reports.tar.gz" | head -n 1) -C reports/unit-tests
           fi
 
-          # 커버리지 보고서 복사
-          if [ -d "artifacts/coverage-reports" ]; then
-            mkdir -p reports/coverage
-            cp -r artifacts/coverage-reports/* reports/coverage/
+          # 커버리지 보고서 압축 해제
+          if [ -f "$(find artifacts -name "coverage-reports.tar.gz" | head -n 1)" ]; then
+            tar -xzf $(find artifacts -name "coverage-reports.tar.gz" | head -n 1) -C reports/coverage
           fi
 
-          # API 통합 테스트 보고서 복사
-          if [ -d "artifacts/api-test-report" ]; then
-            mkdir -p reports/api-tests
-            cp -r artifacts/api-test-report/* reports/api-tests/
+          # API 통합 테스트 보고서 압축 해제
+          if [ -f "$(find artifacts -name "api-test-reports.tar.gz" | head -n 1)" ]; then
+            tar -xzf $(find artifacts -name "api-test-reports.tar.gz" | head -n 1) -C reports/api-tests
           fi
 
-          # 인덱스 페이지 생성
+      - name: 인덱스 페이지 생성
+        run: |
           cat > reports/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="ko">
@@ -157,13 +159,19 @@ jobs:
           EOF
 
       - name: GitHub Pages 설정
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v4
+        with:
+          token: ${{ github.token }}
 
       - name: 보고서 업로드
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: reports
+          name: github-pages
 
       - name: GitHub Pages 배포
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
+        with:
+          token: ${{ github.token }}
+          artifact_name: github-pages
