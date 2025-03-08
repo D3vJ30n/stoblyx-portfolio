@@ -81,6 +81,12 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     testImplementation 'com.h2database:h2'
 
+    // REST Assured API 테스트
+    testImplementation 'io.rest-assured:rest-assured:5.3.2'
+    testImplementation 'io.rest-assured:json-path:5.3.2'
+    testImplementation 'io.rest-assured:xml-path:5.3.2'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+
     // Spring REST Docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
