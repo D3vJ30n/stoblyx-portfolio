@@ -61,13 +61,13 @@ public class RedisCacheConfig {
     }
 
     /**
-     * Redis 템플릿 설정
+     * 캐시용 Redis 템플릿 설정
      * 
      * @param connectionFactory Redis 연결 팩토리
      * @return Redis 템플릿
      */
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+    @Bean(name = "cacheRedisTemplate")
+    public RedisTemplate<String, Object> cacheRedisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         

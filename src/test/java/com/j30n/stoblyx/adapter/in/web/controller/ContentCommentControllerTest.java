@@ -7,6 +7,7 @@ import com.j30n.stoblyx.adapter.in.web.dto.content.ContentCommentUpdateRequest;
 import com.j30n.stoblyx.application.port.in.content.ContentCommentUseCase;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.ContextTestConfig;
+import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
@@ -52,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ContentCommentController.class)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({RestDocsConfig.class, SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class})
+@Import({RestDocsConfig.class, SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
 @DisplayName("ContentCommentController 테스트")
 class ContentCommentControllerTest {
 

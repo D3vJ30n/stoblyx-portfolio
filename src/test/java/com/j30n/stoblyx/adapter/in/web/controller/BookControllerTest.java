@@ -3,6 +3,7 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 import com.j30n.stoblyx.adapter.in.web.dto.book.BookResponse;
 import com.j30n.stoblyx.application.service.book.BookService;
 import com.j30n.stoblyx.config.ContextTestConfig;
+import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
@@ -48,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("도서 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class})
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
 class BookControllerTest {
 
     private MockMvc mockMvc;

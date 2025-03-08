@@ -50,6 +50,12 @@ public class Book extends BaseEntity {
     private Double averageRating;
     private Integer ratingCount;
 
+    /**
+     * 책의 인기도 점수
+     * 조회수, 좋아요, 댓글 등을 기반으로 계산됨
+     */
+    private Integer popularity = 0;
+
     @Builder
     public Book(BookInfo bookInfo) {
         this.title = bookInfo.getTitle();
@@ -128,5 +134,13 @@ public class Book extends BaseEntity {
 
     public void setRatingCount(Integer ratingCount) {
         this.ratingCount = ratingCount;
+    }
+
+    public Integer getPopularity() {
+        return popularity;
+    }
+
+    public void setPopularity(Integer popularity) {
+        this.popularity = popularity;
     }
 } 

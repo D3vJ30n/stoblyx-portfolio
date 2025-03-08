@@ -1,0 +1,86 @@
+name: API 테스트 자동화
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch: # 수동으로 워크플로우 실행 가능
+
+jobs:
+  test:
+    name: API 테스트 실행
+    runs-on: ubuntu-latest
+
+    services:
+      # MySQL 서비스 컨테이너
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: stoblyx_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      # Redis 서비스 컨테이너
+      redis:
+        image: redis:6.2
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v3
+
+      - name: JDK 17 설정
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Gradle 권한 설정
+        run: chmod +x ./gradlew
+
+      - name: 환경 변수 설정
+        run: |
+          echo "SPRING_PROFILES_ACTIVE=test" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/stoblyx_test" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_USERNAME=root" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_PASSWORD=root" >> $GITHUB_ENV
+          echo "SPRING_REDIS_HOST=localhost" >> $GITHUB_ENV
+          echo "SPRING_REDIS_PORT=6379" >> $GITHUB_ENV
+          # 필요한 다른 환경 변수들도 여기에 추가
+
+      - name: 테스트 실행
+        run: ./gradlew test --info
+
+      - name: 테스트 결과 게시
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: "**/build/test-results/test/TEST-*.xml"
+          fail_on_failure: true
+          require_tests: true
+          check_name: 테스트 결과 보고서
+
+      - name: 테스트 보고서 아티팩트 업로드
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-reports
+          path: build/reports/tests/test/
+          retention-days: 7
+
+      - name: 테스트 커버리지 보고서 생성
+        run: ./gradlew jacocoTestReport
+
+      - name: 테스트 커버리지 보고서 업로드
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-reports
+          path: build/reports/jacoco/test/html/
+          retention-days: 7

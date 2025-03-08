@@ -45,6 +45,14 @@
 ![Spring Security](https://img.shields.io/badge/Spring_Security-3.3.9-6DB33F?style=flat-square&logo=spring-security)
 ![Lucy-XSS-Filter](https://img.shields.io/badge/Lucy_XSS_Filter-2.0.1-FF5733?style=flat-square&logo=shield)
 
+#### CI/CD & Testing
+
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
+![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
+![Mockito](https://img.shields.io/badge/Mockito-테스트-25A162?style=flat-square&logo=mockito)
+![Newman](https://img.shields.io/badge/Newman-API_테스트-FF6C37?style=flat-square&logo=postman)
+![JaCoCo](https://img.shields.io/badge/JaCoCo-코드_커버리지-F01F7A?style=flat-square&logo=jacoco)
+
 #### Messaging & Async
 
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-비동기_처리-FF6600?style=flat-square&logo=rabbitmq)
@@ -72,7 +80,6 @@
 #### Deployment
 
 ![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat-square&logo=docker)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
 ![Koyeb](https://img.shields.io/badge/Koyeb-Hosting-121212?style=flat-square&logo=koyeb)
 
 ## 개발 도구
@@ -1420,3 +1427,71 @@ src/
 자세한 내용은 [LICENSE.md](LICENSE.md) 파일을 참조하세요.
 
 ![Copyright](https://img.shields.io/badge/©_2025-Stoblyx-blue?style=flat-square)
+
+## GitHub Actions를 통한 자동화된 API 테스트
+
+스토블릭스 프로젝트는 GitHub Actions를 활용하여 자동화된 테스트 및 CI/CD 파이프라인을 구축하였습니다. 이를 통해 코드 품질을 유지하고 지속적인 통합 및 배포를 실현합니다.
+
+### 1. 자동화된 테스트 워크플로우
+
+프로젝트에는 다음과 같은 GitHub Actions 워크플로우가 구성되어 있습니다:
+
+- **API 테스트 자동화 (`api-test.yml`)**: 단위 테스트 및 통합 테스트 실행
+- **API 통합 테스트 (`api-integration-test.yml`)**: 실제 API 엔드포인트 호출 테스트
+- **테스트 보고서 게시 (`publish-test-reports.yml`)**: 테스트 결과를 GitHub Pages에 게시
+- **Slack 알림 (`slack-notification.yml`)**: 테스트 결과를 Slack으로 알림
+
+### 2. 테스트 결과 확인 방법
+
+#### 2.1 GitHub Actions 탭에서 확인
+
+1. GitHub 저장소 페이지에서 "Actions" 탭을 클릭합니다.
+2. 실행된 워크플로우 목록에서 확인하고 싶은 워크플로우를 클릭합니다.
+3. 워크플로우의 전체 실행 결과와 각 단계별 결과를 확인할 수 있습니다.
+
+#### 2.2 테스트 보고서 웹페이지에서 확인
+
+테스트 결과는 GitHub Pages를 통해 웹페이지로 확인할 수 있습니다:
+
+```
+https://[username].github.io/stoblyx-portfolio/
+```
+
+이 페이지에서 다음과 같은 보고서를 확인할 수 있습니다:
+
+- 단위 테스트 보고서
+- 코드 커버리지 보고서
+- API 통합 테스트 보고서
+
+#### 2.3 Slack 알림으로 확인
+
+테스트 결과는 Slack 채널로도 자동 전송됩니다. 알림에는 다음 정보가 포함됩니다:
+
+- 테스트 성공/실패 여부
+- 저장소 및 브랜치 정보
+- 커밋 메시지 및 작성자
+- 워크플로우 실행 시간
+- 워크플로우 및 테스트 보고서 링크
+
+### 3. 워크플로우 수동 실행 방법
+
+1. GitHub 저장소 페이지에서 "Actions" 탭을 클릭합니다.
+2. 왼쪽 사이드바에서 실행하려는 워크플로우를 선택합니다.
+3. 오른쪽 상단의 "Run workflow" 버튼을 클릭합니다.
+4. 필요한 경우 브랜치를 선택하고 "Run workflow" 버튼을 클릭합니다.
+
+### 4. 워크플로우 커스터마이징
+
+프로젝트의 워크플로우 파일은 `.github/workflows/` 디렉토리에 위치해 있습니다. 필요에 따라 다음과 같이 수정할 수 있습니다:
+
+- **환경 변수 수정**: 각 워크플로우 파일의 `env` 섹션에서 환경 변수를 수정할 수 있습니다.
+- **테스트 범위 조정**: `./gradlew test` 명령어에 옵션을 추가하여 특정 테스트만 실행할 수 있습니다.
+- **Slack 웹훅 URL 설정**: GitHub 저장소의 Settings > Secrets에서 `SLACK_WEBHOOK_URL` 시크릿을 설정해야 합니다.
+
+### 5. API 통합 테스트 컬렉션 수정
+
+API 통합 테스트는 Postman/Newman 컬렉션을 사용합니다. 컬렉션은 워크플로우 실행 시 자동으로 생성되며, 필요에 따라 `.github/workflows/api-integration-test.yml` 파일에서 컬렉션 내용을 수정할 수 있습니다.
+
+## 프로젝트 구조
+
+// ... existing code ...

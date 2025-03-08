@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,10 +37,10 @@ public class AuthController {
      * @return 회원가입 결과
      */
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
+    public ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         log.info("회원가입 요청: {}", request.email());
         authService.signUp(request);
-        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다."));
+        return ApiResponse.success("회원가입이 완료되었습니다.");
     }
 
     /**
@@ -50,9 +51,9 @@ public class AuthController {
      * @return 인증 토큰 정보 (Access Token, Refresh Token)
      */
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
+    public ApiResponse<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
         TokenResponse tokenResponse = authService.login(request);
-        return ResponseEntity.ok(ApiResponse.success("로그인이 완료되었습니다.", tokenResponse));
+        return ApiResponse.success("로그인이 완료되었습니다.", tokenResponse);
     }
 
     /**
@@ -63,10 +64,10 @@ public class AuthController {
      * @return 새로 발급된 인증 토큰 정보
      */
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<TokenResponse>> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+    public ApiResponse<TokenResponse> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
         String refreshToken = tokenExtractor.extractToken(bearerToken);
         TokenResponse tokenResponse = authService.refreshToken(refreshToken);
-        return ResponseEntity.ok(ApiResponse.success("토큰이 갱신되었습니다.", tokenResponse));
+        return ApiResponse.success("토큰이 갱신되었습니다.", tokenResponse);
     }
 
     /**
@@ -77,9 +78,9 @@ public class AuthController {
      * @return 로그아웃 처리 결과
      */
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+    public ApiResponse<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
         String accessToken = tokenExtractor.extractToken(bearerToken);
         authService.logout(accessToken);
-        return ResponseEntity.ok(ApiResponse.success("로그아웃이 완료되었습니다."));
+        return ApiResponse.success("로그아웃이 완료되었습니다.");
     }
 }

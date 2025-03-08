@@ -9,6 +9,7 @@ import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
 import com.j30n.stoblyx.application.port.in.user.UserUseCase;
 import com.j30n.stoblyx.common.exception.GlobalExceptionHandler;
 import com.j30n.stoblyx.config.ContextTestConfig;
+import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
@@ -54,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 @AutoConfigureMockMvc
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, RestDocsConfig.class})
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, RestDocsConfig.class, MonitoringTestConfig.class})
 class UserControllerTest {
 
     @Autowired

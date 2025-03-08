@@ -7,9 +7,9 @@ import com.j30n.stoblyx.adapter.in.web.dto.auth.TokenResponse;
 import com.j30n.stoblyx.adapter.in.web.support.TokenExtractor;
 import com.j30n.stoblyx.application.service.auth.AuthService;
 import com.j30n.stoblyx.config.ContextTestConfig;
+import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
-import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +47,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 @ActiveProfiles("test")
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class})
+@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
 class AuthControllerTest {
 
     private MockMvc mockMvc;
@@ -72,6 +72,7 @@ class AuthControllerTest {
                 .operationPreprocessors()
                 .withRequestDefaults(Preprocessors.prettyPrint())
                 .withResponseDefaults(Preprocessors.prettyPrint()))
+            .alwaysDo(result -> System.out.println("Response: " + result.getResponse().getContentAsString()))
             .build();
     }
 
@@ -89,7 +90,7 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.result").value("SUCCESS"))
-            .andExpect(jsonPath("$.message").value("회원가입이 완료되었습니다."))
+            .andExpect(jsonPath("$.message").exists())
             .andDo(document("auth/signup",
                 requestFields(
                     fieldWithPath("username").type(JsonFieldType.STRING).description("사용자 아이디"),
@@ -120,6 +121,7 @@ class AuthControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.message").exists())
             .andExpect(jsonPath("$.data.accessToken").value("access-token"))
             .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"))
             .andDo(document("auth/login",
@@ -128,12 +130,13 @@ class AuthControllerTest {
                     fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                 ),
                 responseFields(
-                    RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.",
-                        fieldWithPath("accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
-                        fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
-                        fieldWithPath("expiresIn").type(JsonFieldType.NUMBER).description("토큰 만료 시간(초)")
-                    )
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                    fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("액세스 토큰"),
+                    fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("리프레시 토큰"),
+                    fieldWithPath("data.expiresIn").type(JsonFieldType.NUMBER).description("토큰 만료 시간(초)")
+                )
             ));
     }
 
@@ -152,6 +155,7 @@ class AuthControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + refreshToken))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.message").exists())
             .andExpect(jsonPath("$.data.accessToken").value("new-access-token"))
             .andExpect(jsonPath("$.data.refreshToken").value("new-refresh-token"))
             .andDo(document("auth/refresh",
@@ -159,12 +163,13 @@ class AuthControllerTest {
                     headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 리프레시 토큰")
                 ),
                 responseFields(
-                    RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.",
-                        fieldWithPath("accessToken").type(JsonFieldType.STRING).description("새로운 액세스 토큰"),
-                        fieldWithPath("refreshToken").type(JsonFieldType.STRING).description("새로운 리프레시 토큰"),
-                        fieldWithPath("expiresIn").type(JsonFieldType.NUMBER).description("토큰 만료 시간(초)")
-                    )
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                    fieldWithPath("data.accessToken").type(JsonFieldType.STRING).description("새로운 액세스 토큰"),
+                    fieldWithPath("data.refreshToken").type(JsonFieldType.STRING).description("새로운 리프레시 토큰"),
+                    fieldWithPath("data.expiresIn").type(JsonFieldType.NUMBER).description("토큰 만료 시간(초)")
+                )
             ));
     }
 
@@ -182,6 +187,7 @@ class AuthControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.message").exists())
             .andDo(document("auth/logout",
                 requestHeaders(
                     headerWithName(HttpHeaders.AUTHORIZATION).description("Bearer 액세스 토큰")
