@@ -25,7 +25,7 @@ import java.util.List;
 @EnableSpringDataWebSupport
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.upload.dir:${user.home}/uploads}")
+    @Value("${app.upload.dir:/uploads}")
     private String uploadDir;
 
     @Override

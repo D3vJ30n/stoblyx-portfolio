@@ -48,19 +48,18 @@ public class SystemSettingController {
         Object principal = authentication.getPrincipal();
         
         // UserDetails 타입인 경우 (일반적인 폼 로그인)
-        if (principal instanceof UserDetails) {
+        if (principal instanceof UserDetails userDetails) {
             // UserDetails의 username은 보통 DB의 PK나 unique 식별자일 경우가 많음
             // 프로젝트의 인증 방식에 따라 적절히 변환
             try {
-                return Long.parseLong(((UserDetails) principal).getUsername());
+                return Long.parseLong(userDetails.getUsername());
             } catch (NumberFormatException e) {
-                log.warn("사용자 ID를 숫자로 변환할 수 없습니다: {}", ((UserDetails) principal).getUsername());
+                log.warn("사용자 ID를 숫자로 변환할 수 없습니다: {}", userDetails.getUsername());
             }
         }
         
         // JWT 토큰 인증의 경우 종종 토큰 내 클레임에 userId가 포함됨
-        if (authentication.getCredentials() instanceof Map) {
-            Map<String, Object> credentials = (Map<String, Object>) authentication.getCredentials();
+        if (authentication.getCredentials() instanceof Map<?, ?> credentials) {
             if (credentials.containsKey("userId")) {
                 return Long.valueOf(credentials.get("userId").toString());
             }

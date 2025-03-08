@@ -5,9 +5,9 @@ import com.j30n.stoblyx.application.port.in.system.SystemSettingUseCase;
 import com.j30n.stoblyx.domain.enums.SettingCategory;
 import com.j30n.stoblyx.domain.model.SystemSetting;
 import com.j30n.stoblyx.domain.repository.SystemSettingRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,21 +17,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * 시스템 설정 관리를 위한 서비스 구현 클래스
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class SystemSettingService implements SystemSettingUseCase {
 
     private static final String KEY_NOT_FOUND_MSG = "존재하지 않는 설정 키입니다: ";
     private static final String SYSTEM_MANAGED_MSG = "시스템 관리 설정은 직접 수정할 수 없습니다: ";
+    private static final String CATEGORY_KEY = "category";
+    private static final String SETTINGS_KEY = "settings";
     
     private final SystemSettingRepository systemSettingRepository;
     private final CacheManager cacheManager;
+    
+    private final SystemSettingService self;
     
     // 유효한 캐시 이름 목록
     private static final List<String> VALID_CACHE_NAMES = Arrays.asList(
@@ -49,6 +51,15 @@ public class SystemSettingService implements SystemSettingUseCase {
     private static final List<String> VALID_RANK_NAMES = Arrays.asList(
         "BRONZE", "SILVER", "GOLD", "PLATINUM", "DIAMOND"
     );
+
+    public SystemSettingService(
+            SystemSettingRepository systemSettingRepository,
+            CacheManager cacheManager,
+            @Lazy SystemSettingService self) {
+        this.systemSettingRepository = systemSettingRepository;
+        this.cacheManager = cacheManager;
+        this.self = self;
+    }
 
     /**
      * 주어진 설정 키가 시스템 중요 설정인지 확인합니다.
@@ -171,7 +182,7 @@ public class SystemSettingService implements SystemSettingUseCase {
             String value = entry.getValue();
             
             // 기존 설정 조회
-            Optional<SystemSettingDto> existingSettingOpt = getSettingByKey(key);
+            Optional<SystemSettingDto> existingSettingOpt = self.getSettingByKey(key);
             
             if (existingSettingOpt.isPresent()) {
                 // 기존 설정 업데이트
@@ -198,7 +209,7 @@ public class SystemSettingService implements SystemSettingUseCase {
                 );
                 
                 // 업데이트 수행
-                SystemSettingDto updatedSetting = updateSetting(key, updatedDto, adminId);
+                SystemSettingDto updatedSetting = self.updateSetting(key, updatedDto, adminId);
                 updatedSettings.add(updatedSetting);
             } else {
                 // 새 설정 생성 (카테고리는 기본값으로 GENERAL 사용)
@@ -216,7 +227,7 @@ public class SystemSettingService implements SystemSettingUseCase {
                 );
                 
                 // 생성 수행
-                SystemSettingDto createdSetting = createSetting(newSetting, adminId);
+                SystemSettingDto createdSetting = self.createSetting(newSetting, adminId);
                 updatedSettings.add(createdSetting);
             }
         }
@@ -236,11 +247,11 @@ public class SystemSettingService implements SystemSettingUseCase {
         List<SystemSettingDto> settings;
         
         if (category != null) {
-            settings = getSettingsByCategory(category);
-            exportData.put("category", category.name());
+            settings = self.getSettingsByCategory(category);
+            exportData.put(CATEGORY_KEY, category.name());
         } else {
-            settings = getAllSettings();
-            exportData.put("category", "ALL");
+            settings = self.getAllSettings();
+            exportData.put(CATEGORY_KEY, "ALL");
         }
         
         exportData.put("exportDate", java.time.LocalDateTime.now().toString());
@@ -255,7 +266,7 @@ public class SystemSettingService implements SystemSettingUseCase {
             
             settingsMap.put(setting.key(), setting);
         }
-        exportData.put("settings", settingsMap);
+        exportData.put(SETTINGS_KEY, settingsMap);
         
         return exportData;
     }
@@ -272,18 +283,18 @@ public class SystemSettingService implements SystemSettingUseCase {
     public List<SystemSettingDto> importSettings(Map<String, Object> settings, boolean overwrite, Long adminId) {
         List<SystemSettingDto> importedSettings = new ArrayList<>();
         
-        if (!settings.containsKey("settings")) {
+        if (!settings.containsKey(SETTINGS_KEY)) {
             throw new IllegalArgumentException("유효하지 않은 설정 데이터 형식입니다.");
         }
         
         @SuppressWarnings("unchecked")
-        Map<String, Object> settingsMap = (Map<String, Object>) settings.get("settings");
+        Map<String, Object> settingsMap = (Map<String, Object>) settings.get(SETTINGS_KEY);
         
         for (Map.Entry<String, Object> entry : settingsMap.entrySet()) {
             String key = entry.getKey();
             
             // 기존 설정 확인
-            Optional<SystemSettingDto> existingSettingOpt = getSettingByKey(key);
+            Optional<SystemSettingDto> existingSettingOpt = self.getSettingByKey(key);
             
             if (existingSettingOpt.isPresent() && !overwrite) {
                 // 덮어쓰기 옵션이 꺼져 있을 때 기존 설정 건너뛰기
@@ -302,7 +313,7 @@ public class SystemSettingService implements SystemSettingUseCase {
                 Map<String, Object> settingMap = (Map<String, Object>) entry.getValue();
                 
                 String value = settingMap.get("value").toString();
-                SettingCategory category = SettingCategory.valueOf(settingMap.get("category").toString());
+                SettingCategory category = SettingCategory.valueOf(settingMap.get(CATEGORY_KEY).toString());
                 String description = settingMap.getOrDefault("description", "").toString();
                 
                 // 기존 설정이 있으면 업데이트, 없으면 생성
@@ -324,7 +335,7 @@ public class SystemSettingService implements SystemSettingUseCase {
                     );
                     
                     // 업데이트 수행
-                    SystemSettingDto updatedSetting = updateSetting(key, updatedDto, adminId);
+                    SystemSettingDto updatedSetting = self.updateSetting(key, updatedDto, adminId);
                     importedSettings.add(updatedSetting);
                 } else {
                     // 새 설정 생성
@@ -342,7 +353,7 @@ public class SystemSettingService implements SystemSettingUseCase {
                     );
                     
                     // 생성 수행
-                    SystemSettingDto createdSetting = createSetting(newSetting, adminId);
+                    SystemSettingDto createdSetting = self.createSetting(newSetting, adminId);
                     importedSettings.add(createdSetting);
                 }
             } catch (Exception e) {

@@ -23,17 +23,32 @@
 ![Java 17](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.9-6DB33F?style=flat-square&logo=spring-boot)
 ![Gradle](https://img.shields.io/badge/Gradle-8.5-02303A?style=flat-square&logo=gradle)
+![Spring MVC](https://img.shields.io/badge/Spring_MVC-3.3.9-6DB33F?style=flat-square&logo=spring)
+![Spring HATEOAS](https://img.shields.io/badge/Spring_HATEOAS-3.3.9-6DB33F?style=flat-square&logo=spring)
+![Spring Validation](https://img.shields.io/badge/Spring_Validation-3.3.9-6DB33F?style=flat-square&logo=spring)
+![Spring Boot Actuator](https://img.shields.io/badge/Spring_Boot_Actuator-3.3.9-6DB33F?style=flat-square&logo=spring-boot)
+![Spring REST Docs](https://img.shields.io/badge/Spring_REST_Docs-3.3.9-6DB33F?style=flat-square&logo=spring)
+![FreeTTS](https://img.shields.io/badge/FreeTTS-1.2.2-4B32C3?style=flat-square&logo=java)
 
 #### Database
 
 ![MySQL](https://img.shields.io/badge/MySQL-8.0.41-4479A1?style=flat-square&logo=mysql)
 ![Redis](https://img.shields.io/badge/Redis-7.0.15-DC382D?style=flat-square&logo=redis)
 ![JPA](https://img.shields.io/badge/Spring_Data_JPA-3.3.9-6DB33F?style=flat-square&logo=spring)
+![QueryDSL](https://img.shields.io/badge/QueryDSL-5.0.0-4B32C3?style=flat-square&logo=java)
+![H2 Database](https://img.shields.io/badge/H2_Database-테스트용-01A5EC?style=flat-square&logo=h2)
+![Caffeine](https://img.shields.io/badge/Caffeine-인메모리_캐싱-0051BA?style=flat-square&logo=caffeine)
 
 #### Security
 
 ![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=flat-square&logo=json-web-tokens)
 ![Spring Security](https://img.shields.io/badge/Spring_Security-3.3.9-6DB33F?style=flat-square&logo=spring-security)
+![Lucy-XSS-Filter](https://img.shields.io/badge/Lucy_XSS_Filter-2.0.1-FF5733?style=flat-square&logo=shield)
+
+#### Messaging & Async
+
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-비동기_처리-FF6600?style=flat-square&logo=rabbitmq)
+![Spring Async](https://img.shields.io/badge/Spring_Async-비동기_처리-6DB33F?style=flat-square&logo=spring)
 
 #### AI Integration
 
@@ -41,6 +56,18 @@
 ![pyttsx3](https://img.shields.io/badge/pyttsx3-감사-3776AB?style=flat-square&logo=python)
 ![Pexels API](https://img.shields.io/badge/Pexels_API-이미지_검색-05A081?style=flat-square&logo=pexels)
 ![감정 분석](https://img.shields.io/badge/감정_분석-자체_개발_알고리즘-1DB954?style=flat-square&logo=spotify)
+![Hugging Face Transformers](https://img.shields.io/badge/Hugging_Face-Transformers-FFD21E?style=flat-square&logo=huggingface)
+
+#### Environment & Configuration
+
+![Spring dotenv](https://img.shields.io/badge/Spring_dotenv-2.5.4-6DB33F?style=flat-square&logo=spring)
+![Jakarta Validation](https://img.shields.io/badge/Jakarta_Validation-3.0.2-FE8B2C?style=flat-square&logo=jakarta)
+
+#### 테스트
+
+![JUnit 5](https://img.shields.io/badge/JUnit_5-5.10.1-25A162?style=flat-square&logo=junit5)
+![Mockito](https://img.shields.io/badge/Mockito-5.4.0-C5D9E8?style=flat-square)
+![H2 Database](https://img.shields.io/badge/H2_테스트_DB-2.2.224-01A5EC?style=flat-square&logo=h2)
 
 #### Deployment
 
