@@ -70,17 +70,25 @@ jobs:
           echo "SPRING_REDIS_HOST=localhost" >> $GITHUB_ENV
           echo "SPRING_REDIS_PORT=6379" >> $GITHUB_ENV
 
-      - name: MySQL 설치 및 연결 테스트
+      - name: MySQL 연결 테스트
         run: |
           sudo apt-get update
           sudo apt-get install -y mysql-client
-          mysql -h localhost -P 3307 -u stoblyx_user -p6188 -e "SHOW DATABASES;"
+          echo "MySQL 컨테이너 상태 확인"
+          mysqladmin -h 127.0.0.1 -P 3307 -u stoblyx_user -p6188 ping
+          echo "MySQL 데이터베이스 조회"
+          mysql -h 127.0.0.1 -P 3307 -u stoblyx_user -p6188 -e "SHOW DATABASES;"
 
-      - name: Redis 설치 및 연결 테스트
+      - name: Redis 연결 테스트
         run: |
           sudo apt-get update
           sudo apt-get install -y redis-tools
-          redis-cli -h localhost -p 6379 ping
+          redis-cli -h 127.0.0.1 -p 6379 ping
+
+      - name: 테스트 클래스 확인
+        run: |
+          echo "=== API 테스트 클래스 확인 ==="
+          find src/test/java -name "*.java" | grep -i api || true
 
       - name: 테스트 실행 (오류 무시)
         run: |
