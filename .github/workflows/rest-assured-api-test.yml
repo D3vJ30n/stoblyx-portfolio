@@ -70,14 +70,16 @@ jobs:
           echo "SPRING_REDIS_HOST=localhost" >> $GITHUB_ENV
           echo "SPRING_REDIS_PORT=6379" >> $GITHUB_ENV
 
-      - name: MySQL 연결 테스트
+      - name: MySQL 설치 및 연결 테스트
         run: |
-          apt-get update && apt-get install -y mysql-client
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
           mysql -h localhost -P 3307 -u stoblyx_user -p6188 -e "SHOW DATABASES;"
 
-      - name: Redis 연결 테스트
+      - name: Redis 설치 및 연결 테스트
         run: |
-          apt-get update && apt-get install -y redis-tools
+          sudo apt-get update
+          sudo apt-get install -y redis-tools
           redis-cli -h localhost -p 6379 ping
 
       - name: 테스트 실행 (오류 무시)
@@ -90,39 +92,45 @@ jobs:
         run: |
           echo "=== 테스트 로그 확인 ==="
           if [ -d "build/reports/tests/test" ]; then
-            find build/reports/tests/test -name "*.html" -exec cat {} \; | grep -B 5 -A 5 "Failure"
+            find build/reports/tests/test -name "*.html" -exec cat {} \; | grep -B 5 -A 5 "Failure" || true
           fi
 
           if [ -d "build/test-results/test" ]; then
-            find build/test-results/test -name "*.xml" -exec cat {} \; | grep -B 5 -A 5 "failure"
+            find build/test-results/test -name "*.xml" -exec cat {} \; | grep -B 5 -A 5 "failure" || true
           fi
 
       - name: 테스트 결과 확인
         if: always()
         run: |
           echo "=== 테스트 결과 디렉토리 확인 ==="
-          find build/reports/tests -type f | grep -v "/tmp/" | sort
+          find build -name "*.html" -o -name "*.xml" | sort || true
+
+      # 빈 아티팩트 디렉토리 생성
+      - name: 아티팩트 디렉토리 생성
+        if: always()
+        run: |
+          mkdir -p test-artifacts/placeholder
+          echo "아티팩트 placeholder 파일" > test-artifacts/placeholder/info.txt
 
       # 아티팩트 준비
       - name: 아티팩트 준비
         if: always()
         run: |
-          # 테스트 결과 디렉토리 생성
-          mkdir -p test-artifacts
-
           # 테스트 결과 복사 (있는 경우만)
           if [ -d "build/reports/tests/test" ]; then
-            cp -r build/reports/tests/test test-artifacts/api-test-reports
+            mkdir -p test-artifacts/api-test-reports
+            cp -r build/reports/tests/test/* test-artifacts/api-test-reports/
           fi
 
           # 테스트 결과 XML 복사 (있는 경우만)
           if [ -d "build/test-results/test" ]; then
-            cp -r build/test-results/test test-artifacts/api-test-results
+            mkdir -p test-artifacts/api-test-results
+            cp -r build/test-results/test/* test-artifacts/api-test-results/
           fi
 
           # 디렉토리 내용 확인
           echo "=== 아티팩트 디렉토리 내용 ==="
-          find test-artifacts -type f | sort
+          find test-artifacts -type f | sort || true
 
       # 아티팩트 업로드
       - name: 아티팩트 업로드
