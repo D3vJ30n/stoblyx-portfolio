@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.api;
 
+import com.j30n.stoblyx.api.config.RestAssuredFilter;
 import io.restassured.RestAssured;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
@@ -27,17 +28,24 @@ public abstract class RestAssuredConfig {
         RestAssured.port = port;
         RestAssured.basePath = "/api";
         
+        // 글로벌 로깅 설정
+        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails(LogDetail.ALL);
+        
+        // 커스텀 필터 생성 (ExtentReports 로깅용)
+        RestAssuredFilter reportingFilter = new RestAssuredFilter();
+        
         // 기본 요청 스펙 설정
         requestSpec = new RequestSpecBuilder()
                 .setContentType(ContentType.JSON)
                 .setAccept(ContentType.JSON)
-                .log(LogDetail.ALL)
+                .addFilter(reportingFilter)  // ExtentReports 로깅 필터 추가
+                .log(LogDetail.ALL)          // 콘솔에도 로깅
                 .build();
 
         // 기본 응답 스펙 설정
         responseSpec = new ResponseSpecBuilder()
                 .expectContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
+                .log(LogDetail.ALL)          // 콘솔에도 로깅
                 .build();
     }
 

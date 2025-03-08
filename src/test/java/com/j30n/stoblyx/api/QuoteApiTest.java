@@ -3,9 +3,6 @@ package com.j30n.stoblyx.api;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +14,6 @@ import static org.hamcrest.Matchers.*;
  * Quote API 통합 테스트 클래스
  */
 @DisplayName("Quote API 통합 테스트")
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class QuoteApiTest extends BaseApiTest {
 
     private static final String QUOTE_API_PATH = "/quotes";

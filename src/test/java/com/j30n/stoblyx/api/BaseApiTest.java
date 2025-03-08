@@ -1,10 +1,12 @@
 package com.j30n.stoblyx.api;
 
 import com.j30n.stoblyx.adapter.in.web.dto.auth.LoginRequest;
+import com.j30n.stoblyx.api.config.ApiTestListener;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,13 +23,16 @@ import static io.restassured.RestAssured.given;
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
-        "spring.datasource.url=jdbc:mysql://localhost:3307/stoblyx_db",
+        "spring.datasource.url=jdbc:mysql://127.0.0.1:3307/stoblyx_db",
         "spring.datasource.username=stoblyx_user",
         "spring.datasource.password=6188",
-        "spring.redis.host=localhost",
+        "spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver",
+        "spring.jpa.database-platform=org.hibernate.dialect.MySQL8Dialect",
+        "spring.redis.host=127.0.0.1",
         "spring.redis.port=6379"
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ExtendWith(ApiTestListener.class)
 public abstract class BaseApiTest extends RestAssuredConfig {
 
     // 테스트용 사용자 및 토큰 정보

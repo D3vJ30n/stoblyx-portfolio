@@ -1,0 +1,27 @@
+- name: 보고서 디렉토리 설정
+  run: |
+    mkdir -p reports
+
+    # 테스트 보고서 복사 (있는 경우만)
+    if [ -d "artifacts/junit-reports" ]; then
+      mkdir -p reports/unit-tests
+      cp -r artifacts/junit-reports/* reports/unit-tests/
+    fi
+
+    # ExtentReports 복사 (있는 경우만)
+    if [ -d "artifacts/extent-reports" ]; then
+      mkdir -p reports/extent-reports
+      cp -r artifacts/extent-reports/* reports/extent-reports/
+    fi
+
+    # 커버리지 보고서 복사 (있는 경우만)
+    if [ -d "artifacts/coverage-reports" ]; then
+      mkdir -p reports/coverage
+      cp -r artifacts/coverage-reports/* reports/coverage/
+    fi
+
+    # 테스트 결과 XML 복사 (있는 경우만)
+    if [ -d "artifacts/test-results" ]; then
+      mkdir -p reports/test-results
+      cp -r artifacts/test-results/* reports/test-results/
+    fi

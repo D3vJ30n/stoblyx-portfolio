@@ -64,10 +64,12 @@ jobs:
       - name: 환경 변수 설정
         run: |
           echo "SPRING_PROFILES_ACTIVE=test" >> $GITHUB_ENV
-          echo "SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3307/stoblyx_db" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_URL=jdbc:mysql://127.0.0.1:3307/stoblyx_db" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_USERNAME=stoblyx_user" >> $GITHUB_ENV
           echo "SPRING_DATASOURCE_PASSWORD=6188" >> $GITHUB_ENV
-          echo "SPRING_REDIS_HOST=localhost" >> $GITHUB_ENV
+          echo "SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver" >> $GITHUB_ENV
+          echo "SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect" >> $GITHUB_ENV
+          echo "SPRING_REDIS_HOST=127.0.0.1" >> $GITHUB_ENV
           echo "SPRING_REDIS_PORT=6379" >> $GITHUB_ENV
 
       - name: MySQL 연결 테스트
@@ -113,6 +115,12 @@ jobs:
           echo "=== 테스트 결과 디렉토리 확인 ==="
           find build -name "*.html" -o -name "*.xml" | sort || true
 
+          # ExtentReports 결과 확인
+          if [ -d "build/reports/api-tests" ]; then
+            echo "=== ExtentReports 보고서가 생성되었습니다 ==="
+            ls -la build/reports/api-tests
+          fi
+
       # 빈 아티팩트 디렉토리 생성
       - name: 아티팩트 디렉토리 생성
         if: always()
@@ -126,14 +134,20 @@ jobs:
         run: |
           # 테스트 결과 복사 (있는 경우만)
           if [ -d "build/reports/tests/test" ]; then
-            mkdir -p test-artifacts/api-test-reports
-            cp -r build/reports/tests/test/* test-artifacts/api-test-reports/
+            mkdir -p test-artifacts/junit-reports
+            cp -r build/reports/tests/test/* test-artifacts/junit-reports/
+          fi
+
+          # ExtentReports 복사 (있는 경우만)
+          if [ -d "build/reports/api-tests" ]; then
+            mkdir -p test-artifacts/extent-reports
+            cp -r build/reports/api-tests/* test-artifacts/extent-reports/
           fi
 
           # 테스트 결과 XML 복사 (있는 경우만)
           if [ -d "build/test-results/test" ]; then
-            mkdir -p test-artifacts/api-test-results
-            cp -r build/test-results/test/* test-artifacts/api-test-results/
+            mkdir -p test-artifacts/test-results
+            cp -r build/test-results/test/* test-artifacts/test-results/
           fi
 
           # 디렉토리 내용 확인

@@ -87,6 +87,9 @@ dependencies {
     testImplementation 'io.rest-assured:xml-path:5.3.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'
 
+    // ExtentReports 테스트 리포팅
+    testImplementation 'com.aventstack:extentreports:5.1.1'
+
     // Spring REST Docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
