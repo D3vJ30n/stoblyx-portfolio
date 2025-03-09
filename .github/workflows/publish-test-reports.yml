@@ -6,17 +6,25 @@ on:
     types:
       - completed
 
+# GitHub Pages 설정을 위한 동시성 제한
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   publish:
     name: 테스트 보고서 게시
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
 
-    # GitHub Pages 권한 추가
+    # GitHub Pages 권한 추가 (확장)
     permissions:
+      actions: read
       contents: read
       pages: write
       id-token: write
+      checks: write
+      deployments: write
 
     # GitHub Pages 환경 설정
     environment:
@@ -31,6 +39,13 @@ jobs:
           path: artifacts
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
+
+      - name: 아티팩트 디버깅
+        run: |
+          echo "워크플로우 실행 ID: ${{ github.event.workflow_run.id }}"
+          echo "아티팩트 디렉토리 내용:"
+          ls -la artifacts || echo "아티팩트 디렉토리가 없습니다"
+          find artifacts -type f 2>/dev/null || echo "아티팩트 파일이 없습니다"
 
       - name: 보고서 디렉토리 설정
         run: |
@@ -90,12 +105,29 @@ jobs:
         uses: actions/configure-pages@v3
         with:
           enablement: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 보고서 디렉토리 확인
+        run: |
+          echo "보고서 디렉토리 내용:"
+          ls -la reports || echo "보고서 디렉토리가 없습니다"
+          find reports -type f 2>/dev/null || echo "보고서 파일이 없습니다"
+
+          # 빈 디렉토리 확인 및 처리
+          if [ ! -d "reports" ] || [ -z "$(ls -A reports 2>/dev/null)" ]; then
+            echo "보고서 디렉토리가 비어 있습니다. 기본 페이지 생성..."
+            mkdir -p reports
+            echo "<html><body><h1>테스트 보고서</h1><p>테스트 보고서가 생성되지 않았습니다.</p></body></html>" > reports/index.html
+          fi
 
       - name: GitHub Pages 업로드
         uses: actions/upload-pages-artifact@v3
         with:
           path: reports
+          retention-days: 1
 
       - name: GitHub Pages 배포
         id: deployment
         uses: actions/deploy-pages@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
