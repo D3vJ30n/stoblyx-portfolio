@@ -5,19 +5,17 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.context.annotation.Profile;
 
 /**
- * 테스트용 모니터링 설정 클래스
+ * 테스트 환경에서 모니터링 관련 설정을 제공하는 클래스
  */
 @TestConfiguration
-@ActiveProfiles("test")
+@Profile("test")
 public class MonitoringTestConfig {
 
     /**
-     * 테스트용 MeterRegistry 빈 제공
-     * 
-     * @return SimpleMeterRegistry 인스턴스
+     * 테스트용 MeterRegistry 빈
      */
     @Bean
     @Primary

@@ -10,24 +10,35 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 import com.j30n.stoblyx.application.port.in.admin.AdminRankingUseCase;
 import com.j30n.stoblyx.application.port.out.gamification.GamificationRewardPort;
 import org.mockito.Mockito;
 import org.springframework.test.context.ActiveProfiles;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.crypto.SecretKey;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @TestConfiguration
 @EnableWebSecurity
@@ -41,6 +52,58 @@ public class SecurityTestConfig {
     @Primary
     public SecretKey jwtSecretKey() {
         return Keys.hmacShaKeyFor("test_jwt_secret_key_for_testing_purposes_only".getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * 테스트용 JWT 인증 필터
+     * 테스트 환경에서 특별한 JWT 토큰을 사용하여 인증을 우회합니다.
+     */
+    public class TestAuthenticationFilter extends OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+                throws ServletException, IOException {
+            
+            String authHeader = request.getHeader("Authorization");
+            String testAuthHeader = request.getHeader("X-TEST-AUTH");
+            String testRoleHeader = request.getHeader("X-TEST-ROLE");
+            String csrfToken = request.getHeader("X-CSRF-TOKEN");
+            
+            // CSRF 토큰이 있으면 인증된 것으로 간주
+            if (csrfToken != null && csrfToken.equals("test-csrf-token")) {
+                UserRole role = UserRole.USER;
+                UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
+            
+            if (authHeader != null && authHeader.startsWith("Bearer ") && "true".equals(testAuthHeader)) {
+                // 테스트용 토큰 처리
+                String token = authHeader.substring(7);
+                
+                if (token.startsWith("test_")) {
+                    UserRole role = (testRoleHeader != null && testRoleHeader.equals("ROLE_ADMIN")) 
+                        ? UserRole.ADMIN : UserRole.USER;
+                    
+                    // 테스트 사용자 인증 객체 생성
+                    UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            }
+            
+            filterChain.doFilter(request, response);
+        }
+    }
+    
+    /**
+     * 테스트 환경에서 사용할 인증 객체를 생성합니다.
+     */
+    private UsernamePasswordAuthenticationToken createTestAuthentication(UserRole role) {
+        List<SimpleGrantedAuthority> authorities = List.of(
+            new SimpleGrantedAuthority("ROLE_" + role.name())
+        );
+        
+        return new UsernamePasswordAuthenticationToken(
+            "test_user", null, authorities
+        );
     }
 
     @Bean
@@ -57,7 +120,8 @@ public class SecurityTestConfig {
             )
             .headers(headers -> headers
                 .frameOptions(FrameOptionsConfig::sameOrigin)
-            );
+            )
+            .addFilterBefore(new TestAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // 테스트 인증 필터 추가
 
         return http.build();
     }
