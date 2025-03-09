@@ -6,27 +6,15 @@ on:
     types:
       - completed
 
-# GitHub Pages 설정을 위한 동시성 제한
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
-
 jobs:
   publish:
     name: 테스트 보고서 게시
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
 
-    # GitHub Pages 권한 추가
+    # 권한 설정
     permissions:
-      contents: read
-      pages: write
-      id-token: write
-
-    # GitHub Pages 환경 설정
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      contents: write
 
     steps:
       - name: 체크아웃
@@ -92,14 +80,9 @@ jobs:
           ls -la reports
           find reports -type f
 
-      - name: GitHub Pages 설정
-        uses: actions/configure-pages@v3
-
-      - name: GitHub Pages 업로드
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: reports
-
       - name: GitHub Pages 배포
-        id: deployment
-        uses: actions/deploy-pages@v3
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: reports
+          branch: gh-pages
+          clean: true
