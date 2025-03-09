@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - SimpleControllerTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>SimpleControllerTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.j30n.stoblyx.api.html">com.j30n.stoblyx.api</a> &gt; SimpleControllerTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">1</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.176s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">헬스 체크 API 테스트</td>
+<td class="success">testHealthCheck()</td>
+<td class="success">0.176s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2025-03-09T08:47:36.440Z DEBUG 4911 --- [stoblyx] [    Test worker] .b.t.a.w.s.WebMvcTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [SimpleControllerTest]: using SpringBootContextLoader
+2025-03-09T08:47:36.441Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [com.j30n.stoblyx.api.SimpleControllerTest]: no resource found for suffixes {-context.xml, Context.groovy}.
+2025-03-09T08:47:36.441Z  INFO 4911 --- [stoblyx] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.j30n.stoblyx.api.SimpleControllerTest]: SimpleControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-03-09T08:47:36.441Z DEBUG 4911 --- [stoblyx] [    Test worker] .b.t.a.w.s.WebMvcTestContextBootstrapper : Using ContextCustomizerFactory implementations for test class [SimpleControllerTest]: [OnFailureConditionReportContextCustomizerFactory, OverrideAutoConfigurationContextCustomizerFactory, ObservabilityContextCustomizerFactory, TypeExcludeFiltersContextCustomizerFactory, PropertyMappingContextCustomizerFactory, WebDriverContextCustomizerFactory, ImportsContextCustomizerFactory, ExcludeFilterContextCustomizerFactory, HttpGraphQlTesterContextCustomizerFactory, DuplicateJsonObjectContextCustomizerFactory, MockitoContextCustomizerFactory, TestRestTemplateContextCustomizerFactory, WebTestClientContextCustomizerFactory, DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory, MockServerContainerContextCustomizerFactory, DynamicPropertiesContextCustomizerFactory]
+2025-03-09T08:47:36.466Z DEBUG 4911 --- [stoblyx] [    Test worker] .b.t.a.w.s.WebMvcTestContextBootstrapper : Using ContextCustomizers for test class [SimpleControllerTest]: [OnFailureConditionReportContextCustomizer, DisableAutoConfigurationContextCustomizer, DisableObservabilityContextCustomizer, TypeExcludeFiltersContextCustomizer, PropertyMappingContextCustomizer, WebDriverContextCustomizer, ImportsContextCustomizer, ExcludeFilterContextCustomizer, DuplicateJsonObjectContextCustomizer, MockitoContextCustomizer, DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer]
+2025-03-09T08:47:36.467Z  INFO 4911 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.j30n.stoblyx.StoblyxApplication for test class com.j30n.stoblyx.api.SimpleControllerTest
+2025-03-09T08:47:36.469Z DEBUG 4911 --- [stoblyx] [    Test worker] .s.t.c.u.TestContextSpringFactoriesUtils : Skipping candidate TestExecutionListener [org.springframework.test.context.observation.MicrometerObservationRegistryTestExecutionListener] due to a missing dependency. Specify custom TestExecutionListener classes or make the default TestExecutionListener classes and their required dependencies available. Offending class: io.micrometer.context.ThreadLocalAccessor. MicrometerObservationRegistryTestExecutionListener requires io.micrometer:micrometer-observation:1.10.8 or higher and io.micrometer:context-propagation:1.0.3 or higher.
+2025-03-09T08:47:36.469Z DEBUG 4911 --- [stoblyx] [    Test worker] .b.t.a.w.s.WebMvcTestContextBootstrapper : Using TestExecutionListeners for test class [SimpleControllerTest]: [ServletTestExecutionListener, DirtiesContextBeforeModesTestExecutionListener, ApplicationEventsTestExecutionListener, MockitoTestExecutionListener, DependencyInjectionTestExecutionListener, DirtiesContextTestExecutionListener, TransactionalTestExecutionListener, SqlScriptsTestExecutionListener, WithSecurityContextTestExecutionListener, EventPublishingTestExecutionListener, ReactorContextTestExecutionListener, RestDocsTestExecutionListener, MockRestServiceServerResetTestExecutionListener, MockMvcPrintOnlyOnFailureTestExecutionListener, WebDriverTestExecutionListener, MockWebServiceServerTestExecutionListener, ResetMocksTestExecutionListener]
+2025-03-09T08:47:36.469Z DEBUG 4911 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test class: class [SimpleControllerTest], class annotated with @DirtiesContext [false] with mode [null]
+2025-03-09T08:47:36.491Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.env.OriginTrackedYamlLoader     : Loading from YAML: class path resource [application.yml]
+2025-03-09T08:47:36.496Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.env.OriginTrackedYamlLoader     : Merging document (no matchers set): {spring={profiles={active=test}, config={use-legacy-processing=true}, datasource={driver-class-name=org.h2.Driver, url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1, username=sa, password=}, jpa={hibernate={ddl-auto=none}, show-sql=true, properties={hibernate={format_sql=true, dialect=org.hibernate.dialect.H2Dialect}}}, sql={init={mode=always, schema-locations=classpath:schema.sql, data-locations=classpath:data.sql}}, main={allow-bean-definition-overriding=true}}}
+2025-03-09T08:47:36.497Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.env.OriginTrackedYamlLoader     : Loaded 1 document from YAML resource: class path resource [application.yml]
+2025-03-09T08:47:36.521Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.env.OriginTrackedYamlLoader     : Loading from YAML: class path resource [application-test.yml]
+2025-03-09T08:47:36.532Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.env.OriginTrackedYamlLoader     : Merging document (no matchers set): {spring={application={name=stoblyx}, main={allow-bean-definition-overriding=true}, h2={console={enabled=true, path=/h2-console, settings={web-allow-others=true, trace=true}}}, autoconfigure={exclude=[org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration, org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration]}, datasource={driver-class-name=org.h2.Driver, url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE, username=sa, password=, initialization-mode=always}, jpa={database-platform=org.hibernate.dialect.H2Dialect, hibernate={ddl-auto=create-drop}, show-sql=true, properties={hibernate={format_sql=true, use_sql_comments=true, highlight_sql=true, dialect=org.hibernate.dialect.H2Dialect, globally_quoted_identifiers=true}}, generate-ddl=true, defer-datasource-initialization=true}, sql={init={mode=never}}, data={redis={enabled=true, host=127.0.0.1, port=6379, password=, database=0}}, security={oauth2={client={registration={github={client-id=test-client-id, client-secret=test-client-secret}}}}, user={name=test, password=test}}, jackson={date-format=yyyy-MM-dd, serialization={write-dates-as-timestamps=false}, deserialization={fail-on-unknown-properties=false, accept-empty-string-as-null-object=true}}}, jwt={secret=test_jwt_secret_key_for_testing_purposes_only, expiration=3600, refresh-expiration=86400, access-token-validity-in-seconds=3600, refresh-token-validity-in-seconds=86400}, kobart={api={url=http://localhost:5000}}, server={port=0}, logging={level={root=INFO, com.j30n.stoblyx=DEBUG, org.springframework.web=DEBUG, org.springframework.security=DEBUG, org.hibernate.SQL=DEBUG, org.hibernate.type.descriptor.sql.BasicBinder=TRACE, org.springframework.test=DEBUG, org.springframework.jdbc.datasource.init=DEBUG}}, xss={filter={exclusions=[/auth/.*, /docs/.*, /books/.*, /quotes/.*, /test/.*]}}, test={skip-jwt-verify=true}, entity-scan={packages=com.j30n.stoblyx.domain.model}}
+2025-03-09T08:47:36.533Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.env.OriginTrackedYamlLoader     : Loaded 1 document from YAML resource: class path resource [application-test.yml]
+2025-03-09T08:47:36.536Z DEBUG 4911 --- [stoblyx] [    Test worker] .s.b.w.s.c.ApplicationServletEnvironment : Activating profiles [test]
+2025-03-09T08:47:36.546Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.c.e.PropertySourcesPropertyResolver  : Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.9)
+
+2025-03-09T08:47:36.559Z  INFO 4911 --- [stoblyx] [    Test worker] m.p.springdotenv.DotenvPropertySource    : Initializing Dotenv with DotenvConfig{directory=null, filename=null, ignoreIfMalformed=false, ignoreIfMissing=true, systemProperties=false, prefix=null}
+2025-03-09T08:47:36.561Z  INFO 4911 --- [stoblyx] [    Test worker] c.j30n.stoblyx.api.SimpleControllerTest  : Starting SimpleControllerTest using Java 17.0.14 with PID 4911 (started by runner in /home/runner/work/stoblyx-portfolio/stoblyx-portfolio)
+2025-03-09T08:47:36.561Z DEBUG 4911 --- [stoblyx] [    Test worker] c.j30n.stoblyx.api.SimpleControllerTest  : Running with Spring Boot v3.3.9, Spring v6.1.17
+2025-03-09T08:47:36.561Z  INFO 4911 --- [stoblyx] [    Test worker] c.j30n.stoblyx.api.SimpleControllerTest  : The following 1 profile is active: &quot;test&quot;
+2025-03-09T08:47:36.562Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.boot.SpringApplication               : Loading source class com.j30n.stoblyx.StoblyxApplication
+2025-03-09T08:47:36.568Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.w.c.s.GenericWebApplicationContext   : Refreshing org.springframework.web.context.support.GenericWebApplicationContext@2ec0e1d1
+2025-03-09T08:47:37.311Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.j30n.stoblyx'. Automatic @Repository and @Entity scanning is enabled.
+2025-03-09T08:47:37.363Z DEBUG 4911 --- [stoblyx] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : 4 mappings in 'requestMappingHandlerMapping'
+2025-03-09T08:47:37.385Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**, /uploads/**] in 'resourceHandlerMapping'
+2025-03-09T08:47:37.396Z DEBUG 4911 --- [stoblyx] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2025-03-09T08:47:37.407Z DEBUG 4911 --- [stoblyx] [    Test worker] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 1 @ExceptionHandler, 1 ResponseBodyAdvice
+2025-03-09T08:47:37.430Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.w.s.v.f.FreeMarkerConfigurer         : File system access not preferred: using SpringTemplateLoader
+2025-03-09T08:47:37.433Z  WARN 4911 --- [stoblyx] [    Test worker] o.s.b.a.f.FreeMarkerAutoConfiguration    : Cannot find template location: [classpath:/templates/] (please add some templates, check your FreeMarker configuration, or set spring.freemarker.check-template-location=false)
+2025-03-09T08:47:37.464Z  INFO 4911 --- [stoblyx] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-03-09T08:47:37.490Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with filters: DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter, HeaderWriterFilter, CsrfFilter, LogoutFilter, UsernamePasswordAuthenticationFilter, DefaultLoginPageGeneratingFilter, DefaultLogoutPageGeneratingFilter, BasicAuthenticationFilter, RequestCacheAwareFilter, SecurityContextHolderAwareRequestFilter, AnonymousAuthenticationFilter, ExceptionTranslationFilter, AuthorizationFilter
+2025-03-09T08:47:37.504Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: xssFilterRegistrationBean urls=[/*] order=1, springSecurityFilterChain urls=[/*] order=-100, xssFilter urls=[/*] order=-2147483648, characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
+2025-03-09T08:47:37.504Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: 
+2025-03-09T08:47:37.522Z DEBUG 4911 --- [stoblyx] [    Test worker] s.b.w.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
+2025-03-09T08:47:37.522Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.b.w.s.f.OrderedFormContentFilter     : Filter 'formContentFilter' configured for use
+2025-03-09T08:47:37.522Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.b.w.s.f.OrderedRequestContextFilter  : Filter 'requestContextFilter' configured for use
+2025-03-09T08:47:37.522Z DEBUG 4911 --- [stoblyx] [    Test worker] .DelegatingFilterProxyRegistrationBean$1 : Filter 'springSecurityFilterChain' configured for use
+2025-03-09T08:47:37.523Z  INFO 4911 --- [stoblyx] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2025-03-09T08:47:37.523Z  INFO 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2025-03-09T08:47:37.523Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Detected AcceptHeaderLocaleResolver
+2025-03-09T08:47:37.523Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Detected FixedThemeResolver
+2025-03-09T08:47:37.524Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@5bed9cd9
+2025-03-09T08:47:37.525Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Detected org.springframework.web.servlet.support.SessionFlashMapManager@61799717
+2025-03-09T08:47:37.525Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2025-03-09T08:47:37.525Z  INFO 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 2 ms
+2025-03-09T08:47:37.538Z DEBUG 4911 --- [stoblyx] [    Test worker] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ErrorMvcAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.Servlet', 'org.springframework.web.servlet.DispatcherServlet' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+
+   ErrorMvcAutoConfiguration#basicErrorController matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.web.servlet.error.ErrorController; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration#errorAttributes matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.web.servlet.error.ErrorAttributes; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration matched:
+      - @ConditionalOnProperty (server.error.whitelabel.enabled) matched (OnPropertyCondition)
+      - ErrorTemplate Missing did not find error template view (ErrorMvcAutoConfiguration.ErrorTemplateMissingCondition)
+
+   ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration#beanNameViewResolver matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.BeanNameViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration#defaultErrorView matched:
+      - @ConditionalOnMissingBean (names: error; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   FreeMarkerAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'freemarker.template.Configuration', 'org.springframework.ui.freemarker.FreeMarkerConfigurationFactory' (OnClassCondition)
+
+   FreeMarkerServletWebConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.Servlet', 'org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+
+   FreeMarkerServletWebConfiguration#freeMarkerConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.freemarker.FreeMarkerConfig; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   FreeMarkerServletWebConfiguration#freeMarkerViewResolver matched:
+      - @ConditionalOnProperty (spring.freemarker.enabled) matched (OnPropertyCondition)
+      - @ConditionalOnMissingBean (names: freeMarkerViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   GsonAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'com.google.gson.Gson' (OnClassCondition)
+
+   GsonAutoConfiguration#gson matched:
+      - @ConditionalOnMissingBean (types: com.google.gson.Gson; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   GsonAutoConfiguration#gsonBuilder matched:
+      - @ConditionalOnMissingBean (types: com.google.gson.GsonBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   GsonHttpMessageConvertersConfiguration matched:
+      - @ConditionalOnClass found required class 'com.google.gson.Gson' (OnClassCondition)
+
+   HttpEncodingAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.web.filter.CharacterEncodingFilter' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+      - @ConditionalOnProperty (server.servlet.encoding.enabled) matched (OnPropertyCondition)
+
+   HttpEncodingAutoConfiguration#characterEncodingFilter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.filter.CharacterEncodingFilter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   HttpMessageConvertersAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.HttpMessageConverter' (OnClassCondition)
+      - NoneNestedConditions 0 matched 1 did not; NestedCondition on HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition.ReactiveWebApplication did not find reactive web application classes (HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition)
+
+   HttpMessageConvertersAutoConfiguration#messageConverters matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.autoconfigure.http.HttpMessageConverters; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   HttpMessageConvertersAutoConfiguration.StringHttpMessageConverterConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.StringHttpMessageConverter' (OnClassCondition)
+
+   HttpMessageConvertersAutoConfiguration.StringHttpMessageConverterConfiguration#stringHttpMessageConverter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.http.converter.StringHttpMessageConverter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   HypermediaAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'org.springframework.hateoas.EntityModel', 'org.springframework.web.bind.annotation.RequestMapping', 'org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter', 'org.springframework.plugin.core.Plugin' (OnClassCondition)
+      - @ConditionalOnWebApplication (required) found 'session' scope (OnWebApplicationCondition)
+
+   HypermediaAutoConfiguration#applicationJsonHalConfiguration matched:
+      - @ConditionalOnClass found required class 'com.fasterxml.jackson.databind.ObjectMapper' (OnClassCondition)
+      - @ConditionalOnProperty (spring.hateoas.use-hal-as-default-json-media-type) matched (OnPropertyCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.hateoas.mediatype.hal.HalConfiguration; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   HypermediaAutoConfiguration.HypermediaConfiguration matched:
+      - @ConditionalOnClass found required class 'com.fasterxml.jackson.databind.ObjectMapper' (OnClassCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.hateoas.client.LinkDiscoverers; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'com.fasterxml.jackson.databind.ObjectMapper' (OnClassCondition)
+
+   JacksonAutoConfiguration.Jackson2ObjectMapperBuilderCustomizerConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.json.Jackson2ObjectMapperBuilder' (OnClassCondition)
+
+   JacksonAutoConfiguration.JacksonObjectMapperBuilderConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.json.Jackson2ObjectMapperBuilder' (OnClassCondition)
+
+   JacksonAutoConfiguration.JacksonObjectMapperBuilderConfiguration#jacksonObjectMapperBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.http.converter.json.Jackson2ObjectMapperBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonAutoConfiguration.JacksonObjectMapperConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.json.Jackson2ObjectMapperBuilder' (OnClassCondition)
+
+   JacksonAutoConfiguration.JacksonObjectMapperConfiguration#jacksonObjectMapper matched:
+      - @ConditionalOnMissingBean (types: com.fasterxml.jackson.databind.ObjectMapper; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonAutoConfiguration.ParameterNamesModuleConfiguration matched:
+      - @ConditionalOnClass found required class 'com.fasterxml.jackson.module.paramnames.ParameterNamesModule' (OnClassCondition)
+
+   JacksonAutoConfiguration.ParameterNamesModuleConfiguration#parameterNamesModule matched:
+      - @ConditionalOnMissingBean (types: com.fasterxml.jackson.module.paramnames.ParameterNamesModule; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration matched:
+      - @ConditionalOnClass found required class 'com.fasterxml.jackson.databind.ObjectMapper' (OnClassCondition)
+      - @ConditionalOnProperty (spring.mvc.converters.preferred-json-mapper=jackson) matched (OnPropertyCondition)
+      - @ConditionalOnBean (types: com.fasterxml.jackson.databind.ObjectMapper; SearchStrategy: all) found bean 'jacksonObjectMapper' (OnBeanCondition)
+
+   JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration#mappingJackson2HttpMessageConverter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.http.converter.json.MappingJackson2HttpMessageConverter ignored: org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter,org.springframework.data.rest.webmvc.alps.AlpsJsonHttpMessageConverter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MockMvcAutoConfiguration matched:
+      - found 'session' scope (OnWebApplicationCondition)
+
+   MockMvcAutoConfiguration#dispatcherServlet matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.DispatcherServlet; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MockMvcAutoConfiguration#dispatcherServletPath matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MockMvcAutoConfiguration#mockMvc matched:
+      - @ConditionalOnMissingBean (types: org.springframework.test.web.servlet.MockMvc; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MockMvcAutoConfiguration#mockMvcBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.test.web.servlet.MockMvcBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MockMvcSecurityConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors' (OnClassCondition)
+
+   MockMvcSecurityConfiguration#securityMockMvcBuilderCustomizer matched:
+      - @ConditionalOnBean (names: springSecurityFilterChain; SearchStrategy: all) found bean 'springSecurityFilterChain' (OnBeanCondition)
+
+   NoOpCacheConfiguration matched:
+      - Cache org.springframework.boot.autoconfigure.cache.NoOpCacheConfiguration NONE cache type (CacheCondition)
+
+   SecurityAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.authentication.DefaultAuthenticationEventPublisher' (OnClassCondition)
+
+   SecurityAutoConfiguration#authenticationEventPublisher matched:
+      - @ConditionalOnMissingBean (types: org.springframework.security.authentication.AuthenticationEventPublisher; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   SecurityFilterAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer', 'org.springframework.security.config.http.SessionCreationPolicy' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+
+   SecurityFilterAutoConfiguration#securityFilterChainRegistration matched:
+      - @ConditionalOnBean (names: springSecurityFilterChain; SearchStrategy: all) found bean 'springSecurityFilterChain' (OnBeanCondition)
+
+   SpringBootWebSecurityConfiguration matched:
+      - found 'session' scope (OnWebApplicationCondition)
+
+   SpringBootWebSecurityConfiguration.SecurityFilterChainConfiguration matched:
+      - AllNestedConditions 2 matched 0 did not; NestedCondition on DefaultWebSecurityCondition.Beans @ConditionalOnMissingBean (types: org.springframework.security.web.SecurityFilterChain; SearchStrategy: all) did not find any beans; NestedCondition on DefaultWebSecurityCondition.Classes @ConditionalOnClass found required classes 'org.springframework.security.web.SecurityFilterChain', 'org.springframework.security.config.annotation.web.builders.HttpSecurity' (DefaultWebSecurityCondition)
+
+   SpringBootWebSecurityConfiguration.WebSecurityEnablerConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.config.annotation.web.configuration.EnableWebSecurity' (OnClassCondition)
+      - @ConditionalOnMissingBean (names: springSecurityFilterChain; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   TaskExecutionAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor' (OnClassCondition)
+
+   TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration#simpleAsyncTaskExecutorBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+      - @ConditionalOnThreading found PLATFORM (OnThreadingCondition)
+
+   TaskExecutorConfigurations.TaskExecutorBuilderConfiguration#taskExecutorBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.TaskExecutorBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   TaskExecutorConfigurations.TaskExecutorConfiguration matched:
+      - @ConditionalOnMissingBean (types: java.util.concurrent.Executor; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   TaskExecutorConfigurations.TaskExecutorConfiguration#applicationTaskExecutor matched:
+      - @ConditionalOnThreading found PLATFORM (OnThreadingCondition)
+
+   TaskExecutorConfigurations.ThreadPoolTaskExecutorBuilderConfiguration#threadPoolTaskExecutorBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.TaskExecutorBuilder,org.springframework.boot.task.ThreadPoolTaskExecutorBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   UserDetailsServiceAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.authentication.AuthenticationManager' (OnClassCondition)
+      - AnyNestedCondition 3 matched 0 did not; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.PasswordConfigured @ConditionalOnProperty (spring.security.user.password) matched; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.NameConfigured @ConditionalOnProperty (spring.security.user.name) matched; NestedCondition on UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured.MissingAlternative @ConditionalOnMissingClass did not find unwanted classes 'org.springframework.security.oauth2.client.registration.ClientRegistrationRepository', 'org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector', 'org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository' (UserDetailsServiceAutoConfiguration.MissingAlternativeOrUserPropertiesConfigured)
+      - @ConditionalOnBean (types: org.springframework.security.config.annotation.ObjectPostProcessor; SearchStrategy: all) found bean 'objectPostProcessor'; @ConditionalOnMissingBean (types: org.springframework.security.authentication.AuthenticationManager,org.springframework.security.authentication.AuthenticationProvider,org.springframework.security.core.userdetails.UserDetailsService,org.springframework.security.authentication.AuthenticationManagerResolver,org.springframework.security.oauth2.jwt.JwtDecoder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   ValidationAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'jakarta.validation.executable.ExecutableValidator' (OnClassCondition)
+      - @ConditionalOnResource found location classpath:META-INF/services/jakarta.validation.spi.ValidationProvider (OnResourceCondition)
+
+   ValidationAutoConfiguration#defaultValidator matched:
+      - @ConditionalOnMissingBean (types: jakarta.validation.Validator; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   ValidationAutoConfiguration#methodValidationPostProcessor matched:
+      - @ConditionalOnMissingBean (types: org.springframework.validation.beanvalidation.MethodValidationPostProcessor; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.Servlet', 'org.springframework.web.servlet.DispatcherServlet', 'org.springframework.web.servlet.config.annotation.WebMvcConfigurer' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration#formContentFilter matched:
+      - @ConditionalOnProperty (spring.mvc.formcontent.filter.enabled) matched (OnPropertyCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.web.filter.FormContentFilter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.EnableWebMvcConfiguration#flashMapManager matched:
+      - @ConditionalOnMissingBean (names: flashMapManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.EnableWebMvcConfiguration#localeResolver matched:
+      - @ConditionalOnMissingBean (names: localeResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.EnableWebMvcConfiguration#themeResolver matched:
+      - @ConditionalOnMissingBean (names: themeResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#defaultViewResolver matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.InternalResourceViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#requestContextFilter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.context.request.RequestContextListener,org.springframework.web.filter.RequestContextFilter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#viewResolver matched:
+      - @ConditionalOnBean (types: org.springframework.web.servlet.ViewResolver; SearchStrategy: all) found beans 'defaultViewResolver', 'beanNameViewResolver', 'mvcViewResolver'; @ConditionalOnMissingBean (names: viewResolver types: org.springframework.web.servlet.view.ContentNegotiatingViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   Cache2kCacheConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.cache2k.Cache2kBuilder' (OnClassCondition)
+
+   CacheAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.cache.interceptor.CacheAspectSupport; SearchStrategy: all) did not find any beans of type org.springframework.cache.interceptor.CacheAspectSupport (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.cache.CacheManager' (OnClassCondition)
+
+   CacheAutoConfiguration.CacheManagerEntityManagerFactoryDependsOnPostProcessor:
+      Did not match:
+         - Ancestor org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration did not match (ConditionEvaluationReport.AncestorsMatchedCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean' (OnClassCondition)
+
+   CaffeineCacheConfiguration:
+      Did not match:
+         - Cache org.springframework.boot.autoconfigure.cache.CaffeineCacheConfiguration unknown cache type (CacheCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'com.github.benmanes.caffeine.cache.Caffeine', 'org.springframework.cache.caffeine.CaffeineCacheManager' (OnClassCondition)
+
+   CouchbaseCacheConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'com.couchbase.client.java.Cluster' (OnClassCondition)
+
+   ErrorMvcAutoConfiguration.DefaultErrorViewResolverConfiguration#conventionErrorViewResolver:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.web.servlet.DispatcherServlet; SearchStrategy: all) did not find any beans of type org.springframework.web.servlet.DispatcherServlet (OnBeanCondition)
+
+   FreeMarkerNonWebConfiguration:
+      Did not match:
+         - @ConditionalOnWebApplication found 'session' scope and did not find reactive web application classes (OnWebApplicationCondition)
+
+   FreeMarkerReactiveWebConfiguration:
+      Did not match:
+         - did not find reactive web application classes (OnWebApplicationCondition)
+
+   FreeMarkerServletWebConfiguration#resourceUrlEncodingFilter:
+      Did not match:
+         - @ConditionalOnEnabledResourceChain did not find class org.webjars.WebJarAssetLocator (OnEnabledResourceChainCondition)
+
+   GenericCacheConfiguration:
+      Did not match:
+         - Cache org.springframework.boot.autoconfigure.cache.GenericCacheConfiguration unknown cache type (CacheCondition)
+
+   GroovyTemplateAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'groovy.text.markup.MarkupTemplateEngine' (OnClassCondition)
+
+   GsonHttpMessageConvertersConfiguration.GsonHttpMessageConverterConfiguration:
+      Did not match:
+         - AnyNestedCondition 0 matched 2 did not; NestedCondition on GsonHttpMessageConvertersConfiguration.PreferGsonOrJacksonAndJsonbUnavailableCondition.JacksonJsonbUnavailable NoneNestedConditions 1 matched 1 did not; NestedCondition on GsonHttpMessageConvertersConfiguration.JacksonAndJsonbUnavailableCondition.JsonbPreferred @ConditionalOnProperty (spring.mvc.converters.preferred-json-mapper=jsonb) did not find property 'spring.mvc.converters.preferred-json-mapper'; NestedCondition on GsonHttpMessageConvertersConfiguration.JacksonAndJsonbUnavailableCondition.JacksonAvailable @ConditionalOnBean (types: org.springframework.http.converter.json.MappingJackson2HttpMessageConverter; SearchStrategy: all) found bean 'mappingJackson2HttpMessageConverter'; NestedCondition on GsonHttpMessageConvertersConfiguration.PreferGsonOrJacksonAndJsonbUnavailableCondition.GsonPreferred @ConditionalOnProperty (spring.mvc.converters.preferred-json-mapper=gson) did not find property 'spring.mvc.converters.preferred-json-mapper' (GsonHttpMessageConvertersConfiguration.PreferGsonOrJacksonAndJsonbUnavailableCondition)
+
+   HazelcastCacheConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'com.hazelcast.core.HazelcastInstance' (OnClassCondition)
+
+   InfinispanCacheConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager' (OnClassCondition)
+
+   JCacheCacheConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'javax.cache.Caching' (OnClassCondition)
+
+   JacksonHttpMessageConvertersConfiguration.MappingJackson2XmlHttpMessageConverterConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'com.fasterxml.jackson.dataformat.xml.XmlMapper' (OnClassCondition)
+
+   JsonbAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'jakarta.json.bind.Jsonb' (OnClassCondition)
+
+   JsonbHttpMessageConvertersConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'jakarta.json.bind.Jsonb' (OnClassCondition)
+
+   MessageSourceAutoConfiguration:
+      Did not match:
+         - ResourceBundle did not find bundle with basename messages (MessageSourceAutoConfiguration.ResourceBundleCondition)
+
+   MockMvcAutoConfiguration.WebTestClientMockMvcConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.web.reactive.function.client.WebClient' (OnClassCondition)
+
+   MockMvcWebClientAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'com.gargoylesoftware.htmlunit.WebClient' (OnClassCondition)
+
+   MockMvcWebDriverAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.openqa.selenium.htmlunit.HtmlUnitDriver' (OnClassCondition)
+
+   MustacheAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'com.samskivert.mustache.Mustache' (OnClassCondition)
+
+   OAuth2ClientAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.security.oauth2.client.registration.ClientRegistration' (OnClassCondition)
+
+   OAuth2ResourceServerAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken' (OnClassCondition)
+
+   RedisCacheConfiguration:
+      Did not match:
+         - Cache org.springframework.boot.autoconfigure.cache.RedisCacheConfiguration unknown cache type (CacheCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.data.redis.connection.RedisConnectionFactory' (OnClassCondition)
+
+   SecurityDataConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.security.data.repository.query.SecurityEvaluationContextExtension' (OnClassCondition)
+
+   SimpleCacheConfiguration:
+      Did not match:
+         - Cache org.springframework.boot.autoconfigure.cache.SimpleCacheConfiguration unknown cache type (CacheCondition)
+
+   SpringDataWebAutoConfiguration:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.data.web.PageableHandlerMethodArgumentResolver; SearchStrategy: all) found beans of type 'org.springframework.data.web.PageableHandlerMethodArgumentResolver' pageableResolver (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'org.springframework.data.web.PageableHandlerMethodArgumentResolver', 'org.springframework.web.servlet.config.annotation.WebMvcConfigurer' (OnClassCondition)
+         - found 'session' scope (OnWebApplicationCondition)
+
+   TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration#simpleAsyncTaskExecutorBuilderVirtualThreads:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder; SearchStrategy: all) found beans of type 'org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder' simpleAsyncTaskExecutorBuilder (OnBeanCondition)
+
+   TaskExecutorConfigurations.TaskExecutorConfiguration#applicationTaskExecutorVirtualThreads:
+      Did not match:
+         - @ConditionalOnThreading did not find VIRTUAL (OnThreadingCondition)
+
+   ThymeleafAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.thymeleaf.spring6.SpringTemplateEngine' (OnClassCondition)
+
+   WebMvcAutoConfiguration#hiddenHttpMethodFilter:
+      Did not match:
+         - @ConditionalOnProperty (spring.mvc.hiddenmethod.filter.enabled) did not find property 'enabled' (OnPropertyCondition)
+
+   WebMvcAutoConfiguration.ProblemDetailsErrorHandlingConfiguration:
+      Did not match:
+         - @ConditionalOnProperty (spring.mvc.problemdetails.enabled=true) did not find property 'enabled' (OnPropertyCondition)
+
+   WebMvcAutoConfiguration.ResourceChainCustomizerConfiguration:
+      Did not match:
+         - @ConditionalOnEnabledResourceChain did not find class org.webjars.WebJarAssetLocator (OnEnabledResourceChainCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#beanNameViewResolver:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.BeanNameViewResolver; SearchStrategy: all) found beans of type 'org.springframework.web.servlet.view.BeanNameViewResolver' beanNameViewResolver (OnBeanCondition)
+
+   WebTestClientAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.web.reactive.function.client.WebClient' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+    org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-03-09T08:47:37.547Z  INFO 4911 --- [stoblyx] [    Test worker] c.j30n.stoblyx.api.SimpleControllerTest  : Started SimpleControllerTest in 1.069 seconds (process running for 32.785)
+2025-03-09T08:47:37.549Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 67, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.550Z DEBUG 4911 --- [stoblyx] [    Test worker] DependencyInjectionTestExecutionListener : Performing dependency injection for test class com.j30n.stoblyx.api.SimpleControllerTest
+2025-03-09T08:47:37.551Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 68, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.553Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 69, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.555Z DEBUG 4911 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [SimpleControllerTest], method [testHealthCheck], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-09T08:47:37.556Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 70, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.559Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 71, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.561Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 72, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.561Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 73, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.562Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 74, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.564Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 75, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.585Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.586Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.587Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Getting field 'securityContextRepository' from target object [org.springframework.security.web.context.SecurityContextHolderFilter@6d0d2ae1] or target class [class org.springframework.security.web.context.SecurityContextHolderFilter]
+2025-03-09T08:47:37.588Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.588Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.589Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Setting field 'securityContextRepository' of type [null] on target object [org.springframework.security.web.context.SecurityContextHolderFilter@6d0d2ae1] or target class [class org.springframework.security.web.context.SecurityContextHolderFilter] to value [org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors$SecurityContextRequestPostProcessorSupport$TestSecurityContextRepository@65123b1d]
+2025-03-09T08:47:37.591Z DEBUG 4911 --- [stoblyx] [    Test worker] w.c.HttpSessionSecurityContextRepository : Created HttpSession as SecurityContext is non-default
+2025-03-09T08:47:37.592Z DEBUG 4911 --- [stoblyx] [    Test worker] w.c.HttpSessionSecurityContextRepository : Stored SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=testuser, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]] to HttpSession [org.springframework.mock.web.MockHttpSession@62f15824]
+2025-03-09T08:47:37.593Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.593Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Getting field 'tokenRepository' from target object [org.springframework.security.web.csrf.CsrfFilter@709bdd17] or target class [class org.springframework.security.web.csrf.CsrfFilter]
+2025-03-09T08:47:37.593Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.593Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Getting field 'requestHandler' from target object [org.springframework.security.web.csrf.CsrfFilter@709bdd17] or target class [class org.springframework.security.web.csrf.CsrfFilter]
+2025-03-09T08:47:37.594Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Invoking method 'getFilters' on target object [FilterChainProxy[Filter Chains: null]] or target class [null] with arguments {org.springframework.mock.web.MockHttpServletRequest@5aca279c}
+2025-03-09T08:47:37.594Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.test.util.ReflectionTestUtils        : Setting field 'tokenRepository' of type [null] on target object [org.springframework.security.web.csrf.CsrfFilter@709bdd17] or target class [class org.springframework.security.web.csrf.CsrfFilter] to value [org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors$CsrfRequestPostProcessor$TestCsrfTokenRepository@19a16c71]
+2025-03-09T08:47:37.601Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.security.web.FilterChainProxy        : Securing GET /health
+2025-03-09T08:47:37.604Z DEBUG 4911 --- [stoblyx] [    Test worker] w.c.HttpSessionSecurityContextRepository : Retrieved SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=testuser, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]
+2025-03-09T08:47:37.613Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.security.web.FilterChainProxy        : Secured GET /health
+2025-03-09T08:47:37.615Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : GET &quot;/health&quot;, parameters={masked}
+2025-03-09T08:47:37.616Z DEBUG 4911 --- [stoblyx] [    Test worker] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.HealthCheckController#healthCheck()
+2025-03-09T08:47:37.628Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-09T08:47:37.629Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=SUCCESS, message=시스템이 정상 작동 중입니다., data={status=UP, timestamp=1741510057618})]
+2025-03-09T08:47:37.641Z DEBUG 4911 --- [stoblyx] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed 200 OK
+
+MockHttpServletRequest:
+      HTTP Method = GET
+      Request URI = /health
+       Parameters = {_csrf=[3b67J18PVxtbZZHVa0uS7EMICoQO-wGEdoo-1kYv_xQzOvmIv4_dFW1tbyJ2UPS2D2am1CA-J7w9y2OpELld53IfziALApuw]}
+          Headers = [Content-Type:&quot;application/json;charset=UTF-8&quot;]
+             Body = null
+    Session Attrs = {SPRING_SECURITY_CONTEXT=SecurityContextImpl [Authentication=UsernamePasswordAuthenticationToken [Principal=org.springframework.security.core.userdetails.User [Username=testuser, Password=[PROTECTED], Enabled=true, AccountNonExpired=true, CredentialsNonExpired=true, AccountNonLocked=true, Granted Authorities=[ROLE_USER]], Credentials=[PROTECTED], Authenticated=true, Details=null, Granted Authorities=[ROLE_USER]]]}
+
+Handler:
+             Type = com.j30n.stoblyx.adapter.in.web.controller.HealthCheckController
+           Method = com.j30n.stoblyx.adapter.in.web.controller.HealthCheckController#healthCheck()
+
+Async:
+    Async started = false
+     Async result = null
+
+Resolved Exception:
+             Type = null
+
+ModelAndView:
+        View name = null
+             View = null
+            Model = null
+
+FlashMap:
+       Attributes = null
+
+MockHttpServletResponse:
+           Status = 200
+    Error message = null
+          Headers = [Content-Type:&quot;application/json&quot;, X-Content-Type-Options:&quot;nosniff&quot;, X-XSS-Protection:&quot;0&quot;, Cache-Control:&quot;no-cache, no-store, max-age=0, must-revalidate&quot;, Pragma:&quot;no-cache&quot;, Expires:&quot;0&quot;, X-Frame-Options:&quot;DENY&quot;]
+     Content type = application/json
+             Body = {&quot;result&quot;:&quot;SUCCESS&quot;,&quot;message&quot;:&quot;시스템이 정상 작동 중입니다.&quot;,&quot;data&quot;:{&quot;status&quot;:&quot;UP&quot;,&quot;timestamp&quot;:1741510057618}}
+    Forwarded URL = null
+   Redirected URL = null
+          Cookies = []
+2025-03-09T08:47:37.725Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 76, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.725Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 77, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.726Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 78, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.727Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 79, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.727Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 80, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.727Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 81, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.728Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 82, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.728Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 83, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.729Z DEBUG 4911 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [SimpleControllerTest], method [testHealthCheck], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-09T08:47:37.730Z DEBUG 4911 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@14b2afbe size = 2, maxSize = 32, parentContextCount = 0, hitCount = 84, missCount = 2, failureCount = 0]
+2025-03-09T08:47:37.730Z DEBUG 4911 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test class: class [SimpleControllerTest], class annotated with @DirtiesContext [false] with mode [null]
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 8.12.1</a> at Mar 9, 2025, 8:47:38 AM</p>
+</div>
+</div>
+</body>
+</html>
