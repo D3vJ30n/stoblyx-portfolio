@@ -17,14 +17,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure' }}
 
-    # GitHub Pages 권한 추가 (확장)
+    # GitHub Pages 권한 추가
     permissions:
-      actions: read
       contents: read
       pages: write
       id-token: write
-      checks: write
-      deployments: write
 
     # GitHub Pages 환경 설정
     environment:
@@ -32,6 +29,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      - name: 체크아웃
+        uses: actions/checkout@v4
+
       - name: 아티팩트 다운로드
         uses: actions/download-artifact@v4
         with:
@@ -47,8 +47,9 @@ jobs:
           ls -la artifacts || echo "아티팩트 디렉토리가 없습니다"
           find artifacts -type f 2>/dev/null || echo "아티팩트 파일이 없습니다"
 
-      - name: 보고서 디렉토리 설정
+      - name: 보고서 준비
         run: |
+          # 보고서 디렉토리 생성
           mkdir -p reports
 
           # 테스트 보고서 복사 (있는 경우만)
@@ -63,21 +64,7 @@ jobs:
             cp -r artifacts/extent-reports/* reports/extent-reports/
           fi
 
-          # 커버리지 보고서 복사 (있는 경우만)
-          if [ -d "artifacts/coverage-reports" ]; then
-            mkdir -p reports/coverage
-            cp -r artifacts/coverage-reports/* reports/coverage/
-          fi
-
-          # 테스트 결과 XML 복사 (있는 경우만)
-          if [ -d "artifacts/test-results" ]; then
-            mkdir -p reports/test-results
-            cp -r artifacts/test-results/* reports/test-results/
-          fi
-
-      - name: 인덱스 페이지 생성
-        run: |
-          mkdir -p reports
+          # 기본 인덱스 페이지 생성
           cat > reports/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="ko">
@@ -94,83 +81,25 @@ jobs:
             <h1>API 테스트 보고서</h1>
             <a class="report-link" href="./unit-tests/index.html">JUnit 테스트 보고서</a>
             <a class="report-link" href="./extent-reports/extent-report.html">API 요청/응답 상세 보고서</a>
-            <a class="report-link" href="./coverage/index.html">코드 커버리지 보고서</a>
-            <a class="report-link" href="./test-results/">테스트 결과 XML</a>
             <p>생성 시간: <span id="date"></span></p>
             <script>document.getElementById('date').textContent = new Date().toLocaleString();</script>
           </body>
           </html>
           EOF
 
-      - name: 보고서 디렉토리 확인
-        run: |
+          # 보고서 디렉토리 내용 확인
           echo "보고서 디렉토리 내용:"
-          ls -la reports || echo "보고서 디렉토리가 없습니다"
-          find reports -type f 2>/dev/null || echo "보고서 파일이 없습니다"
-
-          # 항상 기본 페이지 생성 (기존 index.html이 있어도 덮어쓰지 않음)
-          if [ ! -f "reports/index.html" ]; then
-            echo "기본 인덱스 페이지 생성..."
-            mkdir -p reports
-            cat > reports/index.html << 'EOF'
-            <!DOCTYPE html>
-            <html lang="ko">
-            <head>
-              <meta charset="UTF-8">
-              <title>API 테스트 보고서</title>
-              <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h1 { color: #2c3e50; }
-                .report-link { display: block; margin: 10px 0; padding: 10px; background: #f5f5f5; }
-              </style>
-            </head>
-            <body>
-              <h1>API 테스트 보고서</h1>
-              <p>테스트 보고서가 생성되었습니다.</p>
-              <p>생성 시간: <span id="date"></span></p>
-              <script>document.getElementById('date').textContent = new Date().toLocaleString();</script>
-            </body>
-            </html>
-            EOF
-          fi
-
-          # 빈 디렉토리 확인 및 처리
-          if [ -z "$(find reports -type f 2>/dev/null)" ]; then
-            echo "보고서 디렉토리에 파일이 없습니다. 기본 파일 생성..."
-            mkdir -p reports
-            echo "테스트 보고서 내용" > reports/report.txt
-          fi
-
-      # 디버그용 아티팩트 업로드 (항상 성공하도록)
-      - name: 디버그 아티팩트 생성
-        run: |
-          mkdir -p debug-artifacts
-          echo "디버그 정보" > debug-artifacts/debug.txt
-          echo "워크플로우 실행 ID: ${{ github.event.workflow_run.id }}" >> debug-artifacts/debug.txt
-          echo "실행 시간: $(date)" >> debug-artifacts/debug.txt
-          cp -r reports/* debug-artifacts/ || true
+          ls -la reports
+          find reports -type f
 
       - name: GitHub Pages 설정
         uses: actions/configure-pages@v3
-        with:
-          enablement: true
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: GitHub Pages 업로드
-        id: upload-pages-artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: reports
-          retention-days: 1
-
-      - name: 업로드 결과 확인
-        run: |
-          echo "업로드 결과: ${{ steps.upload-pages-artifact.outcome }}"
-          echo "업로드 결과 코드: ${{ steps.upload-pages-artifact.conclusion }}"
 
       - name: GitHub Pages 배포
-        if: steps.upload-pages-artifact.outcome == 'success'
         id: deployment
         uses: actions/deploy-pages@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
