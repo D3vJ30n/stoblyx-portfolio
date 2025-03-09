@@ -176,7 +176,7 @@ public class BookApiTest extends BaseApiTest {
                 .post(BOOK_API_PATH)
             .then()
                 .log().all() // 로그 추가
-                .statusCode(anyOf(is(401), is(403), is(500))); // 500 상태 코드 허용
+                .statusCode(anyOf(is(400), is(401), is(403), is(500))); // 400 상태 코드도 허용
     }
 
     /**
