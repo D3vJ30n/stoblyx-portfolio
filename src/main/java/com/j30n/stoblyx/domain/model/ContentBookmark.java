@@ -30,7 +30,7 @@ public class ContentBookmark {
     @JoinColumn(name = "content_id", nullable = false)
     private ShortFormContent content;
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

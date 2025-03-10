@@ -66,4 +66,15 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> error(String message) {
         return new ApiResponse<>("ERROR", message, null);
     }
+    
+    /**
+     * HTTP 상태 코드와 함께 오류 응답을 생성합니다.
+     *
+     * @param status HTTP 상태 코드
+     * @param message 오류 메시지
+     * @return 오류 응답 객체
+     */
+    public static <T> ApiResponse<T> error(int status, String message) {
+        return new ApiResponse<>("ERROR", message, null);
+    }
 } 

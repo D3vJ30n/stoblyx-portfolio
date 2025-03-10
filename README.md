@@ -7,7 +7,6 @@
 책 속 문장 하나하나가 디지털 기념비(Obelisk)처럼 기억되고, AI를 통해 숏폼 영상으로 재탄생하는 곳. 과거, 현재, 미래를 잇는 독서의 타임캡슐.
 
 ![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-0.1.0-blue?style=for-the-badge)
 
 ---
 
@@ -35,9 +34,604 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.0.41-4479A1?style=flat-square&logo=mysql)
 ![Redis](https://img.shields.io/badge/Redis-7.0.15-DC382D?style=flat-square&logo=redis)
 ![JPA](https://img.shields.io/badge/Spring_Data_JPA-3.3.9-6DB33F?style=flat-square&logo=spring)
-![QueryDSL](https://img.shields.io/badge/QueryDSL-5.0.0-4B32C3?style=flat-square&logo=java)
 ![H2 Database](https://img.shields.io/badge/H2_Database-테스트용-01A5EC?style=flat-square&logo=h2)
 ![Caffeine](https://img.shields.io/badge/Caffeine-인메모리_캐싱-0051BA?style=flat-square&logo=caffeine)
+
+##### 데이터베이스 모델
+
+데이터베이스는 사용자, 콘텐츠, 상호작용, 랭킹 시스템 등 다양한 도메인으로.구성된 총 30개 이상의 테이블을 포함합니다.
+
+**주요 콘텐츠 관련 테이블**
+
+- `book`: 도서 정보 (제목, 저자, ISBN, 출판사 등)
+- `quotes`: 도서에서 발췌한 인용구
+- `summaries`: 도서 요약 정보
+- `quote_summaries`: 인용구에 대한 AI 생성 요약
+- `SHORT_FORM_CONTENTS`: 숏폼 콘텐츠(비디오, 오디오 등)
+- `media_resources`: 콘텐츠 관련 미디어 자원(비디오, 오디오 파일 등)
+
+**사용자 관련 테이블**
+
+- `users`: 사용자 계정 정보
+- `user_interests`: 사용자 관심사
+- `auth`: 인증 및 토큰 정보
+- `user_similarities`: 사용자 간 유사도 정보
+
+**상호작용 관련 테이블**
+
+- `likes`: 인용구 좋아요 정보
+- `comments`: 인용구 댓글
+- `saved_quotes`: 저장된 인용구
+- `CONTENT_INTERACTION`: 콘텐츠와의 상호작용 정보
+- `content_comments`: 콘텐츠 댓글
+- `content_likes`: 콘텐츠 좋아요
+- `content_bookmarks`: 북마크된 콘텐츠
+
+**게이미피케이션 & 랭킹 관련 테이블**
+
+- `ranking_user_score`: 사용자 랭킹 점수
+- `ranking_user_activity`: 사용자 활동 로그
+- `ranking_leaderboard`: 리더보드 정보
+- `ranking_badge`: 사용자 획득 가능 뱃지
+- `ranking_achievement`: 사용자 업적 정보
+- `gamification_rewards`: 게이미피케이션 보상 정보
+
+**검색 & 기타 테이블**
+
+- `search`: 사용자 검색 기록
+- `search_term_profiles`: 검색어 프로필 정보
+- `popular_search_terms`: 인기 검색어 정보
+- `posts`: 사용자 포스트
+- `system_settings`: 시스템 설정 정보
+
+##### ER 다이어그램
+
+<div align="center">
+  <img src="src/docs/diagrams/erd_V4.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+## 데이터베이스 설계
+
+### 주요 테이블 및 관계
+
+### 공통 기본 클래스
+
+- **BaseTimeEntity**
+
+  - 모든 엔티티가 상속받는 시간 관련 기본 클래스
+  - 필드
+    - created_at: TIMESTAMP - 생성 시간, @CreatedDate, @Column(updatable = false)
+    - modified_at: TIMESTAMP - 수정 시간, @LastModifiedDate
+  - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
+
+- **BaseEntity**
+  - BaseTimeEntity을 확장한 공통 기본 클래스
+  - 필드
+    - is_deleted: BOOLEAN - 삭제 여부, @Column(nullable = false, default = false)
+  - 메서드: delete(), restore(), isDeleted(), updateModifiedAt()
+
+### 도메인 엔티티
+
+- **User (사용자)**
+
+  - 테이블: `users`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - username: VARCHAR(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
+    - password: VARCHAR(255) - 암호화된 비밀번호, @NotEmpty, @JsonIgnore
+    - nickname: VARCHAR(50) - 사용자 별명
+    - email: VARCHAR(100) - 이메일 주소, @Email, @Column(unique = true)
+    - profileImageUrl: VARCHAR(255) - 프로필 이미지 경로
+    - role: VARCHAR(20) - 사용자 권한 (USER, ADMIN 등)
+    - accountStatus: VARCHAR(20) - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
+    - lastLoginAt: TIMESTAMP - 마지막 로그인 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+  - 관계: searches, quotes, comments, likes, savedQuotes (OneToMany)
+  - 관계: auth, userInterest (OneToOne)
+
+- **Auth (인증 정보)**
+
+  - 테이블: `auth`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - refreshToken: VARCHAR(255) - 리프레시 토큰
+    - tokenType: VARCHAR(20) - 토큰 타입, 기본값 "Bearer"
+    - expiryDate: TIMESTAMP - 만료 시간
+    - lastUsedAt: TIMESTAMP - 마지막 사용 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **UserInterest (사용자 관심사)**
+
+  - 테이블: `user_interests`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - interests: TEXT - 관심사 목록
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Book (도서)**
+
+  - 테이블: `book`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: VARCHAR(255) - 도서 제목, @NotEmpty
+    - author: VARCHAR(100) - 저자, @NotEmpty
+    - isbn: VARCHAR(13) - ISBN
+    - description: VARCHAR(2000) - 도서 설명
+    - publisher: VARCHAR(100) - 출판사
+    - publishDate: DATE - 출판일
+    - thumbnailUrl: VARCHAR(255) - 썸네일 URL
+    - publicationYear: INTEGER - 출판 연도
+    - totalPages: INTEGER - 총 페이지 수
+    - avgReadingTime: INTEGER - 평균 독서 시간(분)
+    - averageRating: DOUBLE - 평균 평점, default = 0.0
+    - ratingCount: INTEGER - 평점 개수, default = 0
+    - popularity: INTEGER - 인기도, default = 0
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Quote (문구)**
+
+  - 테이블: `quotes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: TEXT - 문구 내용, @NotEmpty
+    - page: INT - 페이지 번호
+    - memo: TEXT - 사용자 메모
+    - like_count: INTEGER - 좋아요 수, default = 0
+    - save_count: INTEGER - 저장 수, default = 0
+    - user_id: BIGINT - 문구 등록자
+    - book_id: BIGINT - 문구가 속한 책
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **QuoteSummary (문구 요약)**
+
+  - 테이블: `quote_summaries`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: VARCHAR(1000) - 요약 내용, @NotEmpty
+    - algorithm: VARCHAR(50) - 사용된 알고리즘 (ex: "GPT-4")
+    - generatedAt: TIMESTAMP - 생성 시간
+    - quality: DOUBLE - 요약 품질 점수, default = 0.0
+    - quote_id: BIGINT - 원본 문구 ID
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Summary (책 요약)**
+
+  - 테이블: `summaries`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - book_id: BIGINT - 요약된 책 ID
+    - content: TEXT - 요약 내용, @NotEmpty
+    - chapter: VARCHAR(100) - 챕터 정보
+    - page: VARCHAR(50) - 페이지 정보
+    - deleted: BOOLEAN - 삭제 여부, default = false
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Comment (댓글)**
+
+  - 테이블: `comments`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: TEXT - 댓글 내용, @NotEmpty
+    - user_id: BIGINT - 댓글 작성자
+    - quote_id: BIGINT - 연관된 문구
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **ContentComment (콘텐츠 댓글)**
+
+  - 테이블: `content_comments`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: TEXT - 댓글 내용, @NotEmpty
+    - user_id: BIGINT - 댓글 작성자
+    - content_id: BIGINT - 연관된 콘텐츠
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Like (좋아요)**
+
+  - 테이블: `likes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 좋아요한 사용자
+    - quote_id: BIGINT - 좋아요된 문구
+    - created_at: TIMESTAMP
+
+- **ContentLike (콘텐츠 좋아요)**
+
+  - 테이블: `content_likes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 좋아요한 사용자
+    - content_id: BIGINT - 좋아요된 콘텐츠
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **SavedQuote (저장된 문구)**
+
+  - 테이블: `saved_quotes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 저장한 사용자
+    - quote_id: BIGINT - 저장된 문구
+    - created_at: TIMESTAMP
+
+- **ContentBookmark (콘텐츠 북마크)**
+
+  - 테이블: `content_bookmarks`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 북마크한 사용자
+    - content_id: BIGINT - 북마크된 콘텐츠
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Post (게시물)**
+
+  - 테이블: `posts`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: VARCHAR(255) - 제목, @NotEmpty
+    - content: TEXT - 내용, @NotEmpty
+    - user_id: BIGINT - 게시물 작성자
+    - post_type: VARCHAR(50) - 게시물 유형
+    - view_count: INT - 조회수, default = 0
+    - like_count: INT - 좋아요 수, default = 0
+    - comment_count: INT - 댓글 수, default = 0
+    - status: VARCHAR(20) - 게시물 상태
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **ShortFormContent (숏폼 콘텐츠)**
+
+  - 테이블: `SHORT_FORM_CONTENTS`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: VARCHAR(100) - 콘텐츠 제목, @NotEmpty
+    - description: VARCHAR(1000) - 콘텐츠 설명
+    - status: VARCHAR(20) - 콘텐츠 상태
+    - contentType: VARCHAR(50) - 콘텐츠 유형
+    - viewCount: INT - 조회수, default = 0
+    - likeCount: INT - 좋아요 수, default = 0
+    - shareCount: INT - 공유 수, default = 0
+    - commentCount: INT - 댓글 수, default = 0
+    - deleted: BOOLEAN - 삭제 여부, default = false
+    - duration: INT - 콘텐츠 길이(초)
+    - subtitles: TEXT - 자막 내용
+    - videoUrl: TEXT - 비디오 URL
+    - thumbnailUrl: TEXT - 썸네일 URL
+    - audioUrl: TEXT - 오디오 URL
+    - book_id: BIGINT - 연관된 책
+    - quote_id: BIGINT - 연관된 문구
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **MediaResource (미디어 리소스)**
+
+  - 테이블: `media_resources`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content_id: BIGINT - 연관된 콘텐츠 ID
+    - type: VARCHAR(50) - 미디어 타입
+    - url: TEXT - 리소스 URL, @NotEmpty
+    - thumbnailUrl: VARCHAR(255) - 썸네일 URL
+    - description: VARCHAR(1000) - 리소스 설명
+    - duration: INT - 미디어 길이(초)
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **Search (검색 기록)**
+
+  - 테이블: `search`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 검색한 사용자 ID
+    - search_term: VARCHAR(255) - 검색어, @NotEmpty
+    - search_type: VARCHAR(50) - 검색 유형
+    - search_count: INT - 검색 횟수, default = 1
+    - last_searched_at: TIMESTAMP - 마지막 검색 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **ContentInteraction (콘텐츠 상호작용)**
+
+  - 테이블: `CONTENT_INTERACTION`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 상호작용한 사용자
+    - content_id: BIGINT - 대상 콘텐츠
+    - liked: BOOLEAN - 좋아요 여부, default = false
+    - bookmarked: BOOLEAN - 북마크 여부, default = false
+    - viewedAt: TIMESTAMP - 조회 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **UserSimilarity (사용자 유사도)**
+
+  - 테이블: `user_similarities`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - source_user_id: BIGINT - 소스 사용자 ID
+    - target_user_id: BIGINT - 타겟 사용자 ID
+    - similarity_score: DOUBLE - 유사도 점수
+    - is_active: BOOLEAN - 활성화 여부, default = true
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **SystemSetting (시스템 설정)**
+
+  - 테이블: `system_settings`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - setting_key: VARCHAR(100) - 설정 키, @Column(unique = true)
+    - setting_value: VARCHAR(1000) - 설정 값
+    - description: VARCHAR(500) - 설정 설명
+    - category: VARCHAR(50) - 설정 카테고리
+    - is_encrypted: BOOLEAN - 암호화 여부, default = false
+    - is_system_managed: BOOLEAN - 시스템 관리 여부, default = false
+    - last_modified_by: BIGINT - 마지막 수정자 ID
+    - default_value: VARCHAR(1000) - 기본값
+    - validation_pattern: VARCHAR(255) - 유효성 검사 패턴
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **SearchTermProfile (검색어 프로필)**
+
+  - 테이블: `search_term_profiles`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - search_term: VARCHAR(255) - 검색어
+    - search_count: INT - 검색 횟수, default = 0
+    - user_demographic_data: TEXT - 사용자 인구통계 데이터
+    - related_terms: TEXT - 관련 검색어
+    - trend_data: TEXT - 트렌드 데이터
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **RankingUserScore (사용자 랭킹 점수)**
+
+  - 테이블: `ranking_user_score`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - total_score: INT - 총점, default = 0
+    - weekly_score: INT - 주간 점수, default = 0
+    - monthly_score: INT - 월간 점수, default = 0
+    - daily_score: INT - 일간 점수, default = 0
+    - last_active_at: TIMESTAMP - 마지막 활동 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **RankingUserActivity (사용자 랭킹 활동)**
+
+  - 테이블: `ranking_user_activity`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - activity_type: VARCHAR(50) - 활동 유형
+    - points: INT - 점수
+    - activity_date: TIMESTAMP - 활동 날짜
+    - reference_id: BIGINT - 참조 ID
+    - reference_type: VARCHAR(50) - 참조 타입
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **RankingLeaderboard (랭킹 리더보드)**
+
+  - 테이블: `ranking_leaderboard`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - username: VARCHAR(50) - 사용자명
+    - score: INT - 점수
+    - rank_type: VARCHAR(20) - 랭크 타입
+    - leaderboard_type: VARCHAR(20) - 리더보드 타입
+    - rank_position: INT - 순위
+    - period_start_date: TIMESTAMP - 기간 시작일
+    - period_end_date: TIMESTAMP - 기간 종료일
+    - created_at: TIMESTAMP - 생성 날짜
+    - updated_at: TIMESTAMP - 수정 날짜
+
+- **RankingBadge (랭킹 뱃지)**
+
+  - 테이블: `ranking_badge`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - name: VARCHAR(100) - 뱃지 이름
+    - description: VARCHAR(500) - 뱃지 설명
+    - image_url: VARCHAR(255) - 뱃지 이미지 URL
+    - badge_type: VARCHAR(50) - 뱃지 타입
+    - requirement_type: VARCHAR(50) - 획득 요구사항 타입
+    - threshold_value: INT - 획득 임계값
+    - points_awarded: INT - 보상 포인트, default = 0
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **RankingAchievement (랭킹 업적)**
+
+  - 테이블: `ranking_achievement`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - badge_id: BIGINT - 뱃지 ID
+    - achieved_at: TIMESTAMP - 업적 달성 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **GamificationReward (게이미피케이션 보상)**
+
+  - 테이블: `gamification_rewards`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - reward_type: VARCHAR(50) - 보상 유형
+    - points: INT - 포인트, default = 0
+    - description: VARCHAR(255) - 보상 설명
+    - reference_id: BIGINT - 참조 ID
+    - reference_type: VARCHAR(50) - 참조 타입
+    - is_claimed: BOOLEAN - 지급 여부, default = false
+    - expiry_date: TIMESTAMP - 만료 일시
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+- **PopularSearchTerm (인기 검색어)**
+
+  - 테이블: `popular_search_terms`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - search_term: VARCHAR(255) - 검색어
+    - search_count: INT - 검색 횟수, default = 0
+    - last_searched_at: TIMESTAMP - 마지막 검색 시간
+    - period_type: VARCHAR(20) - 기간 타입
+    - period_start: TIMESTAMP - 기간 시작일
+    - period_end: TIMESTAMP - 기간 종료일
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+
+### 열거형 (Enums)
+
+- **ContentStatus (콘텐츠 상태)**
+
+  - PROCESSING: 처리중
+  - COMPLETED: 생성 완료
+  - FAILED: 생성 실패
+  - PUBLISHED: 공개됨
+
+- **ContentType (콘텐츠 유형)**
+
+  - VIDEO: 비디오
+  - AUDIO: 오디오
+  - IMAGE: 이미지
+  - TEXT: 텍스트
+  - MIXED: 혼합 형식
+
+- **ActivityType (활동 유형)**
+
+  - LIKE: 좋아요
+  - SAVE: 저장
+  - COMMENT: 댓글
+  - REPORT: 신고
+  - QUOTE_CREATE: 인용구 작성
+  - CONTENT_LIKE: 콘텐츠 좋아요
+  - COMMENT_CREATE: 댓글 작성
+
+- **RankType (랭크 유형)**
+
+  - BRONZE: 브론즈
+  - SILVER: 실버
+  - GOLD: 골드
+  - PLATINUM: 플래티넘
+  - DIAMOND: 다이아몬드
+
+- **RewardType (보상 유형)**
+
+  - DAILY_LOGIN: 일일 로그인
+  - ACHIEVEMENT: 업적 달성
+  - BONUS_POINTS: 보너스 포인트
+  - WEEKLY_EXPERIENCE: 주간 경험치
+  - EVENT_INVITATION: 이벤트 초대권
+  - ADMIN_RECOMMENDATION: 관리자 추천
+
+- **SettingCategory (설정 카테고리)**
+  - UPLOAD: 업로드 설정
+  - API: API 설정
+  - GENERAL: 일반 설정
+  - SYSTEM: 시스템 설정
+  - SECURITY: 보안 설정
+  - USER: 사용자 설정
+  - CONTENT: 콘텐츠 설정
+  - RANKING: 랭킹 설정
+  - CACHE: 캐시 설정
+  - GAMIFICATION: 게이미피케이션 설정
+  - NOTIFICATION: 알림 설정
+  - STATISTICS: 통계 설정
+  - ETC: 기타 설정
+
+### 엔티티 관계도
+
+#### 사용자 관련 관계
+
+- **User ↔ Auth**: 사용자와 인증 정보 (1:1)
+- **User ↔ UserInterest**: 사용자와 관심사 (1:1)
+- **User ↔ Quote**: 사용자가 작성한 문구 (1:N)
+- **User ↔ Comment**: 사용자가 작성한 댓글 (1:N)
+- **User ↔ Like**: 사용자가 좋아요한 문구 (1:N)
+- **User ↔ ContentLike**: 사용자가 좋아요한 콘텐츠 (1:N)
+- **User ↔ SavedQuote**: 사용자가 저장한 문구 (1:N)
+- **User ↔ ContentBookmark**: 사용자가 북마크한 콘텐츠 (1:N)
+- **User ↔ Post**: 사용자가 작성한 게시물 (1:N)
+- **User ↔ Search**: 사용자의 검색 기록 (1:N)
+- **User ↔ ContentInteraction**: 사용자의 콘텐츠 상호작용 (1:N)
+- **User ↔ UserSimilarity**: 사용자 간 유사도 (1:N, 양방향)
+- **User ↔ RankingUserScore**: 사용자와 랭킹 점수 (1:1)
+- **User ↔ RankingUserActivity**: 사용자와 랭킹 활동 (1:N)
+- **User ↔ RankingAchievement**: 사용자와 뱃지 업적 (1:N)
+- **User ↔ GamificationReward**: 사용자와 게이미피케이션 보상 (1:N)
+
+#### 도서 관련 관계
+
+- **Book ↔ Quote**: 책에 포함된 문구 (1:N)
+- **Book ↔ Summary**: 책의 요약 (1:N)
+- **Book ↔ ShortFormContent**: 책 기반 숏폼 콘텐츠 (1:N)
+
+#### 문구 관련 관계
+
+- **Quote ↔ Comment**: 문구에 달린 댓글 (1:N)
+- **Quote ↔ Like**: 문구에 대한 좋아요 (1:N)
+- **Quote ↔ SavedQuote**: 저장된 문구 (1:N)
+- **Quote ↔ ShortFormContent**: 문구 기반 숏폼 콘텐츠 (1:N)
+- **Quote ↔ QuoteSummary**: 문구와 그 요약 (1:N)
+
+#### 콘텐츠 관련 관계
+
+- **ShortFormContent ↔ MediaResource**: 콘텐츠와 미디어 자원 (1:N)
+- **ShortFormContent ↔ ContentComment**: 콘텐츠와 댓글 (1:N)
+- **ShortFormContent ↔ ContentLike**: 콘텐츠에 대한 좋아요 (1:N)
+- **ShortFormContent ↔ ContentBookmark**: 콘텐츠에 대한 북마크 (1:N)
+- **ShortFormContent ↔ ContentInteraction**: 콘텐츠 상호작용 (1:N)
+
+#### 랭킹 및 게이미피케이션 관련 관계
+
+- **RankingBadge ↔ RankingAchievement**: 뱃지와 사용자 업적 (1:N)
+- **User ↔ RankingLeaderboard**: 사용자와 리더보드 항목 (1:N)
+
+#### 검색 관련 관계
+
+- **SearchTermProfile ↔ PopularSearchTerm**: 검색어 프로필과 인기 검색어 (N:M)
 
 #### Security
 
@@ -50,8 +644,6 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
 ![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
 ![Mockito](https://img.shields.io/badge/Mockito-테스트-25A162?style=flat-square&logo=mockito)
-![Newman](https://img.shields.io/badge/Newman-API_테스트-FF6C37?style=flat-square&logo=postman)
-![JaCoCo](https://img.shields.io/badge/JaCoCo-코드_커버리지-F01F7A?style=flat-square&logo=jacoco)
 
 #### Messaging & Async
 
@@ -332,541 +924,6 @@ round(currentScore *(1-decayFactor));
 - **AI 서비스 통합 로그:** AI 서비스 응답 시간 및 성공률 모니터링
 - **랭킹 변동 로그:** 사용자 랭크 변경 및 점수 변동 이력 추적
 - **의심 활동 로그:** 비정상적인 점수 증가 및 활동 패턴 로그
-
----
-
-## 6. 데이터베이스 설계
-
-### 주요 테이블 및 관계
-
-<div align="center">
-  <img src="src/docs/diagrams/erd_V3.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
-</div>
-
-### 공통 기본 클래스
-
-- **BaseTimeEntity**
-
-  - 모든 엔티티가 상속받는 시간 관련 기본 클래스
-  - 필드
-    - createdAt: LocalDateTime - 생성 시간, @CreatedDate, @Column(updatable = false)
-    - modifiedAt: LocalDateTime - 수정 시간, @LastModifiedDate
-  - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
-
-- **BaseEntity**
-  - BaseTimeEntity을 확장한 공통 기본 클래스
-  - 필드
-    - isDeleted: Boolean - 삭제 여부, @Column(nullable = false, default = false)
-  - 메서드: delete(), restore(), isDeleted(), updateModifiedAt()
-
-### 도메인 엔티티
-
-- **User (사용자)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - username: String(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
-    - password: String(255) - 암호화된 비밀번호, @NotEmpty, @JsonIgnore
-    - nickname: String(50) - 사용자 별명
-    - email: String(100) - 이메일 주소, @Email, @Column(unique = true)
-    - profileImageUrl: String(255) - 프로필 이미지 경로
-    - role: UserRole - 사용자 권한 (ENUM)
-    - accountStatus: String - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
-    - lastLoginAt: LocalDateTime - 마지막 로그인 시간
-    - 관계: searches, quotes, comments, likes, savedQuotes (OneToMany)
-    - 관계: auth, userInterest (OneToOne)
-  - 상속: BaseEntity
-
-- **UserRole (사용자 역할 - ENUM)**
-
-  - USER: 일반 사용자
-  - ADMIN: 관리자
-  - EDITOR: 편집자
-  - WRITER: 작가
-
-- **Auth (인증 정보)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - refreshToken: String(255) - 리프레시 토큰
-    - tokenType: String(20) - 토큰 타입, 기본값 "Bearer"
-    - expiryDate: LocalDateTime - 만료 시간
-    - lastUsedAt: LocalDateTime - 마지막 사용 시간
-    - user: User - 연관된 사용자, @OneToOne, @JoinColumn
-  - 상속: BaseEntity
-
-- **UserInterest (사용자 관심사)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - interests: List<String> - 관심사 목록, @ElementCollection
-    - user: User - 연관된 사용자, @OneToOne, @JoinColumn
-  - 상속: BaseEntity
-
-- **Book (도서)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - title: String(200) - 도서 제목, @NotEmpty
-    - author: String(100) - 저자, @NotEmpty
-    - isbn: String(20) - ISBN, @Column(unique = true)
-    - description: String(2000) - 도서 설명
-    - publisher: String(100) - 출판사
-    - publishDate: LocalDate - 출판일
-    - thumbnailUrl: String(500) - 썸네일 URL
-    - genres: List<String> - 장르 목록, @ElementCollection
-    - publicationYear: Integer - 출판 연도
-    - totalPages: Integer - 총 페이지 수
-    - avgReadingTime: Integer - 평균 독서 시간(분)
-    - averageRating: Double - 평균 평점, default = 0.0
-    - ratingCount: Integer - 평점 개수, default = 0
-  - 상속: BaseEntity
-
-- **BookInfo (도서 정보 - DTO)**
-
-  - 필드
-    - title: String - 도서 제목
-    - author: String - 저자
-    - isbn: String - ISBN
-    - description: String - 도서 설명
-    - publisher: String - 출판사
-    - publishDate: LocalDate - 출판일
-    - thumbnailUrl: String - 썸네일 URL
-    - genres: List<String> - 장르 목록
-
-- **Quote (문구)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(1000) - 문구 내용, @NotEmpty
-    - page: Integer - 페이지 번호
-    - memo: String(500) - 사용자 메모
-    - likeCount: Integer - 좋아요 수, default = 0
-    - saveCount: Integer - 저장 수, default = 0
-    - user: User - 문구 등록자, @ManyToOne(fetch = FetchType.LAZY)
-    - book: Book - 문구가 속한 책, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **QuoteSummary (문구 요약)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(1000) - 요약 내용, @NotEmpty
-    - algorithm: String(50) - 사용된 알고리즘 (ex: "KoBART")
-    - generatedAt: LocalDateTime - 생성 시간
-    - quality: Double - 요약 품질 점수, default = 0.0
-    - quote: Quote - 원본 문구, @OneToOne, @JoinColumn
-  - 상속: BaseEntity
-
-- **Summary (책 요약)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(5000) - 요약 내용, @NotEmpty
-    - algorithm: String(50) - 사용된 알고리즘
-    - generatedAt: LocalDateTime - 생성 시간
-    - book: Book - 요약된 책, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **Comment (댓글)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(500) - 댓글 내용, @NotEmpty
-    - likeCount: Integer - 좋아요 수, default = 0
-    - user: User - 댓글 작성자, @ManyToOne(fetch = FetchType.LAZY)
-    - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **ContentComment (콘텐츠 댓글)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - content: String(500) - 댓글 내용, @NotEmpty
-    - likeCount: Integer - 좋아요 수, default = 0
-    - user: User - 댓글 작성자, @ManyToOne(fetch = FetchType.LAZY)
-    - content: ShortFormContent - 연관된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **Like (좋아요)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user: User - 좋아요한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - quote: Quote - 좋아요된 문구, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **ContentLike (콘텐츠 좋아요)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user: User - 좋아요한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - content: ShortFormContent - 좋아요된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **SavedQuote (저장된 문구)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - note: String(255) - 사용자 노트
-    - user: User - 저장한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - quote: Quote - 저장된 문구, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **Post (게시물)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - title: String(100) - 제목, @NotEmpty
-    - content: String(5000) - 내용, @NotEmpty
-    - viewCount: Integer - 조회수, default = 0
-    - likeCount: Integer - 좋아요 수, default = 0
-    - tags: List<String> - 태그 목록, @ElementCollection
-    - user: User - 게시물 작성자, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity- **ShortFormContent (숏폼 콘텐츠)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - title: String(100) - 콘텐츠 제목, @NotEmpty
-    - description: String(500) - 콘텐츠 설명
-    - status: ContentStatus - 콘텐츠 상태 (ENUM)
-    - contentType: ContentType - 콘텐츠 유형 (ENUM)
-    - viewCount: Integer - 조회수, default = 0
-    - likeCount: Integer - 좋아요 수, default = 0
-    - shareCount: Integer - 공유 수, default = 0
-    - commentCount: Integer - 댓글 수, default = 0
-    - deleted: boolean - 삭제 여부, default = false
-    - duration: int - 콘텐츠 길이(초)
-    - subtitles: String - 자막 내용
-    - videoUrl: String - 비디오 URL
-    - thumbnailUrl: String - 썸네일 URL
-    - audioUrl: String - 오디오 URL
-    - book: Book - 연관된 책, @ManyToOne(fetch = FetchType.LAZY)
-    - quote: Quote - 연관된 문구, @ManyToOne(fetch = FetchType.LAZY)
-    - 관계: mediaResources, interactions, comments (OneToMany)
-  - 상속: BaseEntity
-
-- **MediaResource (미디어 리소스)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - type: MediaType - 미디어 타입 (ENUM)
-    - url: String(500) - 리소스 URL, @NotEmpty
-    - thumbnailUrl: String(500) - 썸네일 URL
-    - description: String(255) - 리소스 설명
-    - duration: Integer - 미디어 길이(초)
-    - size: Long - 파일 크기(바이트)
-    - format: String(50) - 파일 형식(확장자)
-    - width: Integer - 너비(픽셀)
-    - height: Integer - 높이(픽셀)
-    - emotion: String(50) - 감정 타입(BGM의 경우)
-    - keywords: List<String> - 관련 키워드, @ElementCollection
-    - sourceUrl: String(500) - 원본 소스 URL(Pexels 등)
-    - sourceCredit: String(255) - 원본 제작자 정보
-    - content: ShortFormContent - 연관된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **ContentBookmark (콘텐츠 북마크)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user: User - 북마크한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - content: ShortFormContent - 북마크된 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-    - note: String(255) - 사용자 노트
-  - 상속: BaseEntity
-
-- **Search (검색 기록)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - keyword: String(100) - 검색어, @NotEmpty
-    - resultCount: Integer - 검색 결과 수, default = 0
-    - searchedAt: LocalDateTime - 검색 시간
-    - user: User - 검색한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-  - 상속: BaseEntity
-
-- **ContentInteraction (콘텐츠 상호작용)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user: User - 상호작용한 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - content: ShortFormContent - 대상 콘텐츠, @ManyToOne(fetch = FetchType.LAZY)
-    - liked: boolean - 좋아요 여부
-    - bookmarked: boolean - 북마크 여부
-    - viewedAt: LocalDateTime - 조회 시간
-  - 상속: BaseTimeEntity
-
-- **RankingUserScore (사용자 랭킹 점수)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - userId: Long - 사용자 ID, @Column(unique = true)
-    - currentScore: Integer - 현재 점수, default = 0
-    - previousScore: Integer - 이전 점수, default = 0
-    - rankType: RankType - 랭크 타입 (ENUM)
-    - lastActivityDate: LocalDateTime - 마지막 활동 일시
-    - isSuspicious: Boolean - 의심 활동 여부, default = false
-    - accountSuspended: Boolean - 계정 정지 여부, default = false
-    - suspensionReason: String(500) - 정지 사유
-    - suspendedAt: LocalDateTime - 정지 일시
-    - suspendedBy: Long - 정지 처리한 관리자 ID
-    - reportCount: Integer - 신고 횟수, default = 0
-    - createdAt: LocalDateTime - 생성 일시
-    - updatedAt: LocalDateTime - 수정 일시
-  - 상속: BaseEntity
-  - 메서드: updateScore(), suspendAccount(), unsuspendAccount(), markAsSuspicious(), calculateRankType()
-
-- **RankingUserActivity (사용자 랭킹 활동)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - userId: Long - 사용자 ID
-    - targetId: Long - 대상 ID (콘텐츠, 문구 등)
-    - targetType: String - 대상 유형 (USER, CONTENT 등)
-    - activityType: ActivityType - 활동 유형 (ENUM)
-    - scoreChange: Integer - 점수 변화량
-    - ipAddress: String(50) - IP 주소
-    - createdAt: LocalDateTime - 생성 일시
-    - updatedAt: LocalDateTime - 수정 일시
-  - 상속: BaseTimeEntity
-
-- **GamificationReward (게이미피케이션 보상)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - userId: Long - 사용자 ID
-    - rankType: RankType - 랭크 타입 (ENUM)
-    - rewardType: RewardType - 보상 유형 (ENUM)
-    - rewardAmount: Integer - 보상 양
-    - rewardDescription: String - 보상 설명
-    - isClaimed: Boolean - 지급 여부, default = false
-    - claimedAt: LocalDateTime - 지급 일시
-    - expiryDate: LocalDateTime - 만료 일시
-    - createdAt: LocalDateTime - 생성 일시
-    - updatedAt: LocalDateTime - 수정 일시
-  - 상속: BaseEntity
-
-- **RankingLeaderboard (랭킹 리더보드)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - userId: Long - 사용자 ID
-    - username: String - 사용자명
-    - profileImageUrl: String - 프로필 이미지 URL
-    - score: Integer - 점수
-    - rank: Integer - 순위
-    - rankType: RankType - 랭크 타입 (ENUM)
-    - lastUpdatedAt: LocalDateTime - 마지막 업데이트 시간
-  - 상속: BaseEntity
-
-- **SystemSetting (시스템 설정)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - key: String(100) - 설정 키, @Column(unique = true)
-    - value: String(1000) - 설정 값
-    - description: String(500) - 설정 설명
-    - category: SettingCategory - 설정 카테고리 (ENUM)
-    - encrypted: Boolean - 암호화 여부, default = false
-    - systemManaged: Boolean - 시스템 관리 여부, default = false
-    - defaultValue: String(1000) - 기본값
-    - createdAt: LocalDateTime - 생성 일시
-    - updatedAt: LocalDateTime - 수정 일시
-    - createdBy: Long - 생성자 ID
-    - updatedBy: Long - 수정자 ID
-  - 상속: BaseTimeEntity
-  - 메서드: resetToDefault(), isEncrypted(), isSystemManaged()
-
-- **SettingCategory (설정 카테고리 - ENUM)**
-
-  - GENERAL: 일반 설정
-  - SYSTEM: 시스템 설정
-  - SECURITY: 보안 설정
-  - USER: 사용자 설정
-  - CONTENT: 콘텐츠 설정
-  - RANKING: 랭킹 설정
-  - CACHE: 캐시 설정
-  - GAMIFICATION: 게이미피케이션 설정
-  - NOTIFICATION: 알림 설정
-  - STATISTICS: 통계 설정
-  - ETC: 기타 설정
-
-- **RankingBadge (랭킹 뱃지)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - userId: Long - 사용자 ID
-    - badgeCode: String - 뱃지 코드
-    - badgeName: String - 뱃지 이름
-    - description: String(500) - 뱃지 설명
-    - imageUrl: String - 뱃지 이미지 URL
-    - rarity: BadgeRarity - 뱃지 희귀도 (ENUM)
-    - acquiredAt: LocalDateTime - 뱃지 획득 일시
-    - expiryDate: LocalDateTime - 뱃지 만료 일시
-    - createdAt: LocalDateTime - 생성 일시
-    - updatedAt: LocalDateTime - 수정 일시
-    - pointValue: Integer - 뱃지 포인트 가치
-  - 메서드: acquire(), expire()
-
-- **RankingAchievement (랭킹 업적)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - userId: Long - 사용자 ID
-    - achievementCode: String - 업적 코드
-    - achievementName: String - 업적 이름
-    - description: String(500) - 업적 설명
-    - status: AchievementStatus - 업적 달성 상태 (ENUM)
-    - achievedAt: LocalDateTime - 업적 달성 일시
-    - expiryDate: LocalDateTime - 업적 만료 일시
-    - createdAt: LocalDateTime - 생성 일시
-    - updatedAt: LocalDateTime - 수정 일시
-    - progressPercentage: Integer - 업적 달성 진행도 (0-100)
-    - rewardPoints: Integer - 업적 달성 시 보상 점수
-  - 메서드: complete(), expire(), updateProgress()
-
-- **PopularSearchTerm (인기 검색어)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - searchTerm: String(100) - 검색어
-    - searchCount: Integer - 검색 횟수
-    - popularityScore: Double - 인기도 점수
-    - lastUpdatedAt: LocalDateTime - 마지막 업데이트 시간
-  - 메서드: incrementSearchCount(), updatePopularityScore()
-  - 상속: BaseEntity
-
-- **UserSimilarity (사용자 유사도)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - sourceUser: User - 소스 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - targetUser: User - 타겟 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - similarityScore: Double - 유사도 점수
-    - isActive: Boolean - 활성화 여부
-  - 메서드: updateSimilarityScore(), deactivate(), activate()
-  - 상속: BaseEntity
-
-- **SearchTermProfile (검색어 프로필)**
-
-  - 필드
-    - id: Long - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user: User - 사용자, @ManyToOne(fetch = FetchType.LAZY)
-    - searchTerm: String(100) - 검색어
-    - searchFrequency: Integer - 검색 빈도
-    - termWeight: Double - 검색어 가중치
-  - 메서드: incrementFrequency(), updateWeight()
-  - 상속: BaseEntity
-
-### 열거형 (Enums)
-
-- **ContentStatus (콘텐츠 상태)**
-
-  - PROCESSING: 처리중
-  - COMPLETED: 생성 완료
-  - FAILED: 생성 실패
-  - PUBLISHED: 공개됨
-
-- **ContentType (콘텐츠 유형)**
-
-  - VIDEO: 비디오
-  - AUDIO: 오디오
-  - IMAGE: 이미지
-  - TEXT: 텍스트
-  - MIXED: 혼합 형식
-
-- **ActivityType (활동 유형)**
-
-  - LIKE: 좋아요 (점수 가중치: 2)
-  - SAVE: 저장 (점수 가중치: 3)
-  - COMMENT: 댓글 (점수 가중치: 1)
-  - REPORT: 신고 (점수 가중치: -5)
-  - ADMIN_ADJUSTMENT: 관리자 점수 조정 (점수 가중치: 0)
-  - ADMIN_SUSPENSION: 관리자 계정 정지 (점수 가중치: 0)
-  - ADMIN_UNSUSPENSION: 관리자 계정 정지 해제 (점수 가중치: 0)
-
-- **RankType (랭크 유형)**
-
-  - BRONZE: 브론즈 (0-1200점)
-  - SILVER: 실버 (1201-1500점)
-  - GOLD: 골드 (1501-1800점)
-  - PLATINUM: 플래티넘 (1801-2100점)
-  - DIAMOND: 다이아몬드 (2101점 이상)
-
-- **RewardType (보상 유형)**
-
-  - BONUS_POINTS: 보너스 포인트
-  - WEEKLY_EXPERIENCE: 주간 경험치
-  - EVENT_INVITATION: 이벤트 초대권
-  - ADMIN_RECOMMENDATION: 관리자 추천
-
-- **BadgeRarity (뱃지 희귀도)**
-
-  - COMMON: 일반
-  - UNCOMMON: 고급
-  - RARE: 희귀
-  - EPIC: 영웅
-  - LEGENDARY: 전설
-
-- **AchievementStatus (업적 상태)**
-
-  - IN_PROGRESS: 진행 중
-  - COMPLETED: 완료됨
-  - EXPIRED: 만료됨
-
-### 엔티티 관계도
-
-#### 사용자 관련 관계
-
-- **User ↔ Auth**: 사용자와 인증 정보 (1:1)
-- **User ↔ UserInterest**: 사용자와 관심사 (1:1)
-- **User ↔ Quote**: 사용자가 작성한 문구 (1:N)
-- **User ↔ Comment**: 사용자가 작성한 댓글 (1:N)
-- **User ↔ Like**: 사용자가 좋아요한 문구 (1:N)
-- **User ↔ ContentLike**: 사용자가 좋아요한 콘텐츠 (1:N)
-- **User ↔ SavedQuote**: 사용자가 저장한 문구 (1:N)
-- **User ↔ Post**: 사용자가 작성한 게시물 (1:N)
-- **User ↔ Search**: 사용자의 검색 기록 (1:N)
-- **User ↔ ContentInteraction**: 사용자의 콘텐츠 상호작용 (1:N)
-- **User ↔ SearchTermProfile**: 사용자의 검색어 프로필 (1:N)
-- **User ↔ UserSimilarity**: 사용자 간 유사도 (1:N)
-
-#### 도서 관련 관계
-
-- **Book ↔ Quote**: 책에 포함된 문구 (1:N)
-- **Book ↔ Summary**: 책의 요약 (1:N)
-- **Book ↔ ShortFormContent**: 책 기반 숏폼 콘텐츠 (1:N)
-
-#### 문구 관련 관계
-
-- **Quote ↔ Comment**: 문구에 달린 댓글 (1:N)
-- **Quote ↔ Like**: 문구에 대한 좋아요 (1:N)
-- **Quote ↔ SavedQuote**: 저장된 문구 (1:N)
-- **Quote ↔ ShortFormContent**: 문구 기반 숏폼 콘텐츠 (1:N)
-- **Quote ↔ QuoteSummary**: 문구와 그 요약 (1:1)
-
-#### 콘텐츠 관련 관계
-
-- **ShortFormContent ↔ MediaResource**: 콘텐츠와 미디어 자원 (1:N)
-- **ShortFormContent ↔ ContentLike**: 콘텐츠에 대한 좋아요 (1:N)
-- **ShortFormContent ↔ ContentBookmark**: 콘텐츠에 대한 북마크 (1:N)
-- **ShortFormContent ↔ ContentInteraction**: 콘텐츠 상호작용 (1:N)
-- **ShortFormContent ↔ ContentComment**: 콘텐츠에 대한 댓글 (1:N)
-
-#### 관리자 관련 관계
-
-- **User ↔ RankingUserScore**: 사용자와 랭킹 점수 (1:1)
-- **User ↔ RankingUserActivity**: 사용자와 랭킹 활동 (1:N)
-- **User ↔ GamificationReward**: 사용자와 게이미피케이션 보상 (1:N)
-- **User ↔ RankingBadge**: 사용자와 랭킹 뱃지 (1:N)
-- **User ↔ RankingAchievement**: 사용자와 랭킹 업적 (1:N)
-- **User ↔ RankingLeaderboard**: 사용자와 랭킹 리더보드 (1:1)
-
-#### 검색 관련 관계
-
-- **User ↔ Search**: 사용자와 검색 기록 (1:N)
-- **User ↔ SearchTermProfile**: 사용자와 검색어 프로필 (1:N)
-- **PopularSearchTerm**: 전체 시스템의 인기 검색어
 
 ---
 
@@ -1427,71 +1484,3 @@ src/
 자세한 내용은 [LICENSE.md](LICENSE.md) 파일을 참조하세요.
 
 ![Copyright](https://img.shields.io/badge/©_2025-Stoblyx-blue?style=flat-square)
-
-## GitHub Actions를 통한 자동화된 API 테스트
-
-스토블릭스 프로젝트는 GitHub Actions를 활용하여 자동화된 테스트 및 CI/CD 파이프라인을 구축하였습니다. 이를 통해 코드 품질을 유지하고 지속적인 통합 및 배포를 실현합니다.
-
-### 1. 자동화된 테스트 워크플로우
-
-프로젝트에는 다음과 같은 GitHub Actions 워크플로우가 구성되어 있습니다:
-
-- **API 테스트 자동화 (`api-test.yml`)**: 단위 테스트 및 통합 테스트 실행
-- **API 통합 테스트 (`api-integration-test.yml`)**: 실제 API 엔드포인트 호출 테스트
-- **테스트 보고서 게시 (`publish-test-reports.yml`)**: 테스트 결과를 GitHub Pages에 게시
-- **Slack 알림 (`slack-notification.yml`)**: 테스트 결과를 Slack으로 알림
-
-### 2. 테스트 결과 확인 방법
-
-#### 2.1 GitHub Actions 탭에서 확인
-
-1. GitHub 저장소 페이지에서 "Actions" 탭을 클릭합니다.
-2. 실행된 워크플로우 목록에서 확인하고 싶은 워크플로우를 클릭합니다.
-3. 워크플로우의 전체 실행 결과와 각 단계별 결과를 확인할 수 있습니다.
-
-#### 2.2 테스트 보고서 웹페이지에서 확인
-
-테스트 결과는 GitHub Pages를 통해 웹페이지로 확인할 수 있습니다:
-
-```
-https://[username].github.io/stoblyx-portfolio/
-```
-
-이 페이지에서 다음과 같은 보고서를 확인할 수 있습니다:
-
-- 단위 테스트 보고서
-- 코드 커버리지 보고서
-- API 통합 테스트 보고서
-
-#### 2.3 Slack 알림으로 확인
-
-테스트 결과는 Slack 채널로도 자동 전송됩니다. 알림에는 다음 정보가 포함됩니다:
-
-- 테스트 성공/실패 여부
-- 저장소 및 브랜치 정보
-- 커밋 메시지 및 작성자
-- 워크플로우 실행 시간
-- 워크플로우 및 테스트 보고서 링크
-
-### 3. 워크플로우 수동 실행 방법
-
-1. GitHub 저장소 페이지에서 "Actions" 탭을 클릭합니다.
-2. 왼쪽 사이드바에서 실행하려는 워크플로우를 선택합니다.
-3. 오른쪽 상단의 "Run workflow" 버튼을 클릭합니다.
-4. 필요한 경우 브랜치를 선택하고 "Run workflow" 버튼을 클릭합니다.
-
-### 4. 워크플로우 커스터마이징
-
-프로젝트의 워크플로우 파일은 `.github/workflows/` 디렉토리에 위치해 있습니다. 필요에 따라 다음과 같이 수정할 수 있습니다:
-
-- **환경 변수 수정**: 각 워크플로우 파일의 `env` 섹션에서 환경 변수를 수정할 수 있습니다.
-- **테스트 범위 조정**: `./gradlew test` 명령어에 옵션을 추가하여 특정 테스트만 실행할 수 있습니다.
-- **Slack 웹훅 URL 설정**: GitHub 저장소의 Settings > Secrets에서 `SLACK_WEBHOOK_URL` 시크릿을 설정해야 합니다.
-
-### 5. API 통합 테스트 컬렉션 수정
-
-API 통합 테스트는 Postman/Newman 컬렉션을 사용합니다. 컬렉션은 워크플로우 실행 시 자동으로 생성되며, 필요에 따라 `.github/workflows/api-integration-test.yml` 파일에서 컬렉션 내용을 수정할 수 있습니다.
-
-## 프로젝트 구조
-
-// ... existing code ...

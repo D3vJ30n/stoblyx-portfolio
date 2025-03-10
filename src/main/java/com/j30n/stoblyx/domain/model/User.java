@@ -65,8 +65,10 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role = UserRole.USER;
 
-    @Column(length = 20)
+    @Column(name = "accountStatus", length = 20)
     private String accountStatus = "ACTIVE";
+
+    @Column(name = "lastLoginAt")
     private LocalDateTime lastLoginAt;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -66,16 +66,18 @@ public class SecurityTestConfig {
             String authHeader = request.getHeader("Authorization");
             String testAuthHeader = request.getHeader("X-TEST-AUTH");
             String testRoleHeader = request.getHeader("X-TEST-ROLE");
-            String csrfToken = request.getHeader("X-CSRF-TOKEN");
             
-            // CSRF 토큰이 있으면 인증된 것으로 간주
-            if (csrfToken != null && csrfToken.equals("test-csrf-token")) {
-                UserRole role = UserRole.USER;
+            // 테스트 인증 헤더가 있거나 Authorization 헤더가 있는 경우 인증 처리
+            if (testAuthHeader != null && testAuthHeader.equals("true")) {
+                UserRole role = (testRoleHeader != null && testRoleHeader.equals("ROLE_ADMIN")) 
+                    ? UserRole.ADMIN : UserRole.USER;
+                
+                // 테스트 사용자 인증 객체 생성
                 UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println("테스트 인증 설정됨: " + authentication.getName());
             }
-            
-            if (authHeader != null && authHeader.startsWith("Bearer ") && "true".equals(testAuthHeader)) {
+            else if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 // 테스트용 토큰 처리
                 String token = authHeader.substring(7);
                 
@@ -86,6 +88,7 @@ public class SecurityTestConfig {
                     // 테스트 사용자 인증 객체 생성
                     UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                    System.out.println("Bearer 토큰 인증 설정됨: " + authentication.getName());
                 }
             }
             
@@ -101,8 +104,24 @@ public class SecurityTestConfig {
             new SimpleGrantedAuthority("ROLE_" + role.name())
         );
         
+        User testUser = User.builder()
+            .username("test_user")
+            .password("password")
+            .nickname("테스트 사용자")
+            .email("test@example.com")
+            .role(role)
+            .build();
+        
+        UserPrincipal userPrincipal = UserPrincipal.builder()
+            .id(1L)
+            .username(testUser.getUsername())
+            .email(testUser.getEmail())
+            .role(testUser.getRole().name())
+            .authorities(authorities)
+            .build();
+        
         return new UsernamePasswordAuthenticationToken(
-            "test_user", null, authorities
+            userPrincipal, null, authorities
         );
     }
 
@@ -116,6 +135,8 @@ public class SecurityTestConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/contents/*/like").authenticated()
+                .requestMatchers("/contents/*/bookmark").authenticated()
                 .requestMatchers("/**").permitAll()
             )
             .headers(headers -> headers

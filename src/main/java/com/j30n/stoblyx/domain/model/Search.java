@@ -62,4 +62,11 @@ public class Search extends BaseEntity {
     public void updateSearchedAt() {
         this.searchedAt = LocalDateTime.now();
     }
+
+    /**
+     * 검색 시간을 특정 시간으로 설정합니다.
+     */
+    public void setSearchedAt(LocalDateTime searchedAt) {
+        this.searchedAt = searchedAt;
+    }
 } 

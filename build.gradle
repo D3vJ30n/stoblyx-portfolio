@@ -111,6 +111,9 @@ dependencies {
 
     // 서블릿 API 의존성 추가
     implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+    // Swagger/OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0'
 }
 
 testing {

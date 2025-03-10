@@ -8,10 +8,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +16,7 @@ import java.util.List;
  * 책의 인용구를 기반으로 생성된 숏폼 콘텐츠를 관리하는 엔티티
  */
 @Entity
-@Table(name = "short_form_contents")
+@Table(name = "SHORT_FORM_CONTENTS")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShortFormContent extends BaseEntity {
@@ -54,12 +51,6 @@ public class ShortFormContent extends BaseEntity {
     private int likeCount = 0;
     private int shareCount = 0;
     private int commentCount = 0;
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
@@ -146,5 +137,29 @@ public class ShortFormContent extends BaseEntity {
 
     public void markAsDeleted() {
         this.deleted = true;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
+    }
+    
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+    
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
+    
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+    
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+    
+    public void setSubtitles(String subtitles) {
+        this.subtitles = subtitles;
     }
 }

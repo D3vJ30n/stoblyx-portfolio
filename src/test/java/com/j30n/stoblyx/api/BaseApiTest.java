@@ -2,11 +2,9 @@ package com.j30n.stoblyx.api;
 
 import com.j30n.stoblyx.adapter.in.web.dto.auth.LoginRequest;
 import com.j30n.stoblyx.api.config.ApiTestListener;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MockTestConfig;
-import com.j30n.stoblyx.config.RedisTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.TestConfig;
+import com.j30n.stoblyx.api.config.RestAssuredConfig;
+import com.j30n.stoblyx.config.*;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
@@ -20,24 +18,22 @@ import org.springframework.test.context.TestPropertySource;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.restassured.http.ContentType;
-
 /**
  * API 테스트를 위한 기본 클래스
  */
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
-        "spring.profiles.active=test",
-        "logging.level.org.springframework=DEBUG"
+    "spring.profiles.active=test",
+    "logging.level.org.springframework=DEBUG"
 })
 @TestPropertySource(properties = {
-        "spring.datasource.url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
-        "spring.datasource.username=sa",
-        "spring.datasource.password=",
-        "spring.datasource.driver-class-name=org.h2.Driver",
-        "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
-        "spring.redis.host=127.0.0.1",
-        "spring.redis.port=6379"
+    "spring.datasource.url=jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE",
+    "spring.datasource.username=sa",
+    "spring.datasource.password=",
+    "spring.datasource.driver-class-name=org.h2.Driver",
+    "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
+    "spring.data.redis.host=127.0.0.1",
+    "spring.data.redis.port=6379"
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ApiTestListener.class)
@@ -49,7 +45,7 @@ public abstract class BaseApiTest extends RestAssuredConfig {
     protected static final String TEST_USER_PASSWORD = "test1234";
     protected static final String ADMIN_USER_EMAIL = "admin@example.com";
     protected static final String ADMIN_USER_PASSWORD = "admin1234";
-    
+
     protected String userToken;
     protected String adminToken;
 
@@ -60,11 +56,11 @@ public abstract class BaseApiTest extends RestAssuredConfig {
     public void init() {
         try {
             setupRestAssured();
-            
+
             // 테스트 환경에서 실제 인증 과정을 거치지 않고 더미 토큰 사용
             userToken = "test_user_token_for_testing";
             adminToken = "test_admin_token_for_testing";
-            
+
             System.out.println("테스트 환경용 더미 토큰 초기화 완료: " + userToken);
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,37 +73,37 @@ public abstract class BaseApiTest extends RestAssuredConfig {
 
     /**
      * 로그인하여 JWT 토큰 획득
-     * 
-     * @param email 사용자 이메일
+     *
+     * @param email    사용자 이메일
      * @param password 사용자 비밀번호
      * @return JWT 토큰
      */
     protected String loginAndGetToken(String email, String password) {
         LoginRequest loginRequest = new LoginRequest(email, password);
-        
+
         Response response = createRequestSpec()
-                .body(loginRequest)
-                .when()
-                .post("/auth/login")
-                .then()
-                .extract().response();
-        
+            .body(loginRequest)
+            .when()
+            .post("/auth/login")
+            .then()
+            .extract().response();
+
         if (response.statusCode() != 200) {
             // 로그인 요청이 실패한 경우 기본적인 디버그 정보 출력
             System.err.println("로그인 실패: " + response.statusCode());
             System.err.println("응답 본문: " + response.body().asString());
-            
+
             // 테스트 사용자가 없는 경우 회원가입 진행
             return createUserAndLogin(email, password);
         }
-        
+
         return response.jsonPath().getString("data.token");
     }
-    
+
     /**
      * 테스트 사용자 생성 및 로그인
-     * 
-     * @param email 이메일
+     *
+     * @param email    이메일
      * @param password 비밀번호
      * @return JWT 토큰
      */
@@ -117,55 +113,55 @@ public abstract class BaseApiTest extends RestAssuredConfig {
         registerRequest.put("email", email);
         registerRequest.put("password", password);
         registerRequest.put("nickname", email.split("@")[0]);
-        
+
         System.out.println("회원가입 요청 데이터: " + registerRequest);
-        
+
         // 회원가입 요청
         Response registerResponse = createRequestSpec()
-                .contentType(ContentType.JSON)
-                .body(registerRequest)
-                .when()
-                .post("/auth/register")
-                .then()
-                .extract().response();
-        
+            .contentType(ContentType.JSON)
+            .body(registerRequest)
+            .when()
+            .post("/auth/register")
+            .then()
+            .extract().response();
+
         if (registerResponse.statusCode() != 201) {
             System.err.println("회원가입 실패: HTTP " + registerResponse.statusCode());
             System.err.println("응답 헤더: " + registerResponse.headers());
             System.err.println("응답 본문: " + registerResponse.body().asString());
-            
+
             // H2 데이터베이스를 사용하는 테스트 환경에서는 기본 테스트 토큰 반환
             if (System.getProperty("spring.profiles.active", "test").equals("test")) {
                 System.out.println("테스트 환경에서 실행 중 - 기본 테스트 토큰 반환");
                 return "test_token_for_" + email;
             }
-            
+
             throw new RuntimeException("테스트 사용자 생성 실패");
         }
-        
+
         // 회원가입 후 로그인 재시도
         Response loginResponse = createRequestSpec()
-                .contentType(ContentType.JSON)
-                .body(new LoginRequest(email, password))
-                .when()
-                .post("/auth/login")
-                .then()
-                .extract().response();
-        
+            .contentType(ContentType.JSON)
+            .body(new LoginRequest(email, password))
+            .when()
+            .post("/auth/login")
+            .then()
+            .extract().response();
+
         if (loginResponse.statusCode() != 200) {
             System.err.println("생성 후 로그인 실패: " + loginResponse.statusCode());
             System.err.println("응답 헤더: " + loginResponse.headers());
             System.err.println("응답 본문: " + loginResponse.body().asString());
-            
+
             // H2 데이터베이스를 사용하는 테스트 환경에서는 기본 테스트 토큰 반환
             if (System.getProperty("spring.profiles.active", "test").equals("test")) {
                 System.out.println("테스트 환경에서 실행 중 - 기본 테스트 토큰 반환");
                 return "test_token_for_" + email;
             }
-            
+
             throw new RuntimeException("테스트 사용자 로그인 실패");
         }
-        
+
         return loginResponse.jsonPath().getString("data.token");
     }
 } 

@@ -1,0 +1,11 @@
+${Ansi.MAGENTA}  _____ _______ ____  ____  _     __   __ __  __  ${Ansi.DEFAULT}
+${Ansi.MAGENTA} / ____|__   __/ __ \|  _ \| |    \ \ / / \ \/ /  ${Ansi.DEFAULT}
+${Ansi.MAGENTA}| (___    | | | |  | | |_) | |     \ V /   \  /   ${Ansi.DEFAULT}
+${Ansi.MAGENTA} \___ \   | | | |  | |  _ <| |      > <    > <    ${Ansi.DEFAULT}
+${Ansi.MAGENTA} ____) |  | | | |__| | |_) | |____  | |   / . \   ${Ansi.DEFAULT}
+${Ansi.MAGENTA}|_____/   |_|  \____/|____/|______/_|_|__/_/_\_\  ${Ansi.DEFAULT}
+
+${application.title} ${application.version}
+Spring Boot ${spring-boot.version}
+
+${Ansi.BRIGHT_CYAN}:: 개발자: J30N :: ${Ansi.DEFAULT}

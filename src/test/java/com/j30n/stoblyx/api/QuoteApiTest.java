@@ -25,10 +25,9 @@ import static org.hamcrest.Matchers.*;
  */
 @Import({RedisTestConfig.class, SecurityTestConfig.class, ContextTestConfig.class, MockTestConfig.class, XssExclusionTestConfig.class, TestConfig.class})
 @DisplayName("명언 API 통합 테스트")
-public class QuoteApiTest extends BaseApiTest {
+class QuoteApiTest extends BaseApiTest {
 
     private static final String QUOTE_API_PATH = "/quotes";
-    private static final String BOOK_API_PATH = "/books";
     private static final String TEST_API_PATH = "/test/quotes";
     
     // 테스트용 고정 ID
@@ -39,13 +38,13 @@ public class QuoteApiTest extends BaseApiTest {
     private List<Long> createdQuoteIds = new ArrayList<>();
     
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         createdQuoteIds = new ArrayList<>();
     }
     
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         // 테스트 중 생성된 모든 문구 삭제
         for (Long quoteId : createdQuoteIds) {
             try {
@@ -60,7 +59,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("문구 목록 조회 API 테스트")
-    public void testGetQuotes() {
+    void testGetQuotes() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         givenAuth(userToken)
@@ -77,7 +76,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("문구 상세 조회 API 테스트")
-    public void testGetQuote() {
+    void testGetQuote() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 테스트용 문구 ID 사용
@@ -98,7 +97,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("문구 등록 API 테스트")
-    public void testCreateQuote() {
+    void testCreateQuote() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 테스트용 책 ID 사용
@@ -123,7 +122,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("문구 수정 API 테스트")
-    public void testUpdateQuote() {
+    void testUpdateQuote() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 테스트용 문구 ID 사용
@@ -151,7 +150,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("문구 삭제 API 테스트")
-    public void testDeleteQuote() {
+    void testDeleteQuote() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 테스트용 문구 ID 사용
@@ -170,7 +169,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("인증 없이 문구 등록 시 실패 테스트")
-    public void testCreateQuoteWithoutAuth() {
+    void testCreateQuoteWithoutAuth() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 테스트용 책 ID 사용
@@ -194,7 +193,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("테스트용 문구 목록 조회 API 테스트")
-    public void testGetQuotesUsingTestEndpoint() {
+    void testGetQuotesUsingTestEndpoint() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 테스트 전용 엔드포인트 호출 (인증 없이 사용 가능)
@@ -212,7 +211,7 @@ public class QuoteApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("모킹을 사용한 테스트용 문구 목록 조회 API 테스트")
-    public void testGetQuotesWithMock() {
+    void testGetQuotesWithMock() {
         System.out.println("테스트 시작: " + System.currentTimeMillis());
         
         // 모킹된 서비스를 사용하는 테스트 엔드포인트 호출 (인증 필요 없음)
@@ -238,77 +237,5 @@ public class QuoteApiTest extends BaseApiTest {
         quoteData.put("bookId", bookId);
         quoteData.put("memo", "테스트 메모");
         return quoteData;
-    }
-
-    /**
-     * 테스트용 문구 생성 헬퍼 메서드
-     */
-    private Long createTestQuote() {
-        // 테스트용 책 ID 사용
-        Long bookId = TEST_BOOK_ID;
-
-        // 문구 등록 요청 데이터 생성
-        Map<String, Object> quoteData = createQuoteData(bookId);
-
-        // 인증된 요청으로 문구 등록
-        Long quoteId = givenAuth(userToken)
-            .contentType(ContentType.JSON)
-            .body(quoteData)
-            .when()
-                .post(QUOTE_API_PATH)
-            .then()
-                .log().all()
-                .statusCode(201)
-                .extract()
-                .path("data.id");
-                
-        // 생성된 ID가 null이 아니면 리스트에 추가
-        if (quoteId != null) {
-            createdQuoteIds.add(quoteId);
-        } else {
-            System.out.println("문구 ID를 추출할 수 없습니다. 응답: " + 
-                givenAuth(userToken)
-                    .contentType(ContentType.JSON)
-                    .body(quoteData)
-                    .when()
-                        .post(QUOTE_API_PATH)
-                    .then()
-                        .extract()
-                        .asString());
-        }
-        
-        return quoteId;
-    }
-
-    /**
-     * 테스트용 책 생성 헬퍼 메서드
-     */
-    private Long createTestBook() {
-        Map<String, Object> bookData = new HashMap<>();
-        bookData.put("title", "테스트 책 제목 " + System.currentTimeMillis());
-        bookData.put("author", "테스트 저자");
-        bookData.put("isbn", "9788956746" + (int)(Math.random() * 1000)); // 랜덤 ISBN
-        bookData.put("description", "테스트 책 설명");
-        bookData.put("publisher", "테스트 출판사");
-        bookData.put("publishDate", "2023-01-01");
-        bookData.put("thumbnailUrl", "http://example.com/book.jpg");
-        
-        // genres를 배열로 설정
-        List<String> genres = new ArrayList<>();
-        genres.add("소설");
-        genres.add("판타지");
-        bookData.put("genres", genres);
-
-        // 관리자 권한으로 책 생성
-        return givenAuth(adminToken)
-            .contentType(ContentType.JSON)
-            .body(bookData)
-            .when()
-                .post(BOOK_API_PATH)
-            .then()
-                .log().all()
-                .statusCode(201)
-                .extract()
-                .path("data.id");
     }
 } 

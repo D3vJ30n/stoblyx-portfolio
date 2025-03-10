@@ -53,9 +53,9 @@ public class RedisTestConfig {
     
     @Bean(name = "cacheRedisTemplate")
     @Primary
-    public RedisTemplate<String, Object> cacheRedisTemplate(RedisConnectionFactory connectionFactory) {
+    public RedisTemplate<String, Object> cacheRedisTemplate() {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+        template.setConnectionFactory(redisConnectionFactory());
         
         // 키 직렬화 설정
         template.setKeySerializer(new StringRedisSerializer());
@@ -72,7 +72,7 @@ public class RedisTestConfig {
     
     @Bean
     @Primary
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    public CacheManager cacheManager() {
         // 기본 캐시 설정
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofSeconds(3600)) // 기본 TTL 1시간
@@ -96,7 +96,7 @@ public class RedisTestConfig {
         // 명언 캐시 (12시간)
         cacheConfigurations.put("quotesCache", defaultConfig.entryTtl(Duration.ofHours(12)));
 
-        return RedisCacheManager.builder(connectionFactory)
+        return RedisCacheManager.builder(redisConnectionFactory())
                 .cacheDefaults(defaultConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
                 .build();

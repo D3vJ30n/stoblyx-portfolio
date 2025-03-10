@@ -1,7 +1,9 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkStatusResponse;
 import com.j30n.stoblyx.application.service.content.ContentService;
+import com.j30n.stoblyx.application.service.bookmark.BookmarkService;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
@@ -60,6 +62,9 @@ class ContentControllerTest {
 
     @MockBean
     private ContentService contentService;
+    
+    @MockBean
+    private BookmarkService bookmarkService;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
@@ -490,6 +495,33 @@ class ContentControllerTest {
                         fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
                     )
                     .and(RestDocsUtils.getPageResponseFields())
+                ));
+    }
+
+    @Test
+    @DisplayName("콘텐츠 북마크 상태 확인 API가 정상적으로 동작해야 한다")
+    void checkBookmarkStatus() throws Exception {
+        // given
+        Long contentId = 1L;
+        BookmarkStatusResponse response = new BookmarkStatusResponse(true);
+        
+        when(bookmarkService.checkBookmarkStatus(anyLong(), eq(contentId))).thenReturn(response);
+        
+        // when & then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/{contentId}/bookmark/status", contentId)
+                    .with(testUser))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.result").value("SUCCESS"))
+                .andExpect(jsonPath("$.data.isBookmarked").value(true))
+                .andDo(document("content/check-bookmark-status",
+                    pathParameters(
+                        parameterWithName("contentId").description("콘텐츠 ID")
+                    ),
+                    responseFields(
+                        RestDocsUtils.getCommonResponseFieldsWithData())
+                    .andWithPrefix("data.", 
+                        fieldWithPath("isBookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부")
+                    )
                 ));
     }
 } 

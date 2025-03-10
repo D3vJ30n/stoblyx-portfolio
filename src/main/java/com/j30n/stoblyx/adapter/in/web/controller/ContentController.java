@@ -2,12 +2,15 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.common.response.ApiResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkStatusResponse;
 import com.j30n.stoblyx.application.service.content.ContentService;
+import com.j30n.stoblyx.application.service.bookmark.BookmarkService;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class ContentController {
 
     private final ContentService contentService;
+    private final BookmarkService bookmarkService;
 
     /**
      * 트렌딩 콘텐츠 목록을 조회합니다.
@@ -41,6 +45,11 @@ public class ContentController {
         @AuthenticationPrincipal UserPrincipal user,
         @PageableDefault(size = 20) Pageable pageable
     ) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+        }
+        
         return ResponseEntity.ok(
             ApiResponse.success("추천 콘텐츠 목록입니다.",
                 contentService.getRecommendedContents(user.getId(), pageable))
@@ -83,39 +92,93 @@ public class ContentController {
         @PathVariable Long id,
         @AuthenticationPrincipal UserPrincipal user
     ) {
-        ContentResponse content = contentService.getContent(id);
-        if (user != null) {
-            contentService.incrementViewCount(id);
+        try {
+            ContentResponse content = contentService.getContent(id);
+            if (user != null) {
+                contentService.incrementViewCount(id);
+            }
+            return ResponseEntity.ok(
+                ApiResponse.success("콘텐츠 상세 정보입니다.", content)
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "콘텐츠를 찾을 수 없습니다."));
         }
-        return ResponseEntity.ok(
-            ApiResponse.success("콘텐츠 상세 정보입니다.", content)
-        );
     }
 
     /**
      * 콘텐츠에 좋아요를 토글합니다.
      */
     @PostMapping("/{id}/like")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> toggleLike(
         @PathVariable Long id,
         @AuthenticationPrincipal UserPrincipal user
     ) {
-        contentService.toggleLike(user.getId(), id);
-        return ResponseEntity.ok(ApiResponse.success("좋아요를 토글했습니다.", null));
+        // 인증 확인
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+        }
+        
+        try {
+            contentService.toggleLike(user.getId(), id);
+            return ResponseEntity.ok(ApiResponse.success("좋아요를 토글했습니다.", null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "콘텐츠를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 오류가 발생했습니다."));
+        }
     }
 
     /**
      * 콘텐츠를 북마크에 추가/제거합니다.
      */
     @PostMapping("/{id}/bookmark")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> toggleBookmark(
         @PathVariable Long id,
         @AuthenticationPrincipal UserPrincipal user
     ) {
-        contentService.toggleBookmark(user.getId(), id);
-        return ResponseEntity.ok(ApiResponse.success("북마크를 토글했습니다.", null));
+        // 인증 확인
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+        }
+        
+        try {
+            contentService.toggleBookmark(user.getId(), id);
+            return ResponseEntity.ok(ApiResponse.success("북마크를 토글했습니다.", null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "콘텐츠를 찾을 수 없습니다."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 오류가 발생했습니다."));
+        }
+    }
+
+    /**
+     * 콘텐츠의 북마크 상태를 확인합니다.
+     */
+    @GetMapping("/{id}/bookmark/status")
+    public ResponseEntity<ApiResponse<BookmarkStatusResponse>> checkBookmarkStatus(
+        @PathVariable Long id,
+        @AuthenticationPrincipal UserPrincipal user
+    ) {
+        // 인증 확인
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+        }
+        
+        try {
+            BookmarkStatusResponse status = bookmarkService.checkBookmarkStatus(user.getId(), id);
+            return ResponseEntity.ok(ApiResponse.success("북마크 상태입니다.", status));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 오류가 발생했습니다."));
+        }
     }
 
     /**

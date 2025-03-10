@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "CONTENT_INTERACTION")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ContentInteraction extends BaseTimeEntity {
@@ -49,5 +50,10 @@ public class ContentInteraction extends BaseTimeEntity {
     public void updateViewedAt() {
         this.viewedAt = LocalDateTime.now();
         this.content.incrementViewCount();
+    }
+
+    // 테스트 데이터 초기화용 메서드
+    public void setViewedAt(LocalDateTime viewedAt) {
+        this.viewedAt = viewedAt;
     }
 } 

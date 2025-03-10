@@ -3,6 +3,7 @@ package com.j30n.stoblyx.application.service.auth;
 import com.j30n.stoblyx.adapter.in.web.dto.auth.LoginRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.auth.SignUpRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.auth.TokenResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.user.PasswordChangeRequest;
 import com.j30n.stoblyx.application.port.in.auth.AuthUseCase;
 import com.j30n.stoblyx.application.port.out.auth.AuthPort;
 import com.j30n.stoblyx.domain.model.User;
@@ -108,5 +109,29 @@ public class AuthService implements AuthUseCase {
 
         authPort.addToBlacklist(accessToken, remainingValidityInSeconds);
         log.info("로그아웃 완료: username={}", username);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(Long userId, PasswordChangeRequest request) {
+        // 사용자 조회
+        User user = authPort.findUserById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        
+        // 현재 비밀번호 검증
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+        
+        // 새 비밀번호와 확인 비밀번호 일치 여부 확인
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
+        }
+        
+        // 비밀번호 변경
+        user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+        authPort.saveUser(user);
+        
+        log.info("비밀번호 변경 완료: userId={}", userId);
     }
 }

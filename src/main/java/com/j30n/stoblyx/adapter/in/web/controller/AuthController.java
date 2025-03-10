@@ -3,16 +3,17 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 import com.j30n.stoblyx.adapter.in.web.dto.auth.LoginRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.auth.SignUpRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.auth.TokenResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.user.PasswordChangeRequest;
 import com.j30n.stoblyx.adapter.in.web.support.TokenExtractor;
 import com.j30n.stoblyx.application.service.auth.AuthService;
 import com.j30n.stoblyx.common.response.ApiResponse;
+import com.j30n.stoblyx.infrastructure.annotation.CurrentUser;
+import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -82,5 +83,26 @@ public class AuthController {
         String accessToken = tokenExtractor.extractToken(bearerToken);
         authService.logout(accessToken);
         return ApiResponse.success("로그아웃이 완료되었습니다.");
+    }
+
+    /**
+     * 사용자 비밀번호를 변경합니다.
+     * 현재 비밀번호 확인 후 새 비밀번호로 변경합니다.
+     *
+     * @param userPrincipal 현재 로그인한 사용자 정보
+     * @param request 비밀번호 변경 요청 DTO (현재 비밀번호, 새 비밀번호, 확인 비밀번호)
+     * @return 비밀번호 변경 결과
+     */
+    @PutMapping("/password")
+    public ApiResponse<Void> changePassword(
+        @CurrentUser UserPrincipal userPrincipal,
+        @Valid @RequestBody PasswordChangeRequest request
+    ) {
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+        }
+        
+        authService.changePassword(userPrincipal.getId(), request);
+        return ApiResponse.success("비밀번호가 성공적으로 변경되었습니다.");
     }
 }
