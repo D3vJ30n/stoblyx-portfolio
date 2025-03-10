@@ -90,12 +90,12 @@ public interface RankingUserScoreRepository extends JpaRepository<RankingUserSco
      * 최근 점수 변경이 큰 내역 조회
      * 
      * @param pageable 페이징 정보
-     * @return 점수 변경 내역 목록 (userId, null, rankType, scoreDiff, updatedAt)
+     * @return 점수 변경 내역 목록 (userId, null, rankType, scoreDiff, modifiedAt)
      */
-    @Query(value = "SELECT s.userId, null, s.rankType, (s.currentScore - s.previousScore) as scoreDiff, s.updatedAt " +
+    @Query(value = "SELECT s.userId, null, s.rankType, (s.currentScore - s.previousScore) as scoreDiff, s.modifiedAt " +
            "FROM RankingUserScore s " +
            "WHERE s.previousScore IS NOT NULL AND s.currentScore <> s.previousScore " +
-           "ORDER BY s.updatedAt DESC",
+           "ORDER BY s.modifiedAt DESC",
            countQuery = "SELECT COUNT(s) FROM RankingUserScore s WHERE s.previousScore IS NOT NULL AND s.currentScore <> s.previousScore")
     List<Object[]> findRecentRankChanges(Pageable pageable);
 
@@ -103,7 +103,7 @@ public interface RankingUserScoreRepository extends JpaRepository<RankingUserSco
      * 최근 점수 변경이 큰 내역 조회 (제한된 수)
      * 
      * @param limit 최근 변경 내역의 제한
-     * @return 점수 변경 내역 목록 (userId, null, rankType, scoreDiff, updatedAt)
+     * @return 점수 변경 내역 목록 (userId, null, rankType, scoreDiff, modifiedAt)
      */
     default List<Object[]> findRecentRankChanges(@Param("limit") int limit) {
         return findRecentRankChanges(PageRequest.of(0, limit));

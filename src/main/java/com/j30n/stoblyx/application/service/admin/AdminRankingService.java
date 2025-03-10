@@ -55,7 +55,7 @@ public class AdminRankingService implements AdminRankingUseCase {
                     score.getAccountSuspended(),
                     score.getLastActivityDate(),
                     score.getCreatedAt(),
-                    score.getUpdatedAt()
+                    score.getModifiedAt()
                 ))
                 .toList();
     }
@@ -145,7 +145,7 @@ public class AdminRankingService implements AdminRankingUseCase {
             updatedScore.getAccountSuspended(),
             LocalDateTime.now(), // 최근 활동 시간 업데이트
             updatedScore.getCreatedAt(),
-            updatedScore.getUpdatedAt()
+            updatedScore.getModifiedAt()
         );
     }
 
@@ -183,7 +183,7 @@ public class AdminRankingService implements AdminRankingUseCase {
             true, // 정지됨
             LocalDateTime.now(), // 최근 활동 시간 업데이트
             updatedScore.getCreatedAt(),
-            updatedScore.getUpdatedAt()
+            updatedScore.getModifiedAt()
         );
     }
 
@@ -221,7 +221,7 @@ public class AdminRankingService implements AdminRankingUseCase {
             false, // 정지 해제됨
             LocalDateTime.now(), // 최근 활동 시간 업데이트
             updatedScore.getCreatedAt(),
-            updatedScore.getUpdatedAt()
+            updatedScore.getModifiedAt()
         );
     }
 

@@ -287,17 +287,16 @@ CREATE TABLE search_term_profiles (
 
 CREATE TABLE ranking_user_score (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
-    total_score INT DEFAULT 0,
-    weekly_score INT DEFAULT 0,
-    monthly_score INT DEFAULT 0,
-    daily_score INT DEFAULT 0,
-    last_active_at TIMESTAMP,
-    created_at TIMESTAMP,
+    user_id BIGINT NOT NULL UNIQUE,
+    current_score INT NOT NULL,
+    previous_score INT,
+    rank_type VARCHAR(20) NOT NULL,
+    last_activity_date TIMESTAMP,
+    created_at TIMESTAMP NOT NULL,
     modified_at TIMESTAMP,
-    is_deleted BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_ranking_score_user FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT uk_ranking_user UNIQUE (user_id)
+    suspicious_activity BOOLEAN NOT NULL DEFAULT FALSE,
+    report_count INT NOT NULL DEFAULT 0,
+    account_suspended BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE ranking_user_activity (
@@ -325,7 +324,7 @@ CREATE TABLE ranking_leaderboard (
     period_start_date TIMESTAMP NOT NULL,
     period_end_date TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP,
+    modified_at TIMESTAMP,
     CONSTRAINT fk_leaderboard_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 

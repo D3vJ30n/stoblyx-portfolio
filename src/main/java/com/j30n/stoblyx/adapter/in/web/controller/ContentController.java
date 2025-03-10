@@ -23,6 +23,10 @@ public class ContentController {
 
     private final ContentService contentService;
     private final BookmarkService bookmarkService;
+    
+    private static final String ERROR_AUTH_REQUIRED = "인증이 필요합니다.";
+    private static final String ERROR_CONTENT_NOT_FOUND = "콘텐츠를 찾을 수 없습니다.";
+    private static final String ERROR_SERVER = "서버 오류가 발생했습니다.";
 
     /**
      * 트렌딩 콘텐츠 목록을 조회합니다.
@@ -47,7 +51,7 @@ public class ContentController {
     ) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ERROR_AUTH_REQUIRED));
         }
         
         return ResponseEntity.ok(
@@ -102,7 +106,7 @@ public class ContentController {
             );
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "콘텐츠를 찾을 수 없습니다."));
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ERROR_CONTENT_NOT_FOUND));
         }
     }
 
@@ -117,7 +121,7 @@ public class ContentController {
         // 인증 확인
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ERROR_AUTH_REQUIRED));
         }
         
         try {
@@ -125,10 +129,10 @@ public class ContentController {
             return ResponseEntity.ok(ApiResponse.success("좋아요를 토글했습니다.", null));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "콘텐츠를 찾을 수 없습니다."));
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ERROR_CONTENT_NOT_FOUND));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 오류가 발생했습니다."));
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ERROR_SERVER));
         }
     }
 
@@ -143,7 +147,7 @@ public class ContentController {
         // 인증 확인
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ERROR_AUTH_REQUIRED));
         }
         
         try {
@@ -151,10 +155,10 @@ public class ContentController {
             return ResponseEntity.ok(ApiResponse.success("북마크를 토글했습니다.", null));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), "콘텐츠를 찾을 수 없습니다."));
+                .body(ApiResponse.error(HttpStatus.NOT_FOUND.value(), ERROR_CONTENT_NOT_FOUND));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 오류가 발생했습니다."));
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ERROR_SERVER));
         }
     }
 
@@ -169,7 +173,7 @@ public class ContentController {
         // 인증 확인
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다."));
+                .body(ApiResponse.error(HttpStatus.UNAUTHORIZED.value(), ERROR_AUTH_REQUIRED));
         }
         
         try {
@@ -177,7 +181,7 @@ public class ContentController {
             return ResponseEntity.ok(ApiResponse.success("북마크 상태입니다.", status));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), "서버 오류가 발생했습니다."));
+                .body(ApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(), ERROR_SERVER));
         }
     }
 

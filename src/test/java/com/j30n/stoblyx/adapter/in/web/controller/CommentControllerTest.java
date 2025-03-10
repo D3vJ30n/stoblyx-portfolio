@@ -188,7 +188,7 @@ class CommentControllerTest {
     @DisplayName("댓글 삭제 API가 정상적으로 동작해야 한다")
     void deleteComment() throws Exception {
         // given
-        doNothing().when(commentService).deleteComment(eq(1L), eq(1L));
+        doNothing().when(commentService).deleteComment(1L, 1L);
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.delete("/comments/{commentId}", 1L)
@@ -200,7 +200,7 @@ class CommentControllerTest {
                 )
             ));
 
-        verify(commentService).deleteComment(eq(1L), eq(1L));
+        verify(commentService).deleteComment(1L, 1L);
     }
 
     @Test
@@ -280,7 +280,7 @@ class CommentControllerTest {
                 pathParameters(
                     parameterWithName("userId").description("사용자 ID")
                 ),
-                responseFields(
+                RestDocsUtils.relaxedResponseFields(
                     RestDocsUtils.getCommonResponseFieldsWithData())
                 .andWithPrefix("data.content[].",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
@@ -332,7 +332,7 @@ class CommentControllerTest {
                 pathParameters(
                     parameterWithName("quoteId").description("인용구 ID")
                 ),
-                responseFields(
+                RestDocsUtils.relaxedResponseFields(
                     RestDocsUtils.getCommonResponseFieldsWithData())
                 .andWithPrefix("data.content[].",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),

@@ -44,8 +44,8 @@ public class RankingUserScore {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
 
     @Column(name = "suspicious_activity", nullable = false)
     private Boolean suspiciousActivity;
@@ -59,7 +59,7 @@ public class RankingUserScore {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        modifiedAt = LocalDateTime.now();
         lastActivityDate = LocalDateTime.now();
         
         // 기본값 설정
@@ -82,7 +82,7 @@ public class RankingUserScore {
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        modifiedAt = LocalDateTime.now();
         
         // 점수에 따른 랭크 업데이트
         rankType = RankType.fromScore(currentScore);
@@ -101,6 +101,7 @@ public class RankingUserScore {
         
         previousScore = currentScore;
         currentScore = (int) Math.round(alpha * newActivityScore + (1 - alpha) * currentScore);
+        rankType = RankType.fromScore(this.currentScore);
         lastActivityDate = LocalDateTime.now();
     }
 

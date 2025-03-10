@@ -19,7 +19,7 @@ public record AdminRankingScoreResponse(
     Boolean accountSuspended,
     LocalDateTime lastActivityDate,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    LocalDateTime modifiedAt
 ) {
     /**
      * RankingUserScore 엔티티로부터 AdminRankingScoreResponse를 생성합니다.
@@ -39,7 +39,7 @@ public record AdminRankingScoreResponse(
             score.getAccountSuspended(),
             score.getLastActivityDate(),
             score.getCreatedAt(),
-            score.getUpdatedAt()
+            score.getModifiedAt()
         );
     }
 } 

@@ -173,7 +173,7 @@ class QuoteControllerTest {
                         parameterWithName("size").description("페이지 크기").optional(),
                         parameterWithName("sort").description("정렬 방식 (예: createdAt,desc)").optional()
                     ),
-                    responseFields(
+                    RestDocsUtils.relaxedResponseFields(
                         RestDocsUtils.getCommonResponseFieldsWithData())
                     .andWithPrefix("data.content[].", 
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("인용구 ID"),

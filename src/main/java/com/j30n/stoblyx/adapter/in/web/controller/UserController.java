@@ -4,17 +4,23 @@ import com.j30n.stoblyx.adapter.in.web.dto.user.UserProfileResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserUpdateRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserInterestRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserInterestResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.ranking.UserRankingResponse;
 import com.j30n.stoblyx.application.port.in.user.UserUseCase;
 import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
+import com.j30n.stoblyx.application.port.in.ranking.RankingUserScoreUseCase;
 import com.j30n.stoblyx.common.response.ApiResponse;
+import com.j30n.stoblyx.domain.model.RankingUserScore;
 import com.j30n.stoblyx.infrastructure.annotation.CurrentUser;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * 사용자 관련 API를 처리하는 컨트롤러
@@ -29,6 +35,7 @@ public class UserController {
 
     private final UserUseCase userUseCase;
     private final UserInterestUseCase userInterestUseCase;
+    private final RankingUserScoreUseCase rankingUserScoreUseCase;
 
     /**
      * 현재 사용자의 프로필을 조회합니다.
@@ -146,5 +153,42 @@ public class UserController {
         
         UserProfileResponse updatedProfile = userUseCase.updateProfileImage(userPrincipal.getId(), image);
         return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "프로필 이미지가 성공적으로 업로드되었습니다.", updatedProfile));
+    }
+    
+    /**
+     * 사용자 랭킹 정보 조회
+     *
+     * @param userPrincipal 현재 사용자 인증 정보
+     * @return 사용자 랭킹 정보
+     */
+    @GetMapping("/me/ranking")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserRankingResponse>> getUserRanking(
+        @CurrentUser UserPrincipal userPrincipal
+    ) {
+        if (userPrincipal == null) {
+            throw new IllegalArgumentException(ERROR_USER_NOT_AUTHENTICATED);
+        }
+        
+        try {
+            // 사용자 점수 정보 조회
+            RankingUserScore userScore = rankingUserScoreUseCase.getUserScore(userPrincipal.getId());
+            
+            // 전체 랭킹에서 사용자 순위 계산
+            List<RankingUserScore> allUsers = rankingUserScoreUseCase.getTopUsers(Integer.MAX_VALUE);
+            int rank = 0;
+            for (int i = 0; i < allUsers.size(); i++) {
+                if (allUsers.get(i).getUserId().equals(userPrincipal.getId())) {
+                    rank = i + 1; // 0-based 인덱스를 1-based 순위로 변환
+                    break;
+                }
+            }
+            
+            UserRankingResponse response = UserRankingResponse.fromEntity(userScore, rank);
+            return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 랭킹 정보를 성공적으로 조회했습니다.", response));
+        } catch (Exception e) {
+            log.error("사용자 랭킹 정보 조회 중 오류 발생", e);
+            throw new IllegalArgumentException("사용자 랭킹 정보 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }

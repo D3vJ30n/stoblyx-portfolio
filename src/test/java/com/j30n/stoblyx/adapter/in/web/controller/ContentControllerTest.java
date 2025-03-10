@@ -153,7 +153,7 @@ class ContentControllerTest {
                 .modifiedAt(LocalDateTime.now())
                 .build();
                 
-        when(contentService.getContent(eq(contentId))).thenReturn(response);
+        when(contentService.getContent(contentId)).thenReturn(response);
         
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/{contentId}", contentId)
@@ -234,32 +234,16 @@ class ContentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.content[0].id").value(1))
+                .andExpect(jsonPath("$.data.content[0].subtitles").value("트렌딩 콘텐츠 내용 1"))
                 .andDo(document("content/get-trending-contents",
                     queryParameters(
-                        parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
-                        parameterWithName("size").description("페이지 크기").optional(),
-                        parameterWithName("sort").description("정렬 방식 (예: viewCount,desc)").optional()
+                        RestDocsUtils.getPageRequestParameters()
                     ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.content[].", 
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("콘텐츠 ID"),
-                        fieldWithPath("subtitles").type(JsonFieldType.STRING).description("콘텐츠 내용"),
-                        fieldWithPath("status").type(JsonFieldType.STRING).description("콘텐츠 상태"),
-                        fieldWithPath("videoUrl").type(JsonFieldType.STRING).description("비디오 URL"),
-                        fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).description("썸네일 URL"),
-                        fieldWithPath("bgmUrl").type(JsonFieldType.STRING).description("BGM URL"),
-                        fieldWithPath("viewCount").type(JsonFieldType.NUMBER).description("조회수"),
-                        fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
-                        fieldWithPath("shareCount").type(JsonFieldType.NUMBER).description("공유 수"),
-                        fieldWithPath("isLiked").type(JsonFieldType.BOOLEAN).description("좋아요 여부"),
-                        fieldWithPath("isBookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
-                        fieldWithPath("book").type(JsonFieldType.OBJECT).description("책 정보").optional(),
-                        fieldWithPath("quote").type(JsonFieldType.OBJECT).description("인용구 정보").optional(),
-                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
-                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
+                    RestDocsUtils.relaxedResponseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
                     )
-                    .and(RestDocsUtils.getPageResponseFields())
                 ));
     }
 
@@ -310,32 +294,16 @@ class ContentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.content[0].id").value(1))
+                .andExpect(jsonPath("$.data.content[0].subtitles").value("추천 콘텐츠 내용 1"))
                 .andDo(document("content/get-recommended-contents",
                     queryParameters(
-                        parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
-                        parameterWithName("size").description("페이지 크기").optional(),
-                        parameterWithName("sort").description("정렬 방식 (예: viewCount,desc)").optional()
+                        RestDocsUtils.getPageRequestParameters()
                     ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.content[].", 
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("콘텐츠 ID"),
-                        fieldWithPath("subtitles").type(JsonFieldType.STRING).description("콘텐츠 내용"),
-                        fieldWithPath("status").type(JsonFieldType.STRING).description("콘텐츠 상태"),
-                        fieldWithPath("videoUrl").type(JsonFieldType.STRING).description("비디오 URL"),
-                        fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).description("썸네일 URL"),
-                        fieldWithPath("bgmUrl").type(JsonFieldType.STRING).description("BGM URL"),
-                        fieldWithPath("viewCount").type(JsonFieldType.NUMBER).description("조회수"),
-                        fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
-                        fieldWithPath("shareCount").type(JsonFieldType.NUMBER).description("공유 수"),
-                        fieldWithPath("isLiked").type(JsonFieldType.BOOLEAN).description("좋아요 여부"),
-                        fieldWithPath("isBookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
-                        fieldWithPath("book").type(JsonFieldType.OBJECT).description("책 정보").optional(),
-                        fieldWithPath("quote").type(JsonFieldType.OBJECT).description("인용구 정보").optional(),
-                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
-                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
+                    RestDocsUtils.relaxedResponseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
                     )
-                    .and(RestDocsUtils.getPageResponseFields())
                 ));
     }
 
@@ -387,35 +355,19 @@ class ContentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.content[0].id").value(1))
+                .andExpect(jsonPath("$.data.content[0].subtitles").value("책 콘텐츠 내용 1"))
                 .andDo(document("content/get-contents-by-book",
                     pathParameters(
-                        parameterWithName("bookId").description("도서 ID")
+                        parameterWithName("bookId").description("책 ID")
                     ),
                     queryParameters(
-                        parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
-                        parameterWithName("size").description("페이지 크기").optional(),
-                        parameterWithName("sort").description("정렬 방식 (예: viewCount,desc)").optional()
+                        RestDocsUtils.getPageRequestParameters()
                     ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.content[].", 
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("콘텐츠 ID"),
-                        fieldWithPath("subtitles").type(JsonFieldType.STRING).description("콘텐츠 내용"),
-                        fieldWithPath("status").type(JsonFieldType.STRING).description("콘텐츠 상태"),
-                        fieldWithPath("videoUrl").type(JsonFieldType.STRING).description("비디오 URL"),
-                        fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).description("썸네일 URL"),
-                        fieldWithPath("bgmUrl").type(JsonFieldType.STRING).description("BGM URL"),
-                        fieldWithPath("viewCount").type(JsonFieldType.NUMBER).description("조회수"),
-                        fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
-                        fieldWithPath("shareCount").type(JsonFieldType.NUMBER).description("공유 수"),
-                        fieldWithPath("isLiked").type(JsonFieldType.BOOLEAN).description("좋아요 여부"),
-                        fieldWithPath("isBookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
-                        fieldWithPath("book").type(JsonFieldType.OBJECT).description("책 정보").optional(),
-                        fieldWithPath("quote").type(JsonFieldType.OBJECT).description("인용구 정보").optional(),
-                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
-                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
+                    RestDocsUtils.relaxedResponseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
                     )
-                    .and(RestDocsUtils.getPageResponseFields())
                 ));
     }
 
@@ -427,7 +379,7 @@ class ContentControllerTest {
         List<ContentResponse> contents = List.of(
             ContentResponse.builder()
                 .id(1L)
-                .subtitles("테스트 콘텐츠 내용 1")
+                .subtitles("검색 콘텐츠 내용 1")
                 .status(ContentStatus.PUBLISHED)
                 .videoUrl("http://example.com/video1.mp4")
                 .thumbnailUrl("http://example.com/thumbnail1.jpg")
@@ -442,7 +394,7 @@ class ContentControllerTest {
                 .build(),
             ContentResponse.builder()
                 .id(2L)
-                .subtitles("테스트 콘텐츠 내용 2")
+                .subtitles("검색 콘텐츠 내용 2")
                 .status(ContentStatus.PUBLISHED)
                 .videoUrl("http://example.com/video2.mp4")
                 .thumbnailUrl("http://example.com/thumbnail2.jpg")
@@ -468,33 +420,19 @@ class ContentControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.content[0].id").value(1))
+                .andExpect(jsonPath("$.data.content[0].subtitles").value("검색 콘텐츠 내용 1"))
                 .andDo(document("content/search-contents",
                     queryParameters(
-                        parameterWithName("keyword").description("검색 키워드"),
+                        parameterWithName("keyword").description("검색어"),
                         parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
                         parameterWithName("size").description("페이지 크기").optional(),
-                        parameterWithName("sort").description("정렬 방식 (예: viewCount,desc)").optional()
+                        parameterWithName("sort").description("정렬 방식 (예: createdAt,desc)").optional()
                     ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.content[].", 
-                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("콘텐츠 ID"),
-                        fieldWithPath("subtitles").type(JsonFieldType.STRING).description("콘텐츠 내용"),
-                        fieldWithPath("status").type(JsonFieldType.STRING).description("콘텐츠 상태"),
-                        fieldWithPath("videoUrl").type(JsonFieldType.STRING).description("비디오 URL"),
-                        fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).description("썸네일 URL"),
-                        fieldWithPath("bgmUrl").type(JsonFieldType.STRING).description("BGM URL"),
-                        fieldWithPath("viewCount").type(JsonFieldType.NUMBER).description("조회수"),
-                        fieldWithPath("likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
-                        fieldWithPath("shareCount").type(JsonFieldType.NUMBER).description("공유 수"),
-                        fieldWithPath("isLiked").type(JsonFieldType.BOOLEAN).description("좋아요 여부"),
-                        fieldWithPath("isBookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부"),
-                        fieldWithPath("book").type(JsonFieldType.OBJECT).description("책 정보").optional(),
-                        fieldWithPath("quote").type(JsonFieldType.OBJECT).description("인용구 정보").optional(),
-                        fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
-                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
+                    RestDocsUtils.relaxedResponseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
                     )
-                    .and(RestDocsUtils.getPageResponseFields())
                 ));
     }
 

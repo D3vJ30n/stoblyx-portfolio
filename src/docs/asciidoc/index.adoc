@@ -162,6 +162,28 @@ Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 
 * `POST /admin/ranking/users/{userId}/score/update` - 사용자 점수 업데이트
 * `POST /admin/ranking/users/scores/recalculate` - 모든 사용자 점수 재계산
 
+==== 점수 계산 알고리즘
+
+사용자 점수는 가중 이동 평균(EWMA, Exponential Weighted Moving Average) 알고리즘을 사용하여 계산됩니다.
+
+* 새로운 활동 점수와 기존 점수를 가중치(alpha)를 적용하여 계산
+* 공식: `newScore = alpha * activityScore + (1 - alpha) * currentScore`
+* alpha 값은 0.0에서 1.0 사이의 값으로, 새로운 활동의 영향력을 결정
+* 비활동 기간에 따른 점수 감소 기능 제공
+* 의심스러운 활동 및 신고 처리 기능 포함
+
+==== 랭크 타입
+
+사용자 점수에 따라 다음과 같은 랭크 타입이 부여됩니다:
+
+* `BRONZE`: 0 ~ 1200점
+* `SILVER`: 1201 ~ 1500점
+* `GOLD`: 1501 ~ 1800점
+* `PLATINUM`: 1801 ~ 2100점
+* `DIAMOND`: 2101점 이상
+
+각 랭크는 사용자의 활동 수준과 기여도를 나타내며, 특정 혜택이나 기능 접근 권한과 연결될 수 있습니다.
+
 == 인증
 
 === 인증 방식
@@ -1801,11 +1823,15 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 
 * `id`: Long - 점수 ID
 * `userId`: Long - 사용자 ID
-* `rankType`: String - 랭크 유형
 * `currentScore`: Integer - 현재 점수
 * `previousScore`: Integer - 이전 점수
+* `rankType`: Enum - 랭크 유형 (BRONZE, SILVER, GOLD, PLATINUM, DIAMOND)
+* `lastActivityDate`: LocalDateTime - 마지막 활동 일시
+* `suspiciousActivity`: Boolean - 의심스러운 활동 여부
+* `reportCount`: Integer - 신고 횟수
+* `accountSuspended`: Boolean - 계정 정지 여부
 * `createdAt`: LocalDateTime - 생성일시
-* `updatedAt`: LocalDateTime - 수정일시
+* `modifiedAt`: LocalDateTime - 수정일시
 
 == 표준 응답 형식
 

@@ -7,11 +7,14 @@ import com.j30n.stoblyx.adapter.in.web.dto.user.UserProfileResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserUpdateRequest;
 import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
 import com.j30n.stoblyx.application.port.in.user.UserUseCase;
+import com.j30n.stoblyx.application.port.in.ranking.RankingUserScoreUseCase;
 import com.j30n.stoblyx.common.exception.GlobalExceptionHandler;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.domain.enums.RankType;
+import com.j30n.stoblyx.domain.model.RankingUserScore;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import com.j30n.stoblyx.support.docs.RestDocsConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,10 +39,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -49,6 +55,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.j30n.stoblyx.support.docs.RestDocsUtils.relaxedResponseFields;
 
 @WebMvcTest(controllers = {UserController.class, GlobalExceptionHandler.class})
 @DisplayName("사용자 컨트롤러 테스트")
@@ -69,6 +76,9 @@ class UserControllerTest {
 
     @MockBean
     private UserInterestUseCase userInterestUseCase;
+    
+    @MockBean
+    private RankingUserScoreUseCase rankingUserScoreUseCase;
 
     // 테스트에 사용할 UserPrincipal 객체
     private UserPrincipal testUserPrincipal;
@@ -91,6 +101,27 @@ class UserControllerTest {
             testUserPrincipal.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
+        
+        // RankingUserScore 모킹 설정
+        RankingUserScore mockUserScore = RankingUserScore.builder()
+            .id(1L)
+            .userId(1L)
+            .currentScore(1500)
+            .previousScore(1450)
+            .rankType(RankType.SILVER)
+            .lastActivityDate(LocalDateTime.now())
+            .createdAt(LocalDateTime.now())
+            .modifiedAt(LocalDateTime.now())
+            .suspiciousActivity(false)
+            .reportCount(0)
+            .accountSuspended(false)
+            .build();
+            
+        List<RankingUserScore> mockTopUsers = new ArrayList<>();
+        mockTopUsers.add(mockUserScore);
+        
+        when(rankingUserScoreUseCase.getUserScore(any())).thenReturn(mockUserScore);
+        when(rankingUserScoreUseCase.getTopUsers(anyInt())).thenReturn(mockTopUsers);
     }
 
     @Test
@@ -120,7 +151,7 @@ class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.result").value("SUCCESS"))
             .andExpect(jsonPath("$.data.nickname").value("테스트유저"))
-            .andDo(document("user/get-current-user",
+            .andDo(document("user-get-current",
                 relaxedResponseFields(
                     fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS)"),
                     fieldWithPath("message").type(JsonFieldType.STRING).description("성공 메시지"),
@@ -135,6 +166,50 @@ class UserControllerTest {
             ));
 
         verify(userUseCase).getCurrentUser(any());
+    }
+    
+    @Test
+    @DisplayName("사용자 랭킹 정보 조회 API가 정상적으로 동작해야 한다")
+    void getUserRanking() throws Exception {
+        // given
+        RankingUserScore userScore = RankingUserScore.builder()
+            .id(1L)
+            .userId(1L)
+            .currentScore(1500)
+            .rankType(RankType.SILVER)
+            .build();
+            
+        when(rankingUserScoreUseCase.getUserScore(any())).thenReturn(userScore);
+        when(rankingUserScoreUseCase.getTopUsers(anyInt())).thenReturn(List.of(userScore));
+
+        // when & then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/users/me/ranking")
+                .with(csrf())
+                .with(authentication(new UsernamePasswordAuthenticationToken(
+                    testUserPrincipal,
+                    null,
+                    testUserPrincipal.getAuthorities()
+                ))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.userId").value(1))
+            .andExpect(jsonPath("$.data.rankType").value("SILVER"))
+            .andDo(document("user-get-ranking",
+                relaxedResponseFields(
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("성공 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                    fieldWithPath("data.userId").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                    fieldWithPath("data.score").type(JsonFieldType.NUMBER).description("현재 점수"),
+                    fieldWithPath("data.rankType").type(JsonFieldType.STRING).description("랭크 타입"),
+                    fieldWithPath("data.rankDisplayName").type(JsonFieldType.STRING).description("랭크 표시 이름"),
+                    fieldWithPath("data.rank").type(JsonFieldType.NUMBER).description("전체 랭킹 (순위)"),
+                    fieldWithPath("data.pointsToNextRank").type(JsonFieldType.NUMBER).description("다음 랭크까지 필요한 점수")
+                )
+            ));
+
+        verify(rankingUserScoreUseCase).getUserScore(any());
+        verify(rankingUserScoreUseCase).getTopUsers(anyInt());
     }
 
     @Test

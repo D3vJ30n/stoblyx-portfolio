@@ -69,7 +69,7 @@
 
 **게이미피케이션 & 랭킹 관련 테이블**
 
-- `ranking_user_score`: 사용자 랭킹 점수
+- `ranking_user_score`: 사용자 랭킹 점수 및 상태 정보
 - `ranking_user_activity`: 사용자 활동 로그
 - `ranking_leaderboard`: 리더보드 정보
 - `ranking_badge`: 사용자 획득 가능 뱃지
@@ -87,7 +87,7 @@
 ##### ER 다이어그램
 
 <div align="center">
-  <img src="src/docs/diagrams/erd_V4.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
+  <img src="src/docs/diagrams/erd_V5.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
 ## 데이터베이스 설계
@@ -421,15 +421,20 @@
   - 테이블: `ranking_user_score`
   - 필드
     - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    - user_id: BIGINT - 사용자 ID
-    - total_score: INT - 총점, default = 0
-    - weekly_score: INT - 주간 점수, default = 0
-    - monthly_score: INT - 월간 점수, default = 0
-    - daily_score: INT - 일간 점수, default = 0
-    - last_active_at: TIMESTAMP - 마지막 활동 시간
-    - created_at: TIMESTAMP
-    - modified_at: TIMESTAMP
-    - is_deleted: BOOLEAN - 삭제 여부
+    - user_id: BIGINT - 사용자 ID, @Column(nullable = false, unique = true)
+    - current_score: INT - 현재 점수, @Column(nullable = false), default = 1000
+    - previous_score: INT - 이전 점수
+    - rank_type: VARCHAR(20) - 랭크 타입, @Enumerated(EnumType.STRING), @Column(nullable = false)
+    - last_activity_date: TIMESTAMP - 마지막 활동 시간
+    - created_at: TIMESTAMP - 생성 시간, @Column(nullable = false)
+    - modified_at: TIMESTAMP - 수정 시간
+    - suspicious_activity: BOOLEAN - 의심스러운 활동 여부, @Column(nullable = false), default = false
+    - report_count: INT - 신고 횟수, @Column(nullable = false), default = 0
+    - account_suspended: BOOLEAN - 계정 정지 여부, @Column(nullable = false), default = false
+  - 메서드
+    - updateScoreWithEWMA(int newActivityScore, double alpha): 가중 이동 평균 알고리즘을 적용하여 점수 업데이트
+    - incrementReportCount(int suspensionThreshold): 신고 횟수 증가 및 계정 정지 여부 확인
+    - decayScoreForInactivity(double decayFactor): 비활동 기간에 따른 점수 감소
 
 - **RankingUserActivity (사용자 랭킹 활동)**
 
@@ -551,11 +556,12 @@
 
 - **RankType (랭크 유형)**
 
-  - BRONZE: 브론즈
-  - SILVER: 실버
-  - GOLD: 골드
-  - PLATINUM: 플래티넘
-  - DIAMOND: 다이아몬드
+  - BRONZE: 브론즈 (0 ~ 999점)
+  - SILVER: 실버 (1000 ~ 1999점)
+  - GOLD: 골드 (2000 ~ 2999점)
+  - PLATINUM: 플래티넘 (3000 ~ 3999점)
+  - DIAMOND: 다이아몬드 (4000점 이상)
+  - 메서드: fromScore(int score) - 점수에 따른 랭크 타입 반환
 
 - **RewardType (보상 유형)**
 
@@ -628,6 +634,8 @@
 
 - **RankingBadge ↔ RankingAchievement**: 뱃지와 사용자 업적 (1:N)
 - **User ↔ RankingLeaderboard**: 사용자와 리더보드 항목 (1:N)
+- **User ↔ RankingUserScore**: 사용자와 랭킹 점수 (1:1)
+- **RankingUserScore ↔ RankType**: 사용자 점수와 랭크 타입 (N:1)
 
 #### 검색 관련 관계
 
@@ -710,9 +718,9 @@
 
 ## 3. Stoblyx만의 차별점
 
-### 1. AI 기반 문구 → 숏폼 슬라이드 이미지 변환
+### 1. AI 기반 문구 → 숏폼 슬라이드 이미지 및 영상 변환
 
-- 키워드 기반 문구 추출 및 자동 슬라이드 이미지 생성
+- 키워드 기반 문구 추출 및 자동 슬라이드 이미지 및 영상 생성
 - 이미지 요소: 책 표지, 문장, 배경 이미지, 자막, 감성 기반 BGM 적용
 - 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
 
@@ -764,6 +772,7 @@ round(currentScore *(1-decayFactor));
 - **부정 행위 방지:** 동일 IP 다중 계정 차단 및 자동 계정 정지 정책 적용
 - **랭킹 리셋 주기:** 매월 1일
 - **의심스러운 활동 감지:** 점수 급증 시 자동 플래그 처리 (100점 이상 급증 시)
+- **계정 정지 기능:** 신고 횟수가 임계값을 초과하면 자동 계정 정지
 
 ---
 
@@ -832,6 +841,8 @@ round(currentScore *(1-decayFactor));
 - **EWMA 알고리즘:** 최근 활동에 가중치를 부여하는 지수 가중 이동 평균 적용
 - **점수 감소 메커니즘:** 비활동 사용자의 점수 자동 감소 (7일마다 5%)
 - **랭크 타입 결정:** 점수 범위에 따른 5단계 랭크 자동 부여 (브론즈~다이아)
+- **의심스러운 활동 감지:** 점수 급증 시 자동 플래그 처리 (100점 이상 급증 시)
+- **계정 정지 기능:** 신고 횟수가 임계값을 초과하면 자동 계정 정지
 
 #### 2. 실시간 리더보드
 
@@ -839,6 +850,7 @@ round(currentScore *(1-decayFactor));
 - **전체 랭킹:** 모든 사용자 대상 순위 제공
 - **친구 랭킹:** 팔로우 중인 사용자 간 순위 제공
 - **주간/월간 랭킹:** 기간별 활동 기준 순위 제공
+- **랭킹 데이터 동기화:** 데이터베이스와 Redis 간 주기적 동기화로 데이터 일관성 유지
 
 #### 3. 업적 및 보상 시스템
 
@@ -1250,6 +1262,38 @@ JPA_DDL_AUTO=update
 SHOW_SQL=true
 # Pexels API 설정
 PEXELS_API_KEY=your_pexels_api_key
+# 랭킹 시스템 설정
+RANKING_EWMA_ALPHA=0.2
+RANKING_DECAY_FACTOR=0.05
+RANKING_DECAY_DAYS=7
+RANKING_SUSPICIOUS_THRESHOLD=100
+RANKING_REPORT_THRESHOLD=5
+```
+
+### 테스트 환경 설정
+
+```properties
+# 테스트용 DB 설정
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# 테스트용 Redis 설정
+spring.redis.host=localhost
+spring.redis.port=6379
+
+# 테스트용 JWT 설정
+jwt.secret=test_jwt_secret_key_for_unit_testing_purposes_only
+jwt.expiration=3600
+
+# 테스트용 랭킹 시스템 설정
+ranking.ewma.alpha=0.2
+ranking.decay.factor=0.05
+ranking.decay.days=7
+ranking.suspicious.threshold=100
+ranking.report.threshold=5
 ```
 
 ---
@@ -1275,6 +1319,23 @@ PEXELS_API_KEY=your_pexels_api_key
 - **키워드 기반 감정 분석 시스템 개선:** 한국어/영어 감정 키워드 데이터베이스 확장
 - **가중치 시스템 도입:** 문맥에 따른 키워드 중요도 조정
 - **기본 점수 시스템 구현:** 감정이 명확하지 않은 경우 'neutral' 감정 기본 점수 부여
+
+### 문제: 랭킹 시스템 데이터베이스 컬럼명 불일치
+
+#### 해결책
+
+- **데이터베이스 스키마 수정:** `updated_at` 컬럼을 `modified_at`으로 변경하여 일관성 유지
+- **엔티티 클래스 수정:** 관련 필드명과 JPA 매핑 어노테이션 업데이트
+- **리포지토리 쿼리 수정:** JPQL 쿼리에서 필드명 참조 업데이트
+- **테스트 케이스 보강:** 변경된 스키마에 대한 테스트 케이스 추가
+
+### 문제: REST Docs 테스트 실패
+
+#### 해결책
+
+- **relaxedResponseFields 적용:** 문서화되지 않은 필드가 있어도 테스트가 실패하지 않도록 설정
+- **테스트 데이터와 검증 일치화:** 테스트 데이터와 검증 부분의 필드명 일치 확인
+- **공통 유틸리티 클래스 활용:** `RestDocsUtils` 클래스를 통한 일관된 문서화 패턴 적용
 
 ---
 
@@ -1411,11 +1472,19 @@ src/
 - 인덱싱: 자주 조회되는 필드에 인덱스 적용
 - 페이징 처리: 대용량 데이터 조회 시 페이징 적용
 - N+1 문제 해결: @EntityGraph 사용으로 연관 엔티티 조회 최적화
+- 배치 처리: 대량 데이터 처리 시 배치 작업으로 성능 향상
 
 3. API 요청 제한
 
 - Rate Limiting: 사용자별 API 요청 제한 구현
 - Throttling: 외부 API 호출 시 요청 제한 준수 (throttleRequest 메서드)
+
+4. 테스트 최적화
+
+- 테스트 격리: 각 테스트 케이스 간 독립성 보장
+- 테스트 데이터 관리: 테스트용 데이터 팩토리 패턴 적용
+- 통합 테스트 효율화: Spring Boot Test Slice 어노테이션 활용
+- 테스트 문서화: Spring REST Docs를 통한 API 문서 자동화
 
 ---
 

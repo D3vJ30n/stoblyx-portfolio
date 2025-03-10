@@ -33,7 +33,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -92,7 +91,7 @@ class BookControllerTest {
             .createdAt(now)
             .build();
 
-        when(bookService.getBook(eq(bookId))).thenReturn(response);
+        when(bookService.getBook(bookId)).thenReturn(response);
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/books/{bookId}", bookId))

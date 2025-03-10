@@ -86,10 +86,10 @@ VALUES
     ('사랑', 200, '{"age": {"10s": 15, "20s": 40, "30s": 30, "40s": 15}, "gender": {"male": 35, "female": 65}}', '연애,결혼,관계', '{"2023-01": 65, "2023-02": 70, "2023-03": 65}', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 -- 테스트 사용자 랭킹 점수 데이터
-INSERT INTO ranking_user_score (user_id, total_score, weekly_score, monthly_score, daily_score, last_active_at, created_at, modified_at, is_deleted)
+INSERT INTO ranking_user_score (user_id, current_score, previous_score, rank_type, last_activity_date, created_at, modified_at, suspicious_activity, report_count, account_suspended)
 VALUES
-    (1, 1250, 150, 450, 50, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false),
-    (2, 980, 120, 350, 30, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
+    (1, 1500, 1450, 'SILVER', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), FALSE, 0, FALSE),
+    (2, 1800, 1750, 'GOLD', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), FALSE, 0, FALSE);
 
 -- 테스트 사용자 활동 데이터
 INSERT INTO ranking_user_activity (user_id, activity_type, points, activity_date, reference_id, reference_type, created_at, modified_at, is_deleted)
@@ -99,7 +99,7 @@ VALUES
     (2, 'COMMENT_CREATE', 5, CURRENT_TIMESTAMP(), 1, 'COMMENT', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), false);
 
 -- 테스트 랭킹 리더보드 데이터
-INSERT INTO ranking_leaderboard (user_id, username, score, rank_type, leaderboard_type, rank_position, period_start_date, period_end_date, created_at, updated_at)
+INSERT INTO ranking_leaderboard (user_id, username, score, rank_type, leaderboard_type, rank_position, period_start_date, period_end_date, created_at, modified_at)
 VALUES
     (1, 'test_user', 1250, 'GOLD', 'WEEKLY', 1, DATEADD('DAY', -7, CURRENT_DATE()), CURRENT_DATE(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()),
     (2, 'test_admin', 980, 'SILVER', 'WEEKLY', 2, DATEADD('DAY', -7, CURRENT_DATE()), CURRENT_DATE(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP());

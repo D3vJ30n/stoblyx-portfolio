@@ -6,7 +6,6 @@ import com.j30n.stoblyx.domain.model.ContentBookmark;
 import com.j30n.stoblyx.domain.model.ShortFormContent;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.repository.ContentBookmarkRepository;
-import com.j30n.stoblyx.domain.repository.ShortFormContentRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -24,18 +23,17 @@ import java.util.List;
 public class BookmarkService {
 
     private static final String USER_NOT_FOUND_MSG = "사용자를 찾을 수 없습니다. ID: ";
-    private static final String CONTENT_NOT_FOUND_MSG = "콘텐츠를 찾을 수 없습니다. ID: ";
 
     private final ContentBookmarkRepository bookmarkRepository;
     private final UserRepository userRepository;
-    private final ShortFormContentRepository contentRepository;
 
     /**
      * 사용자의 북마크 목록을 조회합니다.
      */
     @Transactional(readOnly = true)
     public Page<BookmarkResponse> getBookmarks(Long userId, String type, Pageable pageable) {
-        User user = userRepository.findById(userId)
+        // 사용자 존재 여부 확인
+        userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MSG + userId));
 
         // 북마크 목록 조회 로직 구현
@@ -69,7 +67,8 @@ public class BookmarkService {
      */
     @Transactional
     public void deleteBookmarks(Long userId, List<Long> contentIds) {
-        User user = userRepository.findById(userId)
+        // 사용자 존재 여부 확인
+        userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(USER_NOT_FOUND_MSG + userId));
 
         for (Long contentId : contentIds) {

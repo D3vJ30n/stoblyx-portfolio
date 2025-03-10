@@ -1,7 +1,6 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkResponse;
-import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkStatusResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BulkDeleteRequest;
 import com.j30n.stoblyx.application.service.bookmark.BookmarkService;
 import com.j30n.stoblyx.common.response.ApiResponse;
@@ -15,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/bookmarks")

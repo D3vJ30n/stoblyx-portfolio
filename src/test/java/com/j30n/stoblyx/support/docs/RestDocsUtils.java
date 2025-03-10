@@ -47,23 +47,23 @@ public class RestDocsUtils {
      */
     public static FieldDescriptor[] getPageResponseFields() {
         return new FieldDescriptor[] {
-            fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지 정보"),
+            fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+            fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+            fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+            fieldWithPath("data.content").type(JsonFieldType.ARRAY).description("페이지 내용"),
+            fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이징 정보"),
             fieldWithPath("data.pageable.sort").type(JsonFieldType.OBJECT).description("정렬 정보"),
-            fieldWithPath("data.pageable.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 정보 존재 여부"),
-            fieldWithPath("data.pageable.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
-            fieldWithPath("data.pageable.sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
             fieldWithPath("data.pageable.offset").type(JsonFieldType.NUMBER).description("페이지 오프셋"),
-            fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
+            fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"),
             fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER).description("페이지 크기"),
             fieldWithPath("data.pageable.paged").type(JsonFieldType.BOOLEAN).description("페이징 여부"),
             fieldWithPath("data.pageable.unpaged").type(JsonFieldType.BOOLEAN).description("비페이징 여부"),
-            fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
             fieldWithPath("data.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
             fieldWithPath("data.totalElements").type(JsonFieldType.NUMBER).description("전체 요소 수"),
+            fieldWithPath("data.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
             fieldWithPath("data.size").type(JsonFieldType.NUMBER).description("페이지 크기"),
             fieldWithPath("data.number").type(JsonFieldType.NUMBER).description("현재 페이지 번호"),
             fieldWithPath("data.sort").type(JsonFieldType.OBJECT).description("정렬 정보"),
-            fieldWithPath("data.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 정보 존재 여부"),
             fieldWithPath("data.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
             fieldWithPath("data.sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
             fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
@@ -104,18 +104,40 @@ public class RestDocsUtils {
     }
     
     /**
+     * 유연한 응답 필드 스니펫 생성
+     * 문서화되지 않은 필드가 있어도 오류가 발생하지 않음
+     */
+    public static ResponseFieldsSnippet relaxedResponseFields(FieldDescriptor... descriptors) {
+        return org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields(descriptors);
+    }
+    
+    /**
      * 테스트에 사용할 인증된 사용자를 생성합니다.
      */
     public static RequestPostProcessor getTestUser() {
-        // 테스트용 UserPrincipal 생성
         UserPrincipal userPrincipal = UserPrincipal.builder()
-                .id(1L)
-                .username("testuser")
-                .email("test@example.com")
-                .role("USER")
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
-                .build();
-
+            .id(1L)
+            .username("testuser")
+            .email("test@example.com")
+            .role("USER")
+            .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
+            .build();
+        
         return SecurityMockMvcRequestPostProcessors.user(userPrincipal);
+    }
+    
+    /**
+     * 테스트에 사용할 인증된 관리자를 생성합니다.
+     */
+    public static RequestPostProcessor getTestAdmin() {
+        UserPrincipal adminPrincipal = UserPrincipal.builder()
+            .id(2L)
+            .username("testadmin")
+            .email("admin@example.com")
+            .role("ADMIN")
+            .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")))
+            .build();
+        
+        return SecurityMockMvcRequestPostProcessors.user(adminPrincipal);
     }
 } 

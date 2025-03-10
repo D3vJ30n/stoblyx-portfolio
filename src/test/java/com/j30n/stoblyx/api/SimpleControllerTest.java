@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 )
 @Import({MonitoringTestConfig.class, XssExclusionTestConfig.class})
 @ActiveProfiles("test")
-public class SimpleControllerTest {
+class SimpleControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +50,7 @@ public class SimpleControllerTest {
     @Test
     @DisplayName("헬스 체크 API 테스트")
     @WithMockUser(username = "testuser", roles = {"USER"})
-    public void testHealthCheck() throws Exception {
+    void testHealthCheck() throws Exception {
         // HealthEndpoint 모킹
         Health health = Health.up().build();
         when(healthEndpoint.health()).thenReturn(health);
