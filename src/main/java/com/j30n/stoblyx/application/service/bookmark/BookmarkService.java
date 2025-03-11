@@ -4,7 +4,6 @@ import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkStatusResponse;
 import com.j30n.stoblyx.domain.model.ContentBookmark;
 import com.j30n.stoblyx.domain.model.ShortFormContent;
-import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.repository.ContentBookmarkRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;

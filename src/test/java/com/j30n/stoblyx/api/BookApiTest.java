@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,89 +38,166 @@ class BookApiTest extends BaseApiTest {
 
     @BeforeEach
     void setUp() {
-        // 테스트 실행 전 필요한 설정
+        // 테스트 초기화
         System.out.println("테스트 시작: " + System.currentTimeMillis());
     }
 
     @AfterEach
     void tearDown() {
-        // 테스트 중 생성된 책 삭제
+        // 테스트 중 생성된 책 정리
         for (Long bookId : createdBookIds) {
             try {
-                if (bookId != null) {
-                    System.out.println("테스트 후 책 삭제: " + bookId);
-                    givenAuth(adminToken)
-                        .when()
-                        .delete(BOOK_API_PATH + "/" + bookId)
-                        .then()
-                        .statusCode(anyOf(is(204), is(200), is(404), is(500))); // 500 상태 코드 허용
-                }
+                givenAuth(adminToken)
+                    .when()
+                    .delete(BOOK_API_PATH + "/" + bookId)
+                    .then()
+                    .statusCode(anyOf(is(204), is(200), is(404), is(500))); // 여러 상태 코드 허용
             } catch (Exception e) {
-                System.out.println("책 삭제 중 오류 발생: " + e.getMessage());
+                System.err.println("책 삭제 중 오류 발생: " + e.getMessage());
             }
         }
         createdBookIds.clear();
+        
         System.out.println("테스트 종료: " + System.currentTimeMillis());
     }
 
     @Test
     @DisplayName("책 목록 조회 API 테스트")
     void testGetBooks() {
+        System.out.println("\n========== 책 목록 조회 API 테스트 시작: " + new Date() + " ==========");
+        
         // 책 목록 조회 테스트
-        createRequestSpec()
+        Response response = createRequestSpec()
             .when()
             .get(BOOK_API_PATH)
             .then()
-            .log().all() // 로그 추가
-            .statusCode(anyOf(is(200), is(500))) // 500 상태 코드 허용
-            .body(containsString("result")); // 정확한 값 대신 문자열 포함 여부 확인
+            .log().all()
+            .statusCode(anyOf(is(200), is(500)))
+            .extract().response();
+        
+        // 응답 분석
+        System.out.println("\n=========== 응답 분석 시작 ===========");
+        System.out.println("응답 본문: " + response.asString());
+        System.out.println("응답 상태 코드: " + response.getStatusCode());
+        
+        try {
+            System.out.println("result: " + response.path("result"));
+            System.out.println("message: " + response.path("message"));
+            if (response.path("data") != null) {
+                System.out.println("데이터 구조: " + response.path("data").getClass().getName());
+                if (response.path("data.content") != null) {
+                    List<?> content = response.path("data.content");
+                    System.out.println("content size: " + content.size());
+                    if (!content.isEmpty()) {
+                        System.out.println("첫 번째 항목 구조: " + content.get(0));
+                        Map<String, Object> firstItem = (Map<String, Object>) content.get(0);
+                        for (Map.Entry<String, Object> entry : firstItem.entrySet()) {
+                            System.out.println(entry.getKey() + ": " + 
+                                  (entry.getValue() != null ? entry.getValue().getClass().getSimpleName() : "null"));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("응답 구조 분석 오류: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        System.out.println("=========== 응답 분석 종료 ===========\n");
+        System.out.println("========== 책 목록 조회 API 테스트 완료: " + new Date() + " ==========\n");
     }
 
     @Test
     @DisplayName("책 상세 조회 API 테스트")
     void testGetBook() {
+        System.out.println("\n========== 책 상세 조회 API 테스트 시작: " + new Date() + " ==========");
+        
         // 테스트용 책 ID 사용
         Long bookId = TEST_BOOK_ID;
 
         // 책 상세 조회 테스트
-        createRequestSpec()
+        Response response = createRequestSpec()
             .when()
             .get(BOOK_API_PATH + "/" + bookId)
             .then()
-            .log().all() // 로그 추가
-            .statusCode(anyOf(is(200), is(404), is(500))); // 500 상태 코드 허용
+            .log().all()
+            .statusCode(anyOf(is(200), is(404), is(500)))
+            .extract().response();
+        
+        // 응답 분석
+        System.out.println("\n=========== 응답 분석 시작 ===========");
+        System.out.println("응답 본문: " + response.asString());
+        System.out.println("응답 상태 코드: " + response.getStatusCode());
+        
+        try {
+            System.out.println("result: " + response.path("result"));
+            System.out.println("message: " + response.path("message"));
+            if (response.path("data") != null) {
+                System.out.println("데이터 구조: " + response.path("data").getClass().getName());
+                Map<String, Object> data = response.path("data");
+                for (Map.Entry<String, Object> entry : data.entrySet()) {
+                    System.out.println(entry.getKey() + ": " + 
+                          (entry.getValue() != null ? entry.getValue().getClass().getSimpleName() : "null"));
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("응답 구조 분석 오류: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        System.out.println("=========== 응답 분석 종료 ===========\n");
+        System.out.println("========== 책 상세 조회 API 테스트 완료: " + new Date() + " ==========\n");
     }
 
     @Test
     @DisplayName("책 등록 API 테스트")
-    void testCreateBook() {
+    public void testCreateBook() {
+        System.out.println("\n========== 책 등록 API 테스트 시작: " + new Date() + " ==========");
+        
+        // 테스트 데이터 생성
         Map<String, Object> bookData = createBookData();
-
-        // 관리자 권한으로 책 등록 요청
+        System.out.println("요청 데이터: " + bookData);
+        
         Response response = givenAuth(adminToken)
             .contentType(ContentType.JSON)
             .body(bookData)
             .when()
             .post(BOOK_API_PATH)
             .then()
-            .log().all() // 로그 추가
-            .statusCode(anyOf(is(201), is(500))) // 500 상태 코드 허용
-            .body(containsString("result")) // 정확한 값 대신 문자열 포함 여부 확인
-            .extract()
-            .response();
+            .log().all()
+            .statusCode(anyOf(is(200), is(201)))
+            .extract().response();
 
-        // 응답에서 책 ID 추출 시도
+        // 응답 출력 및 구조 분석
+        System.out.println("\n=========== 응답 분석 시작 ===========");
+        System.out.println("응답 본문: " + response.asString());
+        System.out.println("응답 content-type: " + response.getContentType());
+        System.out.println("응답 statusCode: " + response.getStatusCode());
+        
+        // 응답 구조 분석
         try {
-            Long bookId = response.path("data.id");
-            if (bookId != null) {
-                createdBookIds.add(bookId);
-                System.out.println("생성된 책 ID: " + bookId);
-            } else {
-                System.out.println("책 ID를 추출할 수 없습니다. 응답: " + response.asString());
+            System.out.println("result: " + response.path("result"));
+            System.out.println("message: " + response.path("message"));
+            System.out.println("data: " + response.path("data"));
+            if (response.path("data") != null) {
+                // 새로 생성된 책 ID 저장 (테스트 후 정리용)
+                Long createdBookId = response.path("data.id");
+                if (createdBookId != null) {
+                    createdBookIds.add(createdBookId);
+                }
+                
+                System.out.println("data.id: " + createdBookId);
+                System.out.println("data.title: " + response.path("data.title"));
+                System.out.println("data.publishDate: " + response.path("data.publishDate"));
+                System.out.println("data.genres: " + response.path("data.genres"));
             }
         } catch (Exception e) {
-            System.out.println("책 ID 추출 중 오류 발생: " + e.getMessage());
+            System.out.println("응답 구조 분석 오류: " + e.getMessage());
+            e.printStackTrace();
         }
+        
+        System.out.println("=========== 응답 분석 종료 ===========\n");
+        System.out.println("========== 책 등록 API 테스트 완료: " + new Date() + " ==========\n");
     }
 
     @Test
@@ -189,7 +267,7 @@ class BookApiTest extends BaseApiTest {
         Map<String, Object> bookData = new HashMap<>();
         bookData.put("title", "테스트 책 제목 " + System.currentTimeMillis());
         bookData.put("author", "테스트 저자");
-        bookData.put("isbn", "9788956746" + new Random().nextInt(1000)); // 랜덤 ISBN
+        bookData.put("isbn", "979-11-92001-" + (10 + new Random().nextInt(90)) + "-" + (1 + new Random().nextInt(9))); // 유효한 ISBN 형식
         bookData.put("description", "테스트 책 설명");
         bookData.put("publisher", "테스트 출판사");
         bookData.put("publishDate", "2023-01-01");

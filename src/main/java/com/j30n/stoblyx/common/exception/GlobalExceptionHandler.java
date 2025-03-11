@@ -9,6 +9,7 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -61,6 +62,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleAuthenticationCredentialsNotFoundException(
             org.springframework.security.authentication.AuthenticationCredentialsNotFoundException ex) {
         return errorResponseEntity("인증이 필요한 요청입니다.", HttpStatus.UNAUTHORIZED);
+    }
+    
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse<?>> handleBadCredentialsException(BadCredentialsException ex) {
+        return errorResponseEntity("아이디 또는 비밀번호가 잘못되었습니다.", HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(Exception.class)

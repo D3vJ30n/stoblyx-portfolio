@@ -156,12 +156,21 @@ public class SecurityTestConfig {
     @Bean
     @Primary
     public UserDetailsService userDetailsService() {
-        return username -> {
+        return usernameOrEmail -> {
+            // 이메일 형식인 경우 이메일로 간주, 아니면 username으로 간주
+            boolean isEmail = usernameOrEmail.contains("@");
+            
+            String username = isEmail ? usernameOrEmail.split("@")[0] : usernameOrEmail;
+            String email = isEmail ? usernameOrEmail : username + "@example.com";
+            
+            System.out.println("테스트 UserDetailsService 호출됨: " + usernameOrEmail);
+            System.out.println("사용자 생성: username=" + username + ", email=" + email);
+            
             User testUser = User.builder()
                 .username(username)
                 .password(passwordEncoder().encode("password"))
                 .nickname("테스트 사용자")
-                .email("test@example.com")
+                .email(email)
                 .role(UserRole.USER)
                 .build();
             return UserPrincipal.create(testUser);

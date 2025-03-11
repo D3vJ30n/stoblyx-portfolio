@@ -41,6 +41,8 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 
 @WebMvcTest(controllers = AuthController.class)
 @DisplayName("인증 컨트롤러 테스트")
@@ -124,9 +126,12 @@ class AuthControllerTest {
             .andExpect(jsonPath("$.message").exists())
             .andExpect(jsonPath("$.data.accessToken").value("access-token"))
             .andExpect(jsonPath("$.data.refreshToken").value("refresh-token"))
+            .andExpect(jsonPath("$.data.expiresIn").value(3600))
             .andDo(document("auth/login",
+                preprocessResponse(prettyPrint()),
                 requestFields(
                     fieldWithPath("username").type(JsonFieldType.STRING).description("사용자 아이디"),
+                    fieldWithPath("email").type(JsonFieldType.NULL).optional().description("사용자 이메일 (선택적)"),
                     fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호")
                 ),
                 responseFields(

@@ -4,7 +4,7 @@
 
 "책 속의 한 문장은 사라지지 않는다. 그것은 오벨리스크처럼 남아, 사람들에게 영감을 준다."
 
-책 속 문장 하나하나가 디지털 기념비(Obelisk)처럼 기억되고, AI를 통해 숏폼 영상으로 재탄생하는 곳. 과거, 현재, 미래를 잇는 독서의 타임캡슐.
+책 속 문장 하나하나가 디지털 기념비(Obelisk)처럼 기억되고, AI를 통해 숏폼 슬라이드 이미지 or 영상으로 재탄생하는 곳.
 
 ![Status](https://img.shields.io/badge/Status-In_Development-yellow?style=for-the-badge)
 
@@ -37,7 +37,127 @@
 ![H2 Database](https://img.shields.io/badge/H2_Database-테스트용-01A5EC?style=flat-square&logo=h2)
 ![Caffeine](https://img.shields.io/badge/Caffeine-인메모리_캐싱-0051BA?style=flat-square&logo=caffeine)
 
-##### 데이터베이스 모델
+## 2. Why Stoblyx?
+
+### 문제 인식
+
+- MZ세대의 독서율 감소 현상
+- 숏폼 콘텐츠 소비 증가 추세
+- 기존 독서 플랫폼의 젊은 세대 유입 한계
+
+### 해결 방안
+
+- 검색 기반 도서 정보 제공 및 멀티미디어 콘텐츠 경험
+- 책 내용 관련 이미지/영상, BGM, 자막 제공으로 몰입감 증대
+- 게이미피케이션을 통한 독서 동기 부여
+- 소셜 기능을 통한 독서 커뮤니티 형성
+
+### 기대 효과
+
+- 독서 문화의 디지털 전환 및 활성화
+- 지식 공유 플랫폼으로서의 성장 가능성
+- 세대 간 독서 격차 해소 및 독서 습관 형성
+
+---
+
+## 3. Stoblyx만의 차별점
+
+### 1. 검색부터 멀티미디어 경험까지 통합 서비스
+
+- 검색어 관련 책 정보 및 표지 제공
+- 책 클릭 시 관련 이미지/영상, BGM, 자막 음성 읽기 기능
+- 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
+
+### 2. 검색어 기반 유저 추천
+
+- 협업 필터링을 활용한 사용자 맞춤 추천 시스템
+- 추천 기준: 최근 검색어, 좋아요/저장 데이터, 활동 패턴
+
+### 3. 게이미피케이션 & 랭킹 시스템
+
+| 랭크     | 조건                       | 혜택                                |
+| -------- | -------------------------- | ----------------------------------- |
+| 브론즈   | 기본 기능 사용 가능        | 일일 콘텐츠 생성 3회                |
+| 실버     | 인기 문구 TOP 10 확인 가능 | 일일 콘텐츠 생성 5회, 프리미엄 BGM  |
+| 골드     | 100+ 좋아요 문구 저장 가능 | 일일 콘텐츠 생성 10회, 고급 템플릿  |
+| 플래티넘 | AI 추천 영상 제작 가능     | 무제한 콘텐츠 생성, 커스텀 워터마크 |
+| 다이아   | 콘텐츠 트렌드 피드 노출    | 모든 혜택 + 콘텐츠 우선 노출        |
+
+#### 랭킹 산정 공식
+
+```
+점수 = (좋아요 × 2) + (저장수 × 3) + (댓글 × 1) - (신고수 × 5)
+```
+
+#### 사용자 점수 계산 알고리즘 (EWMA)
+
+```java
+// 가중 이동 평균(EWMA) 알고리즘 적용
+currentScore =(int)Math.
+
+round(alpha *newActivityScore+(1-alpha) *currentScore);
+```
+
+- **알파값(α):** 0.2 (최근 활동에 20% 가중치 부여)
+- **장점:** 점진적 점수 변화, 이상치 영향 최소화, 시계열 데이터 효과적 처리
+
+#### 비활동 사용자 점수 감소
+
+```java
+// 비활동 사용자 점수 감소 알고리즘
+currentScore =(int)Math.
+
+round(currentScore *(1-decayFactor));
+```
+
+- **감소 계수:** 0.05 (7일마다 5% 감소)
+- **목적:** 지속적 참여 유도, 랭킹 시스템 활성화, 공정한 경쟁 환경 조성
+
+- **부정 행위 방지:** 동일 IP 다중 계정 차단 및 자동 계정 정지 정책 적용
+- **랭킹 리셋 주기:** 매월 1일
+- **의심스러운 활동 감지:** 점수 급증 시 자동 플래그 처리 (100점 이상 급증 시)
+- **계정 정지 기능:** 신고 횟수가 임계값을 초과하면 자동 계정 정지
+
+---
+
+## 4. 아키텍처 설계
+
+### 시스템 구성 및 계층 설명
+
+<div align="center">
+  <img src="src/docs/diagrams/architecture_V2.png" alt="시스템 아키텍처" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 설명
+
+- **Adapter Layer:** 외부 요청 처리 (REST API), AI 서비스 호출, 메시징 시스템 통합
+- **Application Layer:** 비즈니스 유스케이스 처리 및 트랜잭션 관리
+- **Domain Layer:** 핵심 도메인 로직 및 엔티티 관리
+- **비동기 처리:** @Async 어노테이션을 통한 백그라운드 처리로 확장성과 안정성 확보 (비동기 처리 위해 향후 RabbitMQ 구현 예정)
+
+### 시스템 흐름도
+
+<div align="center">
+  <img src="src/docs/diagrams/flowchart_V2.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+### AI 서비스 통합 아키텍처
+
+- **헥사고날 아키텍처 기반 AI 서비스 통합**
+
+  - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
+  - 도메인 로직과 AI 서비스 간의 느슨한 결합
+  - 폴백 메커니즘을 통한 서비스 안정성 확보
+
+- **AI 통합 컴포넌트**
+  - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
+  - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동
+  - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
+  - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
+
+---
+
+#### 5. 데이터베이스 모델
 
 데이터베이스는 사용자, 콘텐츠, 상호작용, 랭킹 시스템 등 다양한 도메인으로.구성된 총 30개 이상의 테이블을 포함합니다.
 
@@ -84,13 +204,13 @@
 - `posts`: 사용자 포스트
 - `system_settings`: 시스템 설정 정보
 
-##### ER 다이어그램
+#### ERD 다이어그램
 
 <div align="center">
   <img src="src/docs/diagrams/erd_V5.png" alt="ERD" style="max-width: 800px; width: 100%; height: auto;">
 </div>
 
-## 데이터베이스 설계
+## 6. 데이터베이스 설계
 
 ### 주요 테이블 및 관계
 
@@ -694,126 +814,7 @@
 
 ---
 
-## 2. Why Stoblyx?
-
-### 문제 인식
-
-- MZ세대의 독서율 감소 현상
-- 숏폼 콘텐츠 소비 증가 추세
-- 기존 독서 플랫폼의 젊은 세대 유입 한계
-
-### 해결 방안
-
-- AI 기반 독서 콘텐츠의 숏폼 변환 기술 도입
-- 게이미피케이션을 통한 독서 동기 부여
-- 소셜 기능을 통한 독서 커뮤니티 형성
-
-### 기대 효과
-
-- 독서 문화의 디지털 전환 및 활성화
-- 지식 공유 플랫폼으로서의 성장 가능성
-- 세대 간 독서 격차 해소 및 독서 습관 형성
-
----
-
-## 3. Stoblyx만의 차별점
-
-### 1. AI 기반 문구 → 숏폼 슬라이드 이미지 및 영상 변환
-
-- 키워드 기반 문구 추출 및 자동 슬라이드 이미지 및 영상 생성
-- 이미지 요소: 책 표지, 문장, 배경 이미지, 자막, 감성 기반 BGM 적용
-- 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
-
-### 2. 검색어 기반 유저 추천
-
-- 협업 필터링을 활용한 사용자 맞춤 추천 시스템
-- 추천 기준: 최근 검색어, 좋아요/저장 데이터, 활동 패턴
-
-### 3. 게이미피케이션 & 랭킹 시스템
-
-| 랭크     | 조건                       | 혜택                                |
-| -------- | -------------------------- | ----------------------------------- |
-| 브론즈   | 기본 기능 사용 가능        | 일일 콘텐츠 생성 3회                |
-| 실버     | 인기 문구 TOP 10 확인 가능 | 일일 콘텐츠 생성 5회, 프리미엄 BGM  |
-| 골드     | 100+ 좋아요 문구 저장 가능 | 일일 콘텐츠 생성 10회, 고급 템플릿  |
-| 플래티넘 | AI 추천 영상 제작 가능     | 무제한 콘텐츠 생성, 커스텀 워터마크 |
-| 다이아   | 콘텐츠 트렌드 피드 노출    | 모든 혜택 + 콘텐츠 우선 노출        |
-
-#### 랭킹 산정 공식
-
-```
-점수 = (좋아요 × 2) + (저장수 × 3) + (댓글 × 1) - (신고수 × 5)
-```
-
-#### 사용자 점수 계산 알고리즘 (EWMA)
-
-```java
-// 가중 이동 평균(EWMA) 알고리즘 적용
-currentScore =(int)Math.
-
-round(alpha *newActivityScore+(1-alpha) *currentScore);
-```
-
-- **알파값(α):** 0.2 (최근 활동에 20% 가중치 부여)
-- **장점:** 점진적 점수 변화, 이상치 영향 최소화, 시계열 데이터 효과적 처리
-
-#### 비활동 사용자 점수 감소
-
-```java
-// 비활동 사용자 점수 감소 알고리즘
-currentScore =(int)Math.
-
-round(currentScore *(1-decayFactor));
-```
-
-- **감소 계수:** 0.05 (7일마다 5% 감소)
-- **목적:** 지속적 참여 유도, 랭킹 시스템 활성화, 공정한 경쟁 환경 조성
-
-- **부정 행위 방지:** 동일 IP 다중 계정 차단 및 자동 계정 정지 정책 적용
-- **랭킹 리셋 주기:** 매월 1일
-- **의심스러운 활동 감지:** 점수 급증 시 자동 플래그 처리 (100점 이상 급증 시)
-- **계정 정지 기능:** 신고 횟수가 임계값을 초과하면 자동 계정 정지
-
----
-
-## 4. 아키텍처 설계
-
-### 시스템 구성 및 계층 설명
-
-<div align="center">
-  <img src="src/docs/diagrams/architecture_V2.png" alt="시스템 아키텍처" style="max-width: 800px; width: 100%; height: auto;">
-</div>
-
-#### 설명
-
-- **Adapter Layer:** 외부 요청 처리 (REST API), AI 서비스 호출, 메시징 시스템 통합
-- **Application Layer:** 비즈니스 유스케이스 처리 및 트랜잭션 관리
-- **Domain Layer:** 핵심 도메인 로직 및 엔티티 관리
-- **비동기 처리:** @Async 어노테이션을 통한 백그라운드 처리로 확장성과 안정성 확보 (비동기 처리 위해 향후 RabbitMQ 구현 예정)
-
-### 시스템 흐름도
-
-<div align="center">
-  <img src="src/docs/diagrams/flowchart_V2.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
-
-### AI 서비스 통합 아키텍처
-
-- **헥사고날 아키텍처 기반 AI 서비스 통합**
-
-  - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
-  - 도메인 로직과 AI 서비스 간의 느슨한 결합
-  - 폴백 메커니즘을 통한 서비스 안정성 확보
-
-- **AI 통합 컴포넌트**
-  - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
-  - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동
-  - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
-  - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
-
----
-
-## 5. 주요 기능
+## 7. 주요 기능
 
 ### 회원 시스템
 
@@ -939,7 +940,7 @@ round(currentScore *(1-decayFactor));
 
 ---
 
-## 7. 시스템 프로세스 흐름도
+## 8. 시스템 프로세스 흐름도
 
 ### 사용자 인증 및 권한 부여 흐름
 
@@ -1097,20 +1098,31 @@ round(currentScore *(1-decayFactor));
 
 ---
 
-## 8. API 문서
+## 9. API 문서
 
 ### 공통 사항
 
 - **인증:** Bearer Token 방식 (JWT)
 - **권한 요구사항:** 일부 엔드포인트는 인증 필요
-- **에러 코드 및 메시지 예시**
+- **응답 형식:** 모든 API는 일관된 응답 형식을 사용합니다
 
 ```json
 {
-  "status": 403,
-  "error": "Forbidden",
+  "result": "SUCCESS",
+  "message": "요청이 성공적으로 처리되었습니다.",
+  "data": {
+    /* 응답 데이터 */
+  }
+}
+```
+
+- **에러 응답 형식**
+
+```json
+{
+  "result": "ERROR",
   "message": "접근 권한이 없습니다.",
-  "timestamp": "2025-02-23T10:15:30Z"
+  "data": null
 }
 ```
 
@@ -1131,6 +1143,7 @@ round(currentScore *(1-decayFactor));
 - `POST /users/me/profile-image` - 프로필 이미지 업로드
 - `GET /users/me/interests` - 사용자 관심사 조회
 - `PUT /users/me/interests` - 사용자 관심사 수정
+- `GET /users/me/ranking` - 사용자 랭킹 정보 조회
 
 #### 책 API
 
@@ -1163,11 +1176,17 @@ round(currentScore *(1-decayFactor));
 - `GET /contents/trending` - 트렌딩 콘텐츠 조회
 - `GET /contents/recommended` - 추천 콘텐츠 조회
 - `GET /contents/books/{bookId}` - 책별 콘텐츠 조회
-- `GET /contents/search` - 콘텐츠 검색
+- `GET /contents/search` - 콘텐츠 검색 (keyword 파라미터 사용)
 - `GET /contents/{id}` - 콘텐츠 상세 조회
 - `POST /contents/{id}/like` - 콘텐츠 좋아요 토글
+- `GET /contents/{id}/bookmark/status` - 콘텐츠 북마크 상태 조회
 - `POST /contents/{id}/bookmark` - 콘텐츠 북마크 토글
 - `POST /contents/quotes/{quoteId}` - 문구로부터 콘텐츠 생성
+
+#### 북마크 API
+
+- `GET /bookmarks` - 북마크한 콘텐츠 목록 조회
+- `DELETE /bookmarks` - 북마크 일괄 삭제
 
 #### 콘텐츠 댓글 API
 
@@ -1179,12 +1198,12 @@ round(currentScore *(1-decayFactor));
 #### 검색 API
 
 - `GET /search` - 통합 검색
-- `GET /search/history/{userId}` - 검색 기록 조회
+- `GET /search/history` - 검색 기록 조회
 - `DELETE /search/history/{searchId}` - 검색 기록 삭제
 
 #### 추천 API
 
-- `GET /recommendations/users/{userId}` - 사용자 추천 목록 조회
+- `GET /recommendations/users` - 사용자 추천 목록 조회
 - `GET /recommendations/popular-terms` - 인기 검색어 목록 조회
 
 #### 관리자 설정 API
@@ -1203,44 +1222,53 @@ round(currentScore *(1-decayFactor));
 
 #### 랭킹 API
 
-- `GET /admin/ranking/users/{userId}/score` - 사용자 점수 조회
-- `GET /admin/ranking/users/scores` - 모든 사용자 점수 조회
-- `GET /admin/ranking/users/scores/top` - 상위 랭킹 사용자 조회
-- `GET /admin/ranking/users/scores/recent-changes` - 최근 점수 변경 내역 조회
-- `POST /admin/ranking/users/{userId}/score/update` - 사용자 점수 업데이트
-- `POST /admin/ranking/users/scores/recalculate` - 모든 사용자 점수 재계산
-- `GET /admin/ranking/suspicious` - 의심스러운 활동이 있는 사용자 목록 조회
-- `POST /admin/ranking/users/{userId}/suspend` - 사용자 계정 정지
-- `POST /admin/ranking/users/{userId}/unsuspend` - 사용자 계정 정지 해제
+- `GET /ranking/users/top` - 상위 랭킹 사용자 조회
+- `GET /ranking/users/recent-changes` - 최근 점수 변경 내역 조회
+- `GET /admin/ranking/users/{userId}/score` - 사용자 점수 조회 (관리자)
+- `GET /admin/ranking/users/scores` - 모든 사용자 점수 조회 (관리자)
+- `POST /admin/ranking/users/{userId}/score/update` - 사용자 점수 업데이트 (관리자)
+- `POST /admin/ranking/users/scores/recalculate` - 모든 사용자 점수 재계산 (관리자)
+- `GET /admin/ranking/suspicious` - 의심스러운 활동이 있는 사용자 목록 조회 (관리자)
+- `POST /admin/ranking/users/{userId}/suspend` - 사용자 계정 정지 (관리자)
+- `POST /admin/ranking/users/{userId}/unsuspend` - 사용자 계정 정지 해제 (관리자)
 
-### AI 추천 영상 생성 API
+### AI 콘텐츠 생성 API
 
-**엔드포인트:** `/quotes/{id}/generate-video`  
+**엔드포인트:** `/contents/quotes/{quoteId}`  
 **메서드:** POST  
 **권한:** 인증 필요
 
 #### 요청 예시
 
-```json
-{
-  "style": "minimalist",
-  "bgmType": "calm"
-}
+```
+POST /contents/quotes/123
+Authorization: Bearer {token}
 ```
 
-#### 응답 예시 (201 Created)
+#### 응답 예시 (200 OK)
 
 ```json
 {
-  "videoId": "a1b2c3d4",
-  "processingTime": 45,
-  "previewUrl": "https://cdn.stoblyx.com/previews/a1b2c3d4.mp4"
+  "result": "SUCCESS",
+  "message": "콘텐츠가 생성되었습니다",
+  "data": {
+    "id": 456,
+    "subtitles": "생성된 콘텐츠 내용",
+    "status": "PUBLISHED",
+    "videoUrl": "https://cdn.stoblyx.com/videos/456.mp4",
+    "thumbnailUrl": "https://cdn.stoblyx.com/thumbnails/456.jpg",
+    "bgmUrl": "https://cdn.stoblyx.com/audio/456.mp3",
+    "viewCount": 0,
+    "likeCount": 0,
+    "createdAt": "2025-03-10T12:34:56",
+    "modifiedAt": "2025-03-10T12:34:56"
+  }
 }
 ```
 
 ---
 
-## 9. 개발 환경 설정
+## 10. 개발 환경 설정
 
 ### .env.example
 
@@ -1298,7 +1326,7 @@ ranking.report.threshold=5
 
 ---
 
-## 10. 보안 및 확장성 고려 사항
+## 11. 보안 및 확장성 고려 사항
 
 ### 보안 강화 방안
 
@@ -1310,36 +1338,90 @@ ranking.report.threshold=5
 
 ---
 
-## 11. 트러블슈팅
+## 12. 트러블슈팅
 
-### 문제: 텍스트 감정 분석의 정확도 향상
+프로젝트 개발 과정에서 발생한 다양한 문제와 해결 방법에 대한 자세한 내용은 아래 블로그 포스트에서 확인할 수 있습니다:
 
-#### 해결책
+[Spring Boot 프로젝트 API 응답 표준화 및 중복 코드 리팩토링](https://buly.kr/7mBCl7Q)
 
-- **키워드 기반 감정 분석 시스템 개선:** 한국어/영어 감정 키워드 데이터베이스 확장
-- **가중치 시스템 도입:** 문맥에 따른 키워드 중요도 조정
-- **기본 점수 시스템 구현:** 감정이 명확하지 않은 경우 'neutral' 감정 기본 점수 부여
+[API 연동, 보안, 트랜잭션, 비동기 처리 등 개발 중 발생한 오류와 해결 과정](https://buly.kr/31SkH68)
 
-### 문제: 랭킹 시스템 데이터베이스 컬럼명 불일치
+[Stoblyx 프로젝트 테스트 코드 오류 해결 및 코드 품질 개선](https://buly.kr/6Mr8ubR)
 
-#### 해결책
+[Stoblyx 프로젝트 API 통합 테스트 개선 과정에서 마주친 오류와 해결 방법](https://buly.kr/1xyCO7J)
 
-- **데이터베이스 스키마 수정:** `updated_at` 컬럼을 `modified_at`으로 변경하여 일관성 유지
-- **엔티티 클래스 수정:** 관련 필드명과 JPA 매핑 어노테이션 업데이트
-- **리포지토리 쿼리 수정:** JPQL 쿼리에서 필드명 참조 업데이트
-- **테스트 케이스 보강:** 변경된 스키마에 대한 테스트 케이스 추가
+### 주요 해결 사례 요약
 
-### 문제: REST Docs 테스트 실패
+#### 1. JSON 파싱 오류 (ArrayList 생성 실패)
 
-#### 해결책
+- **문제**: 문자열로 전송된 `genres` 필드를 서버가 배열로 파싱하려고 시도하여 발생한 오류
+- **해결**: 클라이언트에서 데이터를 배열 형태로 전송하도록 수정
 
-- **relaxedResponseFields 적용:** 문서화되지 않은 필드가 있어도 테스트가 실패하지 않도록 설정
-- **테스트 데이터와 검증 일치화:** 테스트 데이터와 검증 부분의 필드명 일치 확인
-- **공통 유틸리티 클래스 활용:** `RestDocsUtils` 클래스를 통한 일관된 문서화 패턴 적용
+#### 2. ID 변환 오류 (MethodArgumentTypeMismatchException)
+
+- **문제**: null 값이 Long 타입으로 변환되지 않아 발생한 오류
+- **해결**: 테스트에서 고정된 ID 값을 사용하도록 변경
+
+#### 3. 필수 필드 누락 오류
+
+- **문제**: API 요청에 필수 필드가 포함되지 않아 발생한 오류
+- **해결**: 요청 데이터에 필수 필드 추가
+
+#### 4. 테스트 간 의존성 문제
+
+- **문제**: 테스트 간 상태 공유로 인한 연쇄 실패
+- **해결**: 독립적인 테스트 환경 구성 및 @BeforeEach, @AfterEach를 통한 테스트 데이터 관리
+
+#### 5. REST Docs 테스트 실패
+
+- **문제**: 문서화되지 않은 필드로 인한 테스트 실패
+- **해결**: relaxedResponseFields 적용으로 유연한 문서화 구현
+
+#### 6. 데이터베이스 스키마 관련 오류
+
+- **문제**: 시퀀스 테이블 관련 SQL 문법 오류
+- **해결**: Hibernate 설정 변경 및 SQL 초기화 모드 조정
+
+#### 7. 코드 품질 개선
+
+- **문제**: 사용되지 않는 변수, 불필요한 메서드 호출 등으로 인한 정적 분석 도구 경고
+- **해결**: 미사용 변수 제거, 불필요한 eq() 메서드 호출 제거 등 코드 정리
+
+#### 8. 보안 관련 이슈
+
+- **문제**: 리플렉션을 사용한 접근 제한 우회로 인한 보안 취약점
+- **해결**: 적절한 setter 메서드 추가 및 리플렉션 코드 제거
+
+#### 9. 데이터베이스 방언 차이 문제
+
+- **문제**: H2 데이터베이스와 MySQL 간의 SQL 함수 차이
+- **해결**: 데이터베이스에 독립적인 JPQL 쿼리 사용
+
+#### 10. 인증 관련 테스트 실패
+
+- **문제**: 인증이 필요한 API에 대한 테스트 실패
+- **해결**: 테스트 환경에서 인증을 우회하는 SecurityTestConfig 구현
+
+#### 11. 메서드 복잡도 문제
+
+- **문제**: 메서드의 인지적 복잡도가 허용 수준을 초과
+- **해결**: 메서드를 여러 작은 메서드로 분리하여 단일 책임 원칙 준수
+
+#### 12. API 통합 테스트 환경 구성 문제
+
+- **문제**: 실제 서비스와 유사한 환경에서의 통합 테스트 실행 어려움
+- **해결**: RestAssured와 ExtentReports를 활용한 통합 테스트 프레임워크 구축
+
+#### 13. 응답 상태 코드 불일치
+
+- **문제**: 예상한 상태 코드(401)와 실제 반환된 상태 코드(403) 불일치
+- **해결**: Spring Security 설정에 맞게 테스트 코드의 예상 값 조정
+
+이러한 문제 해결 과정을 통해 더 안정적이고 유지보수하기 쉬운 코드베이스를 구축할 수 있었습니다.
 
 ---
 
-## 12. 프로젝트 구조
+## 13. 프로젝트 구조
 
 헥사고날 아키텍처 (포트와 어댑터 아키텍처)
 
@@ -1443,7 +1525,7 @@ src/
 
 ---
 
-## 13. 성능 최적화 및 모니터링
+## 14. 성능 최적화 및 모니터링
 
 ### 캐시 및 데이터 처리
 
@@ -1459,7 +1541,7 @@ src/
 
 ---
 
-## 14. 성능 최적화
+## 15. 성능 최적화
 
 1. 캐싱 전략
 
@@ -1488,7 +1570,7 @@ src/
 
 ---
 
-## 15. 배포 및 운영 전략
+## 16. 배포 및 운영 전략
 
 ### Koyeb 배포 단계
 
@@ -1498,7 +1580,7 @@ src/
 
 ---
 
-## 16. 개발자 노트
+## 17. 개발자 노트
 
 - **도전 과제**
   - AI API 통합 시 타임아웃 최소화
@@ -1509,13 +1591,12 @@ src/
   - API 속도 제한 대응을 위한 효과적인 전략
   - 캐싱 시스템을 통한 성능 최적화 방법
 - **추후 계획**
-  - 마이크로서비스 전환 및 기능 확장
   - 고급 감정 분석을 위한 머신러닝 모델 도입
   - 실시간 콘텐츠 생성 상태 알림 시스템 구현
 
 ---
 
-## 17. 기여 가이드라인
+## 18. 기여 가이드라인
 
 - 코드 기여 방법
   - 이슈 생성 또는 기존 이슈 선택
@@ -1527,20 +1608,20 @@ src/
   - 메서드 및 클래스에 JavaDoc 주석 작성
   - 테스트 코드 포함
 
-## 18. 연락처
+## 19. 연락처
 
 - 프로젝트 관련 문의는 아래 연락처로 부탁드립니다.
 - 이메일: domyoung.jeon@gmail.com
 
-## 19. 감사의 글
+## 20. 감사의 글
 
 이 프로젝트는 다음과 같은 오픈소스 프로젝트와 리소스의 도움을 받았습니다.
 
 - Spring Boot 및 관련 프로젝트
-- KoBART, KoGPT, pyttsx3 등의 한국어 AI 모델
+- KoBART, pyttsx3 등의 한국어 AI 모델
 - Pexels API
 
-## 20. 라이선스
+## 21. 라이선스
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 

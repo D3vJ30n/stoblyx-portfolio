@@ -78,7 +78,7 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'io.rest-assured:rest-assured'
     testImplementation 'com.h2database:h2'
 
     // REST Assured API 테스트
@@ -92,6 +92,8 @@ dependencies {
 
     // Spring REST Docs
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok'
@@ -127,6 +129,27 @@ testing {
 test {
     outputs.dir snippetsDir
     useJUnitPlatform()
+}
+
+// E2E 테스트를 위한 태스크 추가
+task e2eTest(type: Test) {
+    description = 'Runs E2E tests'
+    group = 'verification'
+
+    useJUnitPlatform {
+        includeTags 'e2e'
+    }
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    // E2E 테스트 결과 보고서 설정
+    reports {
+        html.outputLocation = file("${buildDir}/reports/e2e-tests")
+    }
+
+    // E2E 테스트 시스템 프로퍼티 설정
+    systemProperty 'spring.profiles.active', 'test'
 }
 
 asciidoctor {

@@ -9,6 +9,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -19,6 +20,9 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
+/**
+ * 테스트 환경에서 사용할 Redis 관련 설정
+ */
 @TestConfiguration
 @EnableCaching
 public class RedisTestConfig {
@@ -31,24 +35,14 @@ public class RedisTestConfig {
 
     @Bean
     @Primary
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        return redisTemplate;
+    @SuppressWarnings("unchecked")
+    public RedisTemplate<String, String> redisTemplate() {
+        return (RedisTemplate<String, String>) mock(RedisTemplate.class);
     }
 
     @Bean
-    @Primary
-    public RedisTemplate<String, String> stringRedisTemplate() {
-        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
-        return redisTemplate;
+    public StringRedisTemplate stringRedisTemplate() {
+        return (StringRedisTemplate) mock(StringRedisTemplate.class);
     }
     
     @Bean(name = "cacheRedisTemplate")
@@ -101,4 +95,4 @@ public class RedisTestConfig {
                 .withInitialCacheConfigurations(cacheConfigurations)
                 .build();
     }
-}
+} 
