@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.239s</div>
+<div class="counter">0.367s</div>
 <p>duration</p>
 </div>
 </td>
@@ -81,43 +81,43 @@
 <tr>
 <td class="success">콘텐츠 상세 정보를 조회할 수 있다</td>
 <td class="success">testGetContentDetails()</td>
-<td class="success">0.028s</td>
+<td class="success">0.072s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">로그인한 사용자는 콘텐츠에 북마크를 토글할 수 있다</td>
 <td class="success">testToggleBookmark()</td>
-<td class="success">0.076s</td>
+<td class="success">0.128s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">존재하지 않는 콘텐츠 북마크 시도시 오류가 발생한다</td>
 <td class="success">testToggleBookmarkNonExistingContent()</td>
-<td class="success">0.029s</td>
+<td class="success">0.040s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">로그인하지 않은 사용자는 북마크 토글 시 인증 오류가 발생한다</td>
 <td class="success">testToggleBookmarkWithoutAuth()</td>
-<td class="success">0.022s</td>
+<td class="success">0.025s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">로그인한 사용자는 콘텐츠에 좋아요를 토글할 수 있다</td>
 <td class="success">testToggleLike()</td>
-<td class="success">0.025s</td>
+<td class="success">0.044s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">존재하지 않는 콘텐츠에 좋아요 시도시 오류가 발생한다</td>
 <td class="success">testToggleLikeNonExistingContent()</td>
-<td class="success">0.022s</td>
+<td class="success">0.025s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">로그인하지 않은 사용자는 좋아요 토글 시 인증 오류가 발생한다</td>
 <td class="success">testToggleLikeWithoutAuth()</td>
-<td class="success">0.037s</td>
+<td class="success">0.033s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -125,29 +125,29 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2025-03-13T11:32:26.610Z DEBUG 4542 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [ContentInteractionApiTest]: using SpringBootContextLoader
-2025-03-13T11:32:26.610Z DEBUG 4542 --- [stoblyx] [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [com.j30n.stoblyx.api.ContentInteractionApiTest]: no resource found for suffixes {-context.xml, Context.groovy}.
-2025-03-13T11:32:26.610Z  INFO 4542 --- [stoblyx] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.j30n.stoblyx.api.ContentInteractionApiTest]: ContentInteractionApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2025-03-13T11:32:26.611Z DEBUG 4542 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizerFactory implementations for test class [ContentInteractionApiTest]: [OnFailureConditionReportContextCustomizerFactory, OverrideAutoConfigurationContextCustomizerFactory, ObservabilityContextCustomizerFactory, TypeExcludeFiltersContextCustomizerFactory, PropertyMappingContextCustomizerFactory, WebDriverContextCustomizerFactory, ImportsContextCustomizerFactory, ExcludeFilterContextCustomizerFactory, HttpGraphQlTesterContextCustomizerFactory, DuplicateJsonObjectContextCustomizerFactory, MockitoContextCustomizerFactory, TestRestTemplateContextCustomizerFactory, WebTestClientContextCustomizerFactory, DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory, MockServerContainerContextCustomizerFactory, DynamicPropertiesContextCustomizerFactory]
-2025-03-13T11:32:26.611Z DEBUG 4542 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizers for test class [ContentInteractionApiTest]: [OnFailureConditionReportContextCustomizer, DisableObservabilityContextCustomizer, PropertyMappingContextCustomizer, WebDriverContextCustomizer, ImportsContextCustomizer, ExcludeFilterContextCustomizer, DuplicateJsonObjectContextCustomizer, MockitoContextCustomizer, TestRestTemplateContextCustomizer, DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer]
-2025-03-13T11:32:26.612Z  INFO 4542 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.j30n.stoblyx.StoblyxApplication for test class com.j30n.stoblyx.api.ContentInteractionApiTest
-2025-03-13T11:32:26.616Z DEBUG 4542 --- [stoblyx] [    Test worker] .s.t.c.u.TestContextSpringFactoriesUtils : Skipping candidate TestExecutionListener [org.springframework.test.context.observation.MicrometerObservationRegistryTestExecutionListener] due to a missing dependency. Specify custom TestExecutionListener classes or make the default TestExecutionListener classes and their required dependencies available. Offending class: io.micrometer.context.ThreadLocalAccessor. MicrometerObservationRegistryTestExecutionListener requires io.micrometer:micrometer-observation:1.10.8 or higher and io.micrometer:context-propagation:1.0.3 or higher.
-2025-03-13T11:32:26.616Z DEBUG 4542 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners for test class [ContentInteractionApiTest]: [ServletTestExecutionListener, DirtiesContextBeforeModesTestExecutionListener, ApplicationEventsTestExecutionListener, MockitoTestExecutionListener, DependencyInjectionTestExecutionListener, DirtiesContextTestExecutionListener, TransactionalTestExecutionListener, SqlScriptsTestExecutionListener, WithSecurityContextTestExecutionListener, EventPublishingTestExecutionListener, ReactorContextTestExecutionListener, RestDocsTestExecutionListener, MockRestServiceServerResetTestExecutionListener, MockMvcPrintOnlyOnFailureTestExecutionListener, WebDriverTestExecutionListener, MockWebServiceServerTestExecutionListener, ResetMocksTestExecutionListener]
-2025-03-13T11:32:26.616Z DEBUG 4542 --- [stoblyx] [    Test worker] DependencyInjectionTestExecutionListener : Performing dependency injection for test class com.j30n.stoblyx.api.ContentInteractionApiTest
-2025-03-13T11:32:26.616Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 374, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.617Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 375, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.619Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test class: class [ContentInteractionApiTest], class annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.619Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 376, missCount = 6, failureCount = 1]
+<pre>2025-03-13T11:40:36.549Z DEBUG 4587 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Neither @ContextConfiguration nor @ContextHierarchy found for test class [ContentInteractionApiTest]: using SpringBootContextLoader
+2025-03-13T11:40:36.549Z DEBUG 4587 --- [stoblyx] [    Test worker] o.s.t.c.support.AbstractContextLoader    : Could not detect default resource locations for test class [com.j30n.stoblyx.api.ContentInteractionApiTest]: no resource found for suffixes {-context.xml, Context.groovy}.
+2025-03-13T11:40:36.550Z  INFO 4587 --- [stoblyx] [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.j30n.stoblyx.api.ContentInteractionApiTest]: ContentInteractionApiTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2025-03-13T11:40:36.550Z DEBUG 4587 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizerFactory implementations for test class [ContentInteractionApiTest]: [OnFailureConditionReportContextCustomizerFactory, OverrideAutoConfigurationContextCustomizerFactory, ObservabilityContextCustomizerFactory, TypeExcludeFiltersContextCustomizerFactory, PropertyMappingContextCustomizerFactory, WebDriverContextCustomizerFactory, ImportsContextCustomizerFactory, ExcludeFilterContextCustomizerFactory, HttpGraphQlTesterContextCustomizerFactory, DuplicateJsonObjectContextCustomizerFactory, MockitoContextCustomizerFactory, TestRestTemplateContextCustomizerFactory, WebTestClientContextCustomizerFactory, DisableReactorResourceFactoryGlobalResourcesContextCustomizerFactory, MockServerContainerContextCustomizerFactory, DynamicPropertiesContextCustomizerFactory]
+2025-03-13T11:40:36.551Z DEBUG 4587 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using ContextCustomizers for test class [ContentInteractionApiTest]: [OnFailureConditionReportContextCustomizer, DisableObservabilityContextCustomizer, PropertyMappingContextCustomizer, WebDriverContextCustomizer, ImportsContextCustomizer, ExcludeFilterContextCustomizer, DuplicateJsonObjectContextCustomizer, MockitoContextCustomizer, TestRestTemplateContextCustomizer, DisableReactorResourceFactoryGlobalResourcesContextCustomizerCustomizer]
+2025-03-13T11:40:36.551Z  INFO 4587 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.j30n.stoblyx.StoblyxApplication for test class com.j30n.stoblyx.api.ContentInteractionApiTest
+2025-03-13T11:40:36.552Z DEBUG 4587 --- [stoblyx] [    Test worker] .s.t.c.u.TestContextSpringFactoriesUtils : Skipping candidate TestExecutionListener [org.springframework.test.context.observation.MicrometerObservationRegistryTestExecutionListener] due to a missing dependency. Specify custom TestExecutionListener classes or make the default TestExecutionListener classes and their required dependencies available. Offending class: io.micrometer.context.ThreadLocalAccessor. MicrometerObservationRegistryTestExecutionListener requires io.micrometer:micrometer-observation:1.10.8 or higher and io.micrometer:context-propagation:1.0.3 or higher.
+2025-03-13T11:40:36.552Z DEBUG 4587 --- [stoblyx] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Using TestExecutionListeners for test class [ContentInteractionApiTest]: [ServletTestExecutionListener, DirtiesContextBeforeModesTestExecutionListener, ApplicationEventsTestExecutionListener, MockitoTestExecutionListener, DependencyInjectionTestExecutionListener, DirtiesContextTestExecutionListener, TransactionalTestExecutionListener, SqlScriptsTestExecutionListener, WithSecurityContextTestExecutionListener, EventPublishingTestExecutionListener, ReactorContextTestExecutionListener, RestDocsTestExecutionListener, MockRestServiceServerResetTestExecutionListener, MockMvcPrintOnlyOnFailureTestExecutionListener, WebDriverTestExecutionListener, MockWebServiceServerTestExecutionListener, ResetMocksTestExecutionListener]
+2025-03-13T11:40:36.553Z DEBUG 4587 --- [stoblyx] [    Test worker] DependencyInjectionTestExecutionListener : Performing dependency injection for test class com.j30n.stoblyx.api.ContentInteractionApiTest
+2025-03-13T11:40:36.553Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 374, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.554Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 375, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.554Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test class: class [ContentInteractionApiTest], class annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.554Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 376, missCount = 6, failureCount = 1]
 테스트 환경용 더미 토큰 초기화 완료
 일반 사용자 토큰: test_user_token_for_testing
 관리자 토큰: test_admin_token_for_testing
-2025-03-13T11:32:26.620Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleBookmark], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.621Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 377, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.621Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 378, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.621Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 379, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.625Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 380, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.556Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleBookmark], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.557Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 377, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.557Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 378, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.557Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 379, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.562Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 380, missCount = 6, failureCount = 1]
 Request method:	POST
-Request URI:	http://localhost:33939/contents/1/bookmark
+Request URI:	http://localhost:44101/contents/1/bookmark
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -161,13 +161,13 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.665Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/bookmark
-2025-03-13T11:32:26.666Z  INFO 4542 --- [stoblyx] [o-auto-1-exec-4] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
-2025-03-13T11:32:26.666Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] o.s.security.web.FilterChainProxy        : Secured POST /contents/1/bookmark
-2025-03-13T11:32:26.666Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/1/bookmark&quot;, parameters={}
-2025-03-13T11:32:26.667Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleBookmark(Long, UserPrincipal)
+2025-03-13T11:40:36.633Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/bookmark
+2025-03-13T11:40:36.635Z  INFO 4587 --- [stoblyx] [o-auto-1-exec-7] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
+2025-03-13T11:40:36.636Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] o.s.security.web.FilterChainProxy        : Secured POST /contents/1/bookmark
+2025-03-13T11:40:36.637Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/1/bookmark&quot;, parameters={}
+2025-03-13T11:40:36.637Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleBookmark(Long, UserPrincipal)
 CurrentUserArgumentTestResolver.supportsParameter 호출됨: user = false
-2025-03-13T11:32:26.672Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] org.hibernate.SQL                        : 
+2025-03-13T11:40:36.643Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] org.hibernate.SQL                        : 
     /* &lt;criteria&gt; */ ?[34mselect?[0m
         sfc1_0.id,
         sfc1_0.audioUrl,
@@ -219,10 +219,120 @@ CurrentUserArgumentTestResolver.supportsParameter 호출됨: user = false
     ?[34mwhere?[0m
         sfc1_0.id=? 
         ?[34mand?[0m ?[34mnot?[0m(sfc1_0.is_deleted)
-2025-03-13T11:32:26.675Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.675Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=서버 오류가 발생했습니다., data=null)]
-2025-03-13T11:32:26.679Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
-HTTP/1.1 500 
+2025-03-13T11:40:36.650Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] org.hibernate.SQL                        : 
+    /* &lt;criteria&gt; */ ?[34mselect?[0m
+        cb1_0.id 
+    ?[34mfrom?[0m
+        content_bookmark cb1_0 
+    ?[34mwhere?[0m
+        cb1_0.user_id=? 
+        ?[34mand?[0m cb1_0.content_id=? 
+    ?[34mfetch?[0m
+        first ? ?[34mrows?[0m ?[34monly?[0m
+?[35m[Hibernate]?[0m 
+    /* &lt;criteria&gt; */ ?[34mselect?[0m
+        cb1_0.id 
+    ?[34mfrom?[0m
+        content_bookmark cb1_0 
+    ?[34mwhere?[0m
+        cb1_0.user_id=? 
+        ?[34mand?[0m cb1_0.content_id=? 
+    ?[34mfetch?[0m
+        first ? ?[34mrows?[0m ?[34monly?[0m
+2025-03-13T11:40:36.652Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] org.hibernate.SQL                        : 
+    ?[34mselect?[0m
+        u1_0.id,
+        u1_0.accountStatus,
+        a1_0.id,
+        a1_0.created_at,
+        a1_0.expiryDate,
+        a1_0.is_deleted,
+        a1_0.lastUsedAt,
+        a1_0.modified_at,
+        a1_0.refreshToken,
+        a1_0.tokenType,
+        a1_0.user_id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.is_deleted,
+        u1_0.lastLoginAt,
+        u1_0.modified_at,
+        u1_0.nickname,
+        u1_0.password,
+        u1_0.profileImageUrl,
+        u1_0.role,
+        ui1_0.id,
+        ui1_0.created_at,
+        ui1_0.interests,
+        ui1_0.is_deleted,
+        ui1_0.modified_at,
+        u1_0.username 
+    ?[34mfrom?[0m
+        users u1_0 
+    ?[34mleft?[0m ?[34mjoin?[0m
+        auth a1_0 
+            ?[34mon?[0m u1_0.id=a1_0.user_id 
+    ?[34mleft?[0m ?[34mjoin?[0m
+        user_interests ui1_0 
+            ?[34mon?[0m u1_0.id=ui1_0.user_id 
+    ?[34mwhere?[0m
+        u1_0.id=?
+?[35m[Hibernate]?[0m 
+    ?[34mselect?[0m
+        u1_0.id,
+        u1_0.accountStatus,
+        a1_0.id,
+        a1_0.created_at,
+        a1_0.expiryDate,
+        a1_0.is_deleted,
+        a1_0.lastUsedAt,
+        a1_0.modified_at,
+        a1_0.refreshToken,
+        a1_0.tokenType,
+        a1_0.user_id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.is_deleted,
+        u1_0.lastLoginAt,
+        u1_0.modified_at,
+        u1_0.nickname,
+        u1_0.password,
+        u1_0.profileImageUrl,
+        u1_0.role,
+        ui1_0.id,
+        ui1_0.created_at,
+        ui1_0.interests,
+        ui1_0.is_deleted,
+        ui1_0.modified_at,
+        u1_0.username 
+    ?[34mfrom?[0m
+        users u1_0 
+    ?[34mleft?[0m ?[34mjoin?[0m
+        auth a1_0 
+            ?[34mon?[0m u1_0.id=a1_0.user_id 
+    ?[34mleft?[0m ?[34mjoin?[0m
+        user_interests ui1_0 
+            ?[34mon?[0m u1_0.id=ui1_0.user_id 
+    ?[34mwhere?[0m
+        u1_0.id=?
+2025-03-13T11:40:36.657Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] org.hibernate.SQL                        : 
+    /* ?[34minsert?[0m ?[34mfor?[0m
+        com.j30n.stoblyx.domain.model.ContentBookmark */?[34minsert?[0m 
+    ?[34minto?[0m
+        content_bookmark (content_id, created_at, is_deleted, modified_at, user_id, id) 
+    ?[34mvalues?[0m
+        (?, ?, ?, ?, ?, ?[34mdefault?[0m)
+?[35m[Hibernate]?[0m 
+    /* ?[34minsert?[0m ?[34mfor?[0m
+        com.j30n.stoblyx.domain.model.ContentBookmark */?[34minsert?[0m 
+    ?[34minto?[0m
+        content_bookmark (content_id, created_at, is_deleted, modified_at, user_id, id) 
+    ?[34mvalues?[0m
+        (?, ?, ?, ?, ?, ?[34mdefault?[0m)
+2025-03-13T11:40:36.659Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.659Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=SUCCESS, message=북마크를 토글했습니다., data=null)]
+2025-03-13T11:40:36.662Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+HTTP/1.1 200 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -231,15 +341,16 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
-Connection: close
+Date: Thu, 13 Mar 2025 11:40:36 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
 
 {
-    &quot;result&quot;: &quot;ERROR&quot;,
-    &quot;message&quot;: &quot;서버 오류가 발생했습니다.&quot;,
+    &quot;result&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;북마크를 토글했습니다.&quot;,
     &quot;data&quot;: null
 }
-HTTP/1.1 500 
+HTTP/1.1 200 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -248,31 +359,32 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
-Connection: close
+Date: Thu, 13 Mar 2025 11:40:36 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
 
 {
-    &quot;result&quot;: &quot;ERROR&quot;,
-    &quot;message&quot;: &quot;서버 오류가 발생했습니다.&quot;,
+    &quot;result&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;북마크를 토글했습니다.&quot;,
     &quot;data&quot;: null
 }
 북마크 토글 테스트 완료
-2025-03-13T11:32:26.691Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 381, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.692Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 382, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.693Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 383, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.693Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 384, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.694Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 385, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.694Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 386, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.694Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 387, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.695Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 388, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.695Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleBookmark], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.696Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleLike], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.697Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 389, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.697Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 390, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.697Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 391, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.699Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 392, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.677Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 381, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.677Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 382, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.682Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 383, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.682Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 384, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.682Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 385, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.683Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 386, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.683Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 387, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.683Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 388, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.684Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleBookmark], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.685Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleLike], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.685Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 389, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.685Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 390, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.685Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 391, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.688Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 392, missCount = 6, failureCount = 1]
 Request method:	POST
-Request URI:	http://localhost:33939/contents/1/like
+Request URI:	http://localhost:44101/contents/1/like
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -286,13 +398,13 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.707Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/like
-2025-03-13T11:32:26.707Z  INFO 4542 --- [stoblyx] [o-auto-1-exec-7] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
-2025-03-13T11:32:26.707Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] o.s.security.web.FilterChainProxy        : Secured POST /contents/1/like
-2025-03-13T11:32:26.708Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/1/like&quot;, parameters={}
-2025-03-13T11:32:26.708Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleLike(Long, UserPrincipal)
+2025-03-13T11:40:36.697Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/like
+2025-03-13T11:40:36.697Z  INFO 4587 --- [stoblyx] [o-auto-1-exec-8] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
+2025-03-13T11:40:36.698Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] o.s.security.web.FilterChainProxy        : Secured POST /contents/1/like
+2025-03-13T11:40:36.698Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/1/like&quot;, parameters={}
+2025-03-13T11:40:36.698Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleLike(Long, UserPrincipal)
 CurrentUserArgumentTestResolver.supportsParameter 호출됨: user = false
-2025-03-13T11:32:26.710Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] org.hibernate.SQL                        : 
+2025-03-13T11:40:36.703Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] org.hibernate.SQL                        : 
     /* &lt;criteria&gt; */ ?[34mselect?[0m
         sfc1_0.id,
         sfc1_0.audioUrl,
@@ -344,10 +456,56 @@ CurrentUserArgumentTestResolver.supportsParameter 호출됨: user = false
     ?[34mwhere?[0m
         sfc1_0.id=? 
         ?[34mand?[0m ?[34mnot?[0m(sfc1_0.is_deleted)
-2025-03-13T11:32:26.712Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.712Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=서버 오류가 발생했습니다., data=null)]
-2025-03-13T11:32:26.715Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
-HTTP/1.1 500 
+2025-03-13T11:40:36.710Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] org.hibernate.SQL                        : 
+    /* ?[34mupdate?[0m
+        ?[34mfor?[0m com.j30n.stoblyx.domain.model.ShortFormContent */?[34mupdate?[0m SHORT_FORM_CONTENTS 
+    ?[34mset?[0m
+        audioUrl=?,
+        book_id=?,
+        commentCount=?,
+        contentType=?,
+        description=?,
+        duration=?,
+        is_deleted=?,
+        likeCount=?,
+        modified_at=?,
+        quote_id=?,
+        shareCount=?,
+        status=?,
+        subtitles=?,
+        thumbnailUrl=?,
+        title=?,
+        videoUrl=?,
+        viewCount=? 
+    ?[34mwhere?[0m
+        id=?
+?[35m[Hibernate]?[0m 
+    /* ?[34mupdate?[0m
+        ?[34mfor?[0m com.j30n.stoblyx.domain.model.ShortFormContent */?[34mupdate?[0m SHORT_FORM_CONTENTS 
+    ?[34mset?[0m
+        audioUrl=?,
+        book_id=?,
+        commentCount=?,
+        contentType=?,
+        description=?,
+        duration=?,
+        is_deleted=?,
+        likeCount=?,
+        modified_at=?,
+        quote_id=?,
+        shareCount=?,
+        status=?,
+        subtitles=?,
+        thumbnailUrl=?,
+        title=?,
+        videoUrl=?,
+        viewCount=? 
+    ?[34mwhere?[0m
+        id=?
+2025-03-13T11:40:36.713Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.714Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=SUCCESS, message=좋아요를 토글했습니다., data=null)]
+2025-03-13T11:40:36.719Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+HTTP/1.1 200 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -356,15 +514,16 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
-Connection: close
+Date: Thu, 13 Mar 2025 11:40:36 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
 
 {
-    &quot;result&quot;: &quot;ERROR&quot;,
-    &quot;message&quot;: &quot;서버 오류가 발생했습니다.&quot;,
+    &quot;result&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;좋아요를 토글했습니다.&quot;,
     &quot;data&quot;: null
 }
-HTTP/1.1 500 
+HTTP/1.1 200 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -373,31 +532,32 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
-Connection: close
+Date: Thu, 13 Mar 2025 11:40:36 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
 
 {
-    &quot;result&quot;: &quot;ERROR&quot;,
-    &quot;message&quot;: &quot;서버 오류가 발생했습니다.&quot;,
+    &quot;result&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;좋아요를 토글했습니다.&quot;,
     &quot;data&quot;: null
 }
 좋아요 토글 테스트 완료
-2025-03-13T11:32:26.718Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 393, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.718Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 394, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.719Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 395, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.719Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 396, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.720Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 397, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.720Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 398, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.721Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 399, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.721Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 400, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.721Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleLike], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.722Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleBookmarkNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.722Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 401, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.722Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 402, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.722Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 403, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.724Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 404, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.722Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 393, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.722Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 394, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.726Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 395, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.726Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 396, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.726Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 397, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.727Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 398, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.727Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 399, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.727Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 400, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.728Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleLike], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.729Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleBookmarkNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.730Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 401, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.730Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 402, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.730Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 403, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.733Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 404, missCount = 6, failureCount = 1]
 Request method:	POST
-Request URI:	http://localhost:33939/contents/9999/bookmark
+Request URI:	http://localhost:44101/contents/9999/bookmark
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -411,12 +571,12 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.734Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] o.s.security.web.FilterChainProxy        : Securing POST /contents/9999/bookmark
-2025-03-13T11:32:26.735Z  INFO 4542 --- [stoblyx] [o-auto-1-exec-8] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
-2025-03-13T11:32:26.736Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] o.s.security.web.FilterChainProxy        : Secured POST /contents/9999/bookmark
-2025-03-13T11:32:26.736Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/9999/bookmark&quot;, parameters={}
-2025-03-13T11:32:26.737Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleBookmark(Long, UserPrincipal)
-2025-03-13T11:32:26.740Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] org.hibernate.SQL                        : 
+2025-03-13T11:40:36.748Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] o.s.security.web.FilterChainProxy        : Securing POST /contents/9999/bookmark
+2025-03-13T11:40:36.748Z  INFO 4587 --- [stoblyx] [o-auto-1-exec-5] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
+2025-03-13T11:40:36.748Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] o.s.security.web.FilterChainProxy        : Secured POST /contents/9999/bookmark
+2025-03-13T11:40:36.749Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/9999/bookmark&quot;, parameters={}
+2025-03-13T11:40:36.749Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleBookmark(Long, UserPrincipal)
+2025-03-13T11:40:36.755Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] org.hibernate.SQL                        : 
     /* &lt;criteria&gt; */ ?[34mselect?[0m
         sfc1_0.id,
         sfc1_0.audioUrl,
@@ -468,9 +628,9 @@ Body:			&lt;none&gt;
     ?[34mwhere?[0m
         sfc1_0.id=? 
         ?[34mand?[0m ?[34mnot?[0m(sfc1_0.is_deleted)
-2025-03-13T11:32:26.743Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.743Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=서버 오류가 발생했습니다., data=null)]
-2025-03-13T11:32:26.744Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
+2025-03-13T11:40:36.759Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.759Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=서버 오류가 발생했습니다., data=null)]
+2025-03-13T11:40:36.760Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
 HTTP/1.1 500 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -480,7 +640,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
+Date: Thu, 13 Mar 2025 11:40:36 GMT
 Connection: close
 
 {
@@ -489,22 +649,22 @@ Connection: close
     &quot;data&quot;: null
 }
 존재하지 않는 콘텐츠 북마크 테스트 완료
-2025-03-13T11:32:26.747Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 405, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.747Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 406, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.749Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 407, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.749Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 408, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.749Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 409, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.750Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 410, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.750Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 411, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.750Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 412, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.750Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleBookmarkNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.751Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testGetContentDetails], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.751Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 413, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.751Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 414, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.751Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 415, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.754Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 416, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.764Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 405, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.764Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 406, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.767Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 407, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.767Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 408, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.768Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 409, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.768Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 410, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.769Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 411, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.769Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 412, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.769Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleBookmarkNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.770Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testGetContentDetails], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.770Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 413, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.770Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 414, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.770Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 415, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.773Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 416, missCount = 6, failureCount = 1]
 Request method:	GET
-Request URI:	http://localhost:33939/contents/1
+Request URI:	http://localhost:44101/contents/1
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -516,13 +676,13 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.763Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /contents/1
-2025-03-13T11:32:26.764Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
-2025-03-13T11:32:26.764Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /contents/1
-2025-03-13T11:32:26.764Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.web.servlet.DispatcherServlet        : GET &quot;/contents/1&quot;, parameters={}
-2025-03-13T11:32:26.765Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#getContent(Long, UserPrincipal)
+2025-03-13T11:40:36.782Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /contents/1
+2025-03-13T11:40:36.785Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-03-13T11:40:36.786Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /contents/1
+2025-03-13T11:40:36.786Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.web.servlet.DispatcherServlet        : GET &quot;/contents/1&quot;, parameters={}
+2025-03-13T11:40:36.787Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#getContent(Long, UserPrincipal)
 CurrentUserArgumentTestResolver.supportsParameter 호출됨: user = false
-2025-03-13T11:32:26.768Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] org.hibernate.SQL                        : 
+2025-03-13T11:40:36.790Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] org.hibernate.SQL                        : 
     /* &lt;criteria&gt; */ ?[34mselect?[0m
         sfc1_0.id,
         sfc1_0.audioUrl,
@@ -574,10 +734,146 @@ CurrentUserArgumentTestResolver.supportsParameter 호출됨: user = false
     ?[34mwhere?[0m
         sfc1_0.id=? 
         ?[34mand?[0m ?[34mnot?[0m(sfc1_0.is_deleted)
-2025-03-13T11:32:26.770Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.770Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=콘텐츠를 찾을 수 없습니다., data=null)]
-2025-03-13T11:32:26.772Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 404 NOT_FOUND
-HTTP/1.1 404 
+2025-03-13T11:40:36.801Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] org.hibernate.SQL                        : 
+    ?[34mselect?[0m
+        mr1_0.content_id,
+        mr1_0.id,
+        mr1_0.created_at,
+        mr1_0.description,
+        mr1_0.duration,
+        mr1_0.is_deleted,
+        mr1_0.modified_at,
+        mr1_0.thumbnailUrl,
+        mr1_0.type,
+        mr1_0.url 
+    ?[34mfrom?[0m
+        media_resources mr1_0 
+    ?[34mwhere?[0m
+        mr1_0.content_id=?
+?[35m[Hibernate]?[0m 
+    ?[34mselect?[0m
+        mr1_0.content_id,
+        mr1_0.id,
+        mr1_0.created_at,
+        mr1_0.description,
+        mr1_0.duration,
+        mr1_0.is_deleted,
+        mr1_0.modified_at,
+        mr1_0.thumbnailUrl,
+        mr1_0.type,
+        mr1_0.url 
+    ?[34mfrom?[0m
+        media_resources mr1_0 
+    ?[34mwhere?[0m
+        mr1_0.content_id=?
+2025-03-13T11:40:36.811Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] org.hibernate.SQL                        : 
+    ?[34mselect?[0m
+        b1_0.id,
+        b1_0.author,
+        b1_0.averageRating,
+        b1_0.avgReadingTime,
+        b1_0.created_at,
+        b1_0.description,
+        b1_0.is_deleted,
+        b1_0.isbn,
+        b1_0.modified_at,
+        b1_0.popularity,
+        b1_0.publicationYear,
+        b1_0.publishDate,
+        b1_0.publisher,
+        b1_0.ratingCount,
+        b1_0.thumbnailUrl,
+        b1_0.title,
+        b1_0.totalPages 
+    ?[34mfrom?[0m
+        Book b1_0 
+    ?[34mwhere?[0m
+        b1_0.id=?
+?[35m[Hibernate]?[0m 
+    ?[34mselect?[0m
+        b1_0.id,
+        b1_0.author,
+        b1_0.averageRating,
+        b1_0.avgReadingTime,
+        b1_0.created_at,
+        b1_0.description,
+        b1_0.is_deleted,
+        b1_0.isbn,
+        b1_0.modified_at,
+        b1_0.popularity,
+        b1_0.publicationYear,
+        b1_0.publishDate,
+        b1_0.publisher,
+        b1_0.ratingCount,
+        b1_0.thumbnailUrl,
+        b1_0.title,
+        b1_0.totalPages 
+    ?[34mfrom?[0m
+        Book b1_0 
+    ?[34mwhere?[0m
+        b1_0.id=?
+2025-03-13T11:40:36.817Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] org.hibernate.SQL                        : 
+    ?[34mselect?[0m
+        q1_0.id,
+        q1_0.book_id,
+        q1_0.content,
+        q1_0.created_at,
+        q1_0.is_deleted,
+        q1_0.like_count,
+        q1_0.memo,
+        q1_0.modified_at,
+        q1_0.page,
+        q1_0.save_count,
+        s1_0.id,
+        s1_0.algorithm,
+        s1_0.content,
+        s1_0.created_at,
+        s1_0.generatedAt,
+        s1_0.is_deleted,
+        s1_0.modified_at,
+        s1_0.quality,
+        s1_0.quote_id,
+        q1_0.user_id 
+    ?[34mfrom?[0m
+        quotes q1_0 
+    ?[34mleft?[0m ?[34mjoin?[0m
+        quote_summaries s1_0 
+            ?[34mon?[0m q1_0.id=s1_0.quote_id 
+    ?[34mwhere?[0m
+        q1_0.id=?
+?[35m[Hibernate]?[0m 
+    ?[34mselect?[0m
+        q1_0.id,
+        q1_0.book_id,
+        q1_0.content,
+        q1_0.created_at,
+        q1_0.is_deleted,
+        q1_0.like_count,
+        q1_0.memo,
+        q1_0.modified_at,
+        q1_0.page,
+        q1_0.save_count,
+        s1_0.id,
+        s1_0.algorithm,
+        s1_0.content,
+        s1_0.created_at,
+        s1_0.generatedAt,
+        s1_0.is_deleted,
+        s1_0.modified_at,
+        s1_0.quality,
+        s1_0.quote_id,
+        q1_0.user_id 
+    ?[34mfrom?[0m
+        quotes q1_0 
+    ?[34mleft?[0m ?[34mjoin?[0m
+        quote_summaries s1_0 
+            ?[34mon?[0m q1_0.id=s1_0.quote_id 
+    ?[34mwhere?[0m
+        q1_0.id=?
+2025-03-13T11:40:36.820Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.828Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=SUCCESS, message=콘텐츠 상세 정보입니다., data=ContentResponse[id=1, videoUrl=https://www.p (truncated)...]
+2025-03-13T11:40:36.834Z DEBUG 4587 --- [stoblyx] [-auto-1-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+HTTP/1.1 200 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
 Cache-Control: no-cache, no-store, max-age=0, must-revalidate
@@ -586,32 +882,56 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
+Date: Thu, 13 Mar 2025 11:40:36 GMT
 Keep-Alive: timeout=60
 Connection: keep-alive
 
 {
-    &quot;result&quot;: &quot;ERROR&quot;,
-    &quot;message&quot;: &quot;콘텐츠를 찾을 수 없습니다.&quot;,
-    &quot;data&quot;: null
+    &quot;result&quot;: &quot;SUCCESS&quot;,
+    &quot;message&quot;: &quot;콘텐츠 상세 정보입니다.&quot;,
+    &quot;data&quot;: {
+        &quot;id&quot;: 1,
+        &quot;videoUrl&quot;: &quot;https://www.pexels.com/video/time-lapse-video-of-stars-857195/&quot;,
+        &quot;thumbnailUrl&quot;: null,
+        &quot;bgmUrl&quot;: null,
+        &quot;subtitles&quot;: null,
+        &quot;status&quot;: &quot;PUBLISHED&quot;,
+        &quot;viewCount&quot;: 16,
+        &quot;likeCount&quot;: 8,
+        &quot;shareCount&quot;: 6,
+        &quot;isLiked&quot;: false,
+        &quot;isBookmarked&quot;: false,
+        &quot;book&quot;: {
+            &quot;id&quot;: 1,
+            &quot;title&quot;: &quot;철학의 즐거움&quot;,
+            &quot;author&quot;: &quot;알랭 드 보통&quot;,
+            &quot;thumbnailUrl&quot;: &quot;https://images.pexels.com/photos/3747139/pexels-photo-3747139.jpeg&quot;
+        },
+        &quot;quote&quot;: {
+            &quot;id&quot;: 1,
+            &quot;content&quot;: &quot;진정한 지혜는 자신이 모른다는 것을 아는 데서 시작한다.&quot;
+        },
+        &quot;createdAt&quot;: &quot;2025-03-13T11:40:29.158271&quot;,
+        &quot;modifiedAt&quot;: &quot;2025-03-13T11:40:36.707365&quot;
+    }
 }
 콘텐츠 상세 조회 테스트 완료
-2025-03-13T11:32:26.774Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 417, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.775Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 418, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.777Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 419, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.777Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 420, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.777Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 421, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.778Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 422, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.778Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 423, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.779Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 424, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.779Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testGetContentDetails], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.780Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleLikeWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.781Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 425, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.781Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 426, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.781Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 427, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.783Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 428, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.837Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 417, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.837Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 418, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.839Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 419, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.839Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 420, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.839Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 421, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.840Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 422, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.840Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 423, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.840Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 424, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.841Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testGetContentDetails], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.842Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleLikeWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.842Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 425, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.842Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 426, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.842Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 427, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.844Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 428, missCount = 6, failureCount = 1]
 Request method:	POST
-Request URI:	http://localhost:33939/contents/1/like
+Request URI:	http://localhost:44101/contents/1/like
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -623,17 +943,17 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.792Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/like
-2025-03-13T11:32:26.793Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
-2025-03-13T11:32:26.794Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
-2025-03-13T11:32:26.801Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.security.web.FilterChainProxy        : Securing POST /error
-2025-03-13T11:32:26.801Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.security.web.FilterChainProxy        : Secured POST /error
-2025-03-13T11:32:26.802Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
-2025-03-13T11:32:26.803Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
-2025-03-13T11:32:26.805Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.805Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Thu Mar 13 11:32:26 UTC 2025, status=403, error=Forbidden, message=Access Denied, path=/c (truncated)...]
-2025-03-13T11:32:26.812Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 403
-2025-03-13T11:32:26.812Z DEBUG 4542 --- [stoblyx] [-auto-1-exec-10] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-03-13T11:40:36.852Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/like
+2025-03-13T11:40:36.852Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-03-13T11:40:36.853Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-03-13T11:40:36.859Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.security.web.FilterChainProxy        : Securing POST /error
+2025-03-13T11:40:36.860Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.security.web.FilterChainProxy        : Secured POST /error
+2025-03-13T11:40:36.861Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
+2025-03-13T11:40:36.861Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2025-03-13T11:40:36.863Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.864Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Thu Mar 13 11:40:36 UTC 2025, status=403, error=Forbidden, message=Access Denied, path=/c (truncated)...]
+2025-03-13T11:40:36.869Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 403
+2025-03-13T11:40:36.869Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
 HTTP/1.1 403 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -643,34 +963,34 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
+Date: Thu, 13 Mar 2025 11:40:36 GMT
 Keep-Alive: timeout=60
 Connection: keep-alive
 
 {
-    &quot;timestamp&quot;: &quot;2025-03-13T11:32:26.804+00:00&quot;,
+    &quot;timestamp&quot;: &quot;2025-03-13T11:40:36.862+00:00&quot;,
     &quot;status&quot;: 403,
     &quot;error&quot;: &quot;Forbidden&quot;,
     &quot;message&quot;: &quot;Access Denied&quot;,
     &quot;path&quot;: &quot;/contents/1/like&quot;
 }
 좋아요 토글 인증 실패 테스트 완료
-2025-03-13T11:32:26.813Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 429, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.813Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 430, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.815Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 431, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.816Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 432, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.816Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 433, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.816Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 434, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.816Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 435, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.817Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 436, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.817Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleLikeWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.817Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleBookmarkWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.818Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 437, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.818Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 438, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.818Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 439, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.819Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 440, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.871Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 429, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.871Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 430, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.873Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 431, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.873Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 432, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.873Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 433, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.874Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 434, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.874Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 435, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.874Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 436, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.874Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleLikeWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.875Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleBookmarkWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.875Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 437, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.875Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 438, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.876Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 439, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.877Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 440, missCount = 6, failureCount = 1]
 Request method:	POST
-Request URI:	http://localhost:33939/contents/1/bookmark
+Request URI:	http://localhost:44101/contents/1/bookmark
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -682,17 +1002,17 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.827Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/bookmark
-2025-03-13T11:32:26.828Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
-2025-03-13T11:32:26.828Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
-2025-03-13T11:32:26.829Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /error
-2025-03-13T11:32:26.829Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /error
-2025-03-13T11:32:26.832Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
-2025-03-13T11:32:26.833Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
-2025-03-13T11:32:26.833Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.833Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Thu Mar 13 11:32:26 UTC 2025, status=403, error=Forbidden, message=Access Denied, path=/c (truncated)...]
-2025-03-13T11:32:26.834Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 403
-2025-03-13T11:32:26.834Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-03-13T11:40:36.885Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /contents/1/bookmark
+2025-03-13T11:40:36.886Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2025-03-13T11:40:36.887Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.s.w.a.Http403ForbiddenEntryPoint     : Pre-authenticated entry point called. Rejecting access
+2025-03-13T11:40:36.888Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.security.web.FilterChainProxy        : Securing POST /error
+2025-03-13T11:40:36.889Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.security.web.FilterChainProxy        : Secured POST /error
+2025-03-13T11:40:36.889Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : &quot;ERROR&quot; dispatch for POST &quot;/error&quot;, parameters={}
+2025-03-13T11:40:36.889Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController#error(HttpServletRequest)
+2025-03-13T11:40:36.890Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.891Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Thu Mar 13 11:40:36 UTC 2025, status=403, error=Forbidden, message=Access Denied, path=/c (truncated)...]
+2025-03-13T11:40:36.892Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.web.servlet.DispatcherServlet        : Exiting from &quot;ERROR&quot; dispatch, status 403
+2025-03-13T11:40:36.892Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-2] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
 HTTP/1.1 403 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -702,34 +1022,34 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
+Date: Thu, 13 Mar 2025 11:40:36 GMT
 Keep-Alive: timeout=60
 Connection: keep-alive
 
 {
-    &quot;timestamp&quot;: &quot;2025-03-13T11:32:26.833+00:00&quot;,
+    &quot;timestamp&quot;: &quot;2025-03-13T11:40:36.890+00:00&quot;,
     &quot;status&quot;: 403,
     &quot;error&quot;: &quot;Forbidden&quot;,
     &quot;message&quot;: &quot;Access Denied&quot;,
     &quot;path&quot;: &quot;/contents/1/bookmark&quot;
 }
 북마크 토글 인증 실패 테스트 완료
-2025-03-13T11:32:26.837Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 441, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.837Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 442, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.839Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 443, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.839Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 444, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.839Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 445, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.840Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 446, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.840Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 447, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.840Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 448, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.840Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleBookmarkWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.841Z DEBUG 4542 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleLikeNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.841Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 449, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.841Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 450, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.841Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 451, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.843Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 452, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.894Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 441, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.895Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 442, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.897Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 443, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.897Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 444, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.898Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 445, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.898Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 446, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.899Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 447, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.899Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 448, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.899Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleBookmarkWithoutAuth], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.901Z DEBUG 4587 --- [stoblyx] [    Test worker] sContextBeforeModesTestExecutionListener : Before test method: class [ContentInteractionApiTest], method [testToggleLikeNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.901Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 449, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.901Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 450, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.901Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 451, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.903Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 452, missCount = 6, failureCount = 1]
 Request method:	POST
-Request URI:	http://localhost:33939/contents/9999/like
+Request URI:	http://localhost:44101/contents/9999/like
 Proxy:			&lt;none&gt;
 Request params:	&lt;none&gt;
 Query params:	&lt;none&gt;
@@ -743,12 +1063,12 @@ Headers:		X-CSRF-TOKEN=test-csrf-token
 Cookies:		&lt;none&gt;
 Multiparts:		&lt;none&gt;
 Body:			&lt;none&gt;
-2025-03-13T11:32:26.850Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] o.s.security.web.FilterChainProxy        : Securing POST /contents/9999/like
-2025-03-13T11:32:26.850Z  INFO 4542 --- [stoblyx] [o-auto-1-exec-3] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
-2025-03-13T11:32:26.850Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] o.s.security.web.FilterChainProxy        : Secured POST /contents/9999/like
-2025-03-13T11:32:26.851Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/9999/like&quot;, parameters={}
-2025-03-13T11:32:26.851Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleLike(Long, UserPrincipal)
-2025-03-13T11:32:26.853Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] org.hibernate.SQL                        : 
+2025-03-13T11:40:36.912Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] o.s.security.web.FilterChainProxy        : Securing POST /contents/9999/like
+2025-03-13T11:40:36.913Z  INFO 4587 --- [stoblyx] [o-auto-1-exec-3] urityTestConfig$TestAuthenticationFilter : 테스트 인증 설정됨 (ADMIN) - 사용자: testadmin, ID: 2
+2025-03-13T11:40:36.913Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] o.s.security.web.FilterChainProxy        : Secured POST /contents/9999/like
+2025-03-13T11:40:36.914Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] o.s.web.servlet.DispatcherServlet        : POST &quot;/contents/9999/like&quot;, parameters={}
+2025-03-13T11:40:36.914Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.j30n.stoblyx.adapter.in.web.controller.ContentController#toggleLike(Long, UserPrincipal)
+2025-03-13T11:40:36.916Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] org.hibernate.SQL                        : 
     /* &lt;criteria&gt; */ ?[34mselect?[0m
         sfc1_0.id,
         sfc1_0.audioUrl,
@@ -800,9 +1120,9 @@ Body:			&lt;none&gt;
     ?[34mwhere?[0m
         sfc1_0.id=? 
         ?[34mand?[0m ?[34mnot?[0m(sfc1_0.is_deleted)
-2025-03-13T11:32:26.855Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
-2025-03-13T11:32:26.855Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=서버 오류가 발생했습니다., data=null)]
-2025-03-13T11:32:26.856Z DEBUG 4542 --- [stoblyx] [o-auto-1-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
+2025-03-13T11:40:36.918Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2025-03-13T11:40:36.918Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [ApiResponse(result=ERROR, message=서버 오류가 발생했습니다., data=null)]
+2025-03-13T11:40:36.920Z DEBUG 4587 --- [stoblyx] [o-auto-1-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 500 INTERNAL_SERVER_ERROR
 HTTP/1.1 500 
 X-Content-Type-Options: nosniff
 X-XSS-Protection: 0
@@ -812,7 +1132,7 @@ Expires: 0
 X-Frame-Options: SAMEORIGIN
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Thu, 13 Mar 2025 11:32:26 GMT
+Date: Thu, 13 Mar 2025 11:40:36 GMT
 Connection: close
 
 {
@@ -821,17 +1141,17 @@ Connection: close
     &quot;data&quot;: null
 }
 존재하지 않는 콘텐츠 좋아요 테스트 완료
-2025-03-13T11:32:26.858Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 453, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.858Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 454, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.860Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 455, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.860Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 456, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.861Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 457, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.861Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 458, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.862Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 459, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.862Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 460, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.862Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleLikeNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
-2025-03-13T11:32:26.892Z DEBUG 4542 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@3d24ce5e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 461, missCount = 6, failureCount = 1]
-2025-03-13T11:32:26.892Z DEBUG 4542 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test class: class [ContentInteractionApiTest], class annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.922Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 453, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.922Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 454, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.924Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 455, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.924Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 456, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.924Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 457, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.925Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 458, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.925Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 459, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.925Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 460, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.925Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test method: class [ContentInteractionApiTest], method [testToggleLikeNonExistingContent], class annotated with @DirtiesContext [false] with mode [null], method annotated with @DirtiesContext [false] with mode [null]
+2025-03-13T11:40:36.951Z DEBUG 4587 --- [stoblyx] [    Test worker] org.springframework.test.context.cache   : Spring test ApplicationContext cache statistics: [DefaultContextCache@581cb35e size = 3, maxSize = 32, parentContextCount = 0, hitCount = 461, missCount = 6, failureCount = 1]
+2025-03-13T11:40:36.952Z DEBUG 4587 --- [stoblyx] [    Test worker] .c.s.DirtiesContextTestExecutionListener : After test class: class [ContentInteractionApiTest], class annotated with @DirtiesContext [false] with mode [null]
 </pre>
 </span>
 </div>
@@ -843,7 +1163,7 @@ Connection: close
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.12.1</a> at Mar 13, 2025, 11:32:29 AM</p>
+<a href="http://www.gradle.org">Gradle 8.12.1</a> at Mar 13, 2025, 11:40:39 AM</p>
 </div>
 </div>
 </body>
