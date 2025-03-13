@@ -19,16 +19,16 @@ public class PopularSearchTerm extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "search_term", nullable = false, length = 255)
     private String searchTerm;
 
-    @Column(nullable = false)
+    @Column(name = "search_count", nullable = false)
     private Integer searchCount;
 
-    @Column(nullable = false)
+    @Column(name = "popularity_score", nullable = false)
     private Double popularityScore;
 
-    @Column(nullable = false)
+    @Column(name = "last_updated_at", nullable = false)
     private LocalDateTime lastUpdatedAt;
 
     @Builder

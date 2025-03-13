@@ -18,10 +18,10 @@ public record PostResponse(
             post.getId(),
             post.getTitle(),
             post.getContent(),
-            post.getAuthor().getNickname(),
+            post.getUser().getNickname(),
             post.getThumbnailUrl(),
             post.getCreatedAt(),
-            post.getUpdatedAt()
+            post.getModifiedAt()
         );
     }
     

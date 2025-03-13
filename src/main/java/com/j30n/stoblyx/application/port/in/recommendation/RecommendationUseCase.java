@@ -47,4 +47,20 @@ public interface RecommendationUseCase {
      * @return 갱신된 인기 검색어 수
      */
     Integer updatePopularTerms();
+    
+    /**
+     * 개인화된 주간 추천 목록을 제공합니다.
+     *
+     * @return 주간 추천 정보
+     */
+    RecommendationResponse getWeeklyRecommendations();
+    
+    /**
+     * 사용자 유사성 기반 추천 목록을 제공합니다.
+     *
+     * @param contentType 콘텐츠 타입 (선택, BOOK 또는 SHORTFORM)
+     * @param pageable 페이징 정보
+     * @return 사용자 유사성 기반 추천 목록
+     */
+    Page<RecommendationResponse> getUserSimilarityRecommendations(String contentType, Pageable pageable);
 } 

@@ -11,6 +11,8 @@ venv_kospeech/
 *.bat
 *.exe
 *.ps1
+*.sh
+reset_test_db.*
 
 ### STS ###
 .apt_generated

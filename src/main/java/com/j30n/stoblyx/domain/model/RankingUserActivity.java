@@ -1,11 +1,11 @@
 package com.j30n.stoblyx.domain.model;
 
 import com.j30n.stoblyx.domain.enums.ActivityType;
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -15,11 +15,9 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "ranking_user_activity")
-@Data
+@Getter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class RankingUserActivity {
+public class RankingUserActivity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,41 +26,47 @@ public class RankingUserActivity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "target_id", nullable = false)
-    private Long targetId;
-
-    @Column(name = "target_type", nullable = false)
-    private String targetType;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "activity_type", nullable = false)
     private ActivityType activityType;
 
-    @Column(name = "score_change", nullable = false)
-    private Integer scoreChange;
+    @Column(name = "points", nullable = false)
+    private Integer points;
 
-    @Column(name = "ip_address")
-    private String ipAddress;
+    @Column(name = "activity_date", nullable = false)
+    private LocalDateTime activityDate;
 
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "reference_id")
+    private Long referenceId;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "reference_type")
+    private String referenceType;
+
+    @Builder
+    public RankingUserActivity(Long userId, ActivityType activityType, Integer points, 
+                              LocalDateTime activityDate, Long referenceId, String referenceType) {
+        this.userId = userId;
+        this.activityType = activityType;
+        this.points = points != null ? points : activityType.getScoreWeight();
+        this.activityDate = activityDate != null ? activityDate : LocalDateTime.now();
+        this.referenceId = referenceId;
+        this.referenceType = referenceType;
+    }
 
     @PrePersist
     protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        // 활동 유형에 따른 포인트 설정
+        if (points == null) {
+            points = activityType.getScoreWeight();
+        }
         
-        // 활동 유형에 따른 점수 변화 설정
-        if (scoreChange == null) {
-            scoreChange = activityType.getScoreWeight();
+        if (activityDate == null) {
+            activityDate = LocalDateTime.now();
         }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        updateModifiedAt();
     }
 } 

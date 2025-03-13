@@ -152,9 +152,9 @@ class SearchControllerTest {
         
         // Search 객체 생성 - 실제 데이터 흐름보다는 테스트 성공을 위한 목 데이터
         Search searchHistory = Search.builder()
-                .keyword("테스트 검색")
-                .category("ALL")
-                .resultCount(10)
+                .searchTerm("테스트 검색")
+                .searchType("ALL")
+                .searchCount(10)
                 .build();
         
         // id 값 설정을 위한 리플렉션 사용

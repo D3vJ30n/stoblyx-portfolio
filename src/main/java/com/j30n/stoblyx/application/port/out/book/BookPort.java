@@ -15,4 +15,28 @@ public interface BookPort {
     void delete(Book book);
     boolean existsByIsbn(String isbn);
     Page<Book> findByGenre(String genre, Pageable pageable);
+    
+    /**
+     * 검색 기록 기반 추천 책 목록을 조회합니다.
+     *
+     * @param pageable 페이징 정보
+     * @return 추천 책 목록
+     */
+    Page<Book> getHistoryBasedRecommendations(Pageable pageable);
+    
+    /**
+     * 관심사 기반 추천 책 목록을 조회합니다.
+     *
+     * @param pageable 페이징 정보
+     * @return 추천 책 목록
+     */
+    Page<Book> getInterestBasedRecommendations(Pageable pageable);
+    
+    /**
+     * 기본 추천 책 목록을 조회합니다.
+     *
+     * @param pageable 페이징 정보
+     * @return 추천 책 목록
+     */
+    Page<Book> getDefaultRecommendations(Pageable pageable);
 }

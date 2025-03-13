@@ -1,6 +1,5 @@
 package com.j30n.stoblyx.application.port.out.ranking;
 
-import com.j30n.stoblyx.domain.enums.AchievementStatus;
 import com.j30n.stoblyx.domain.model.RankingAchievement;
 
 import java.time.LocalDateTime;
@@ -45,30 +44,21 @@ public interface RankingAchievementPort {
     List<RankingAchievement> findByUserId(Long userId);
 
     /**
-     * 사용자 ID와 상태로 업적 정보 목록 조회
+     * 뱃지 타입으로 업적 정보 조회
      *
-     * @param userId 사용자 ID
-     * @param status 업적 상태
-     * @return 업적 정보 목록
-     */
-    List<RankingAchievement> findByUserIdAndStatus(Long userId, AchievementStatus status);
-
-    /**
-     * 업적 코드로 업적 정보 조회
-     *
-     * @param achievementCode 업적 코드
+     * @param badgeType 뱃지 타입
      * @return 업적 정보
      */
-    Optional<RankingAchievement> findByAchievementCode(String achievementCode);
+    Optional<RankingAchievement> findByBadgeType(String badgeType);
 
     /**
-     * 사용자 ID와 업적 코드로 업적 정보 조회
+     * 사용자 ID와 뱃지 타입으로 업적 정보 조회
      *
-     * @param userId          사용자 ID
-     * @param achievementCode 업적 코드
+     * @param userId    사용자 ID
+     * @param badgeType 뱃지 타입
      * @return 업적 정보
      */
-    Optional<RankingAchievement> findByUserIdAndAchievementCode(Long userId, String achievementCode);
+    Optional<RankingAchievement> findByUserIdAndBadgeType(Long userId, String badgeType);
 
     /**
      * 달성 일시 범위로 업적 정보 목록 조회
@@ -83,17 +73,17 @@ public interface RankingAchievementPort {
      * 가장 많이 달성된 업적 목록 조회
      *
      * @param limit 조회 개수
-     * @return 업적 코드와 달성 횟수 목록
+     * @return 뱃지 타입과 달성 횟수 목록
      */
     List<Object[]> findMostAchievedAchievements(int limit);
 
     /**
-     * 업적 코드로 달성 횟수 조회
+     * 뱃지 타입으로 달성 횟수 조회
      *
-     * @param achievementCode 업적 코드
+     * @param badgeType 뱃지 타입
      * @return 달성 횟수
      */
-    Long countByAchievementCode(String achievementCode);
+    Long countByBadgeType(String badgeType);
 
     /**
      * 사용자의 업적 달성률 계산

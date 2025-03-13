@@ -18,13 +18,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Auth extends BaseEntity {
 
-    @Column(length = 20, nullable = false)
-    private final String tokenType = "Bearer";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column(length = 255)
     private String refreshToken;
+    
+    @Column(length = 20, nullable = false)
+    private String tokenType;
+    
     @Column(nullable = false)
     private LocalDateTime expiryDate;
 
@@ -35,8 +38,9 @@ public class Auth extends BaseEntity {
     private User user;
 
     @Builder
-    public Auth(String refreshToken, LocalDateTime expiryDate, User user) {
+    public Auth(String refreshToken, String tokenType, LocalDateTime expiryDate, User user) {
         this.refreshToken = refreshToken;
+        this.tokenType = tokenType != null ? tokenType : "Bearer";
         this.expiryDate = expiryDate;
         this.user = user;
         this.lastUsedAt = LocalDateTime.now();
@@ -49,6 +53,13 @@ public class Auth extends BaseEntity {
         this.refreshToken = refreshToken;
         this.expiryDate = expiryDate;
         this.lastUsedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 토큰 타입을 업데이트합니다.
+     */
+    public void updateTokenType(String tokenType) {
+        this.tokenType = tokenType;
     }
 
     /**

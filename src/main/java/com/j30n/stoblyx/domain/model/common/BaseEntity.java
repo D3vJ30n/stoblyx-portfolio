@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 /**
  * 모든 엔티티의 기본이 되는 클래스로, 생성 시간, 수정 시간, 삭제 상태를 관리합니다.
  * 이 클래스를 상속받은 모든 엔티티는 자동으로 이 필드들을 가지게 됩니다.
+ * 
+ * 참고: 대부분의 테이블은 'modified_at'을 사용하지만 일부 테이블(ranking_leaderboard, posts, popular_search_terms)은
+ * 'updated_at'을 사용합니다. 이러한 테이블의 엔티티 클래스에서는 이 필드를 오버라이드하여 컬럼명을 'updated_at'으로 
+ * 명시적으로 매핑해야 합니다.
  */
 @Getter
 @MappedSuperclass

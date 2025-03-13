@@ -56,6 +56,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
 
+    // JSON 처리를 위한 라이브러리 추가
+    implementation 'org.json:json:20240303'
+
     // XSS 방지를 위한 Lucy-XSS-Filter 추가
     implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.1'
     implementation 'com.navercorp.lucy:lucy-xss:1.6.3'

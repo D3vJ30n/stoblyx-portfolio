@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class AdminRankingAdapter implements AdminRankingPort {
 
     private static final String ERROR_USER_SCORE_NOT_FOUND = "사용자 점수 정보를 찾을 수 없습니다: ";
-    private static final String ADMIN_IP_ADDRESS = "ADMIN";
     
     private final RankingUserScoreRepository rankingUserScoreRepository;
     private final RankingUserActivityRepository rankingUserActivityRepository;
@@ -76,16 +75,21 @@ public class AdminRankingAdapter implements AdminRankingPort {
     }
 
     /**
-     * 특정 IP 주소의 활동 내역 조회
+     * 특정 기간 내 활동 내역 조회
      * 
-     * @param ipAddress IP 주소
+     * @param userId 사용자 ID (선택적)
      * @param startDate 시작 일시
      * @param endDate 종료 일시
      * @return 활동 내역 목록
      */
     @Override
-    public List<RankingUserActivity> findActivitiesByIpAddress(String ipAddress, LocalDateTime startDate, LocalDateTime endDate) {
-        return rankingUserActivityRepository.findByIpAddressAndCreatedAtBetween(ipAddress, startDate, endDate);
+    public List<RankingUserActivity> findActivitiesByDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        // 사용자 ID가 제공된 경우 해당 사용자의 활동만 조회
+        if (userId != null && userId > 0) {
+            return rankingUserActivityRepository.findByUserIdAndCreatedAtBetween(userId, startDate, endDate);
+        }
+        // 그렇지 않으면 모든 활동 조회
+        return rankingUserActivityRepository.findByCreatedAtBetween(startDate, endDate);
     }
 
     /**
@@ -113,14 +117,13 @@ public class AdminRankingAdapter implements AdminRankingPort {
         userScore.setRankType(RankType.fromScore(newScore));
         
         // 관리자 조정 활동 기록
-        RankingUserActivity activity = new RankingUserActivity();
-        activity.setUserId(userId);
-        activity.setTargetId(userId);
-        activity.setTargetType("USER_SCORE");
-        activity.setActivityType(ActivityType.ADMIN_ADJUSTMENT);
-        activity.setScoreChange(scoreAdjustment);
-        activity.setIpAddress(ADMIN_IP_ADDRESS);
-        activity.setCreatedAt(LocalDateTime.now());
+        RankingUserActivity activity = RankingUserActivity.builder()
+            .userId(userId)
+            .activityType(ActivityType.ADMIN_ADJUSTMENT)
+            .points(scoreAdjustment)
+            .referenceId(userId)
+            .referenceType("USER_SCORE")
+            .build();
         
         // 활동 기록 저장
         rankingUserActivityRepository.save(activity);
@@ -146,14 +149,13 @@ public class AdminRankingAdapter implements AdminRankingPort {
         userScore.setAccountSuspended(true);
         
         // 관리자 정지 활동 기록
-        RankingUserActivity activity = new RankingUserActivity();
-        activity.setUserId(userId);
-        activity.setTargetId(userId);
-        activity.setTargetType("USER_ACCOUNT");
-        activity.setActivityType(ActivityType.ADMIN_SUSPENSION);
-        activity.setScoreChange(0);
-        activity.setIpAddress(ADMIN_IP_ADDRESS);
-        activity.setCreatedAt(LocalDateTime.now());
+        RankingUserActivity activity = RankingUserActivity.builder()
+            .userId(userId)
+            .activityType(ActivityType.ADMIN_SUSPENSION)
+            .points(0)
+            .referenceId(userId)
+            .referenceType("USER_ACCOUNT")
+            .build();
         
         // 활동 기록 저장
         rankingUserActivityRepository.save(activity);
@@ -178,14 +180,13 @@ public class AdminRankingAdapter implements AdminRankingPort {
         userScore.setAccountSuspended(false);
         
         // 관리자 정지 해제 활동 기록
-        RankingUserActivity activity = new RankingUserActivity();
-        activity.setUserId(userId);
-        activity.setTargetId(userId);
-        activity.setTargetType("USER_ACCOUNT");
-        activity.setActivityType(ActivityType.ADMIN_UNSUSPENSION);
-        activity.setScoreChange(0);
-        activity.setIpAddress(ADMIN_IP_ADDRESS);
-        activity.setCreatedAt(LocalDateTime.now());
+        RankingUserActivity activity = RankingUserActivity.builder()
+            .userId(userId)
+            .activityType(ActivityType.ADMIN_UNSUSPENSION)
+            .points(0)
+            .referenceId(userId)
+            .referenceType("USER_ACCOUNT")
+            .build();
         
         // 활동 기록 저장
         rankingUserActivityRepository.save(activity);

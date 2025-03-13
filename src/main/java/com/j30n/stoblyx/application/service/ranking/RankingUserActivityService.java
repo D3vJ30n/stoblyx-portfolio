@@ -40,23 +40,21 @@ public class RankingUserActivityService implements RankingUserActivityUseCase {
      * 활동 유형에 따라 점수를 계산하고, 사용자 점수를 업데이트
      *
      * @param userId       사용자 ID
-     * @param targetId     대상 ID
-     * @param targetType   대상 유형
+     * @param referenceId     참조 ID
+     * @param referenceType   참조 유형
      * @param activityType 활동 유형
-     * @param ipAddress    IP 주소
      * @return 생성된 활동 기록
      */
     @Override
     @Transactional
-    public RankingUserActivity createActivity(Long userId, Long targetId, String targetType, ActivityType activityType, String ipAddress) {
+    public RankingUserActivity createActivity(Long userId, Long referenceId, String referenceType, ActivityType activityType) {
         // 활동 기록 생성
         RankingUserActivity activity = RankingUserActivity.builder()
             .userId(userId)
-            .targetId(targetId)
-            .targetType(targetType)
+            .referenceId(referenceId)
+            .referenceType(referenceType)
             .activityType(activityType)
-            .scoreChange(activityType.getScoreWeight())
-            .ipAddress(ipAddress)
+            .points(activityType.getScoreWeight())
             .build();
 
         // 활동 기록 저장
@@ -105,42 +103,15 @@ public class RankingUserActivityService implements RankingUserActivityUseCase {
     }
 
     /**
-     * 특정 IP 주소에서 발생한 활동 기록 조회
+     * 특정 참조 ID와 참조 유형에 대한 활동 기록 조회
      *
-     * @param ipAddress IP 주소
-     * @param startDate 시작 일시
-     * @param endDate   종료 일시
+     * @param referenceId   참조 ID
+     * @param referenceType 참조 유형
      * @return 활동 기록 목록
      */
     @Override
-    public List<RankingUserActivity> getActivitiesByIpAddress(String ipAddress, LocalDateTime startDate, LocalDateTime endDate) {
-        return rankingUserActivityPort.findByIpAddressAndCreatedAtBetween(ipAddress, startDate, endDate);
-    }
-
-    /**
-     * 특정 IP 주소에서 발생한 특정 활동 유형의 기록 조회
-     *
-     * @param ipAddress    IP 주소
-     * @param activityType 활동 유형
-     * @param startDate    시작 일시
-     * @param endDate      종료 일시
-     * @return 활동 기록 목록
-     */
-    @Override
-    public List<RankingUserActivity> getActivitiesByIpAddressAndType(String ipAddress, ActivityType activityType, LocalDateTime startDate, LocalDateTime endDate) {
-        return rankingUserActivityPort.findByIpAddressAndActivityTypeAndCreatedAtBetween(ipAddress, activityType, startDate, endDate);
-    }
-
-    /**
-     * 특정 대상에 대한 활동 기록 조회
-     *
-     * @param targetId   대상 ID
-     * @param targetType 대상 유형
-     * @return 활동 기록 목록
-     */
-    @Override
-    public List<RankingUserActivity> getActivitiesByTarget(Long targetId, String targetType) {
-        return rankingUserActivityPort.findByTargetIdAndTargetType(targetId, targetType);
+    public List<RankingUserActivity> getActivitiesByReference(Long referenceId, String referenceType) {
+        return rankingUserActivityPort.findByReferenceIdAndReferenceType(referenceId, referenceType);
     }
 
     /**

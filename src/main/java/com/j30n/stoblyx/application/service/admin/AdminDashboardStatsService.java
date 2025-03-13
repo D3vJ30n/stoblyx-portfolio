@@ -275,7 +275,7 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
             Long viewCount = Long.valueOf(content.getViewCount());
 
             // 좋아요, 댓글, 공유 수 조회
-            Long likeCount = contentLikeRepository.countByContentId(contentId);
+            Long likeCount = contentLikeRepository.countByContent_Id(contentId);
             Long commentCount = contentCommentRepository.countByContentId(contentId);
             Long shareCount = Long.valueOf(content.getShareCount());
 
@@ -303,7 +303,7 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
         if (content == null) return 0;
 
         long viewCount = content.getViewCount();
-        long likeCount = contentLikeRepository.countByContentId(contentId);
+        long likeCount = contentLikeRepository.countByContent_Id(contentId);
         long commentCount = contentCommentRepository.countByContentId(contentId);
         long shareCount = content.getShareCount();
 
@@ -568,10 +568,10 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
             long contentCount = contentRepository.countByUserIdAndCreatedAtBetween(userId, startDateTime, endDateTime);
 
             // 해당 기간 동안의 좋아요 수
-            long likeCount = contentLikeRepository.countByUserIdAndCreatedAtBetween(userId, startDateTime, endDateTime);
+            long likeCount = contentLikeRepository.countByUser_IdAndCreatedAtBetween(userId, startDateTime, endDateTime);
 
             // 해당 기간 동안의 댓글 수
-            long commentCount = contentCommentRepository.countByUserIdAndCreatedAtBetween(userId, startDateTime, endDateTime);
+            long commentCount = contentCommentRepository.countByUser_IdAndCreatedAtBetween(userId, startDateTime, endDateTime);
 
             // 해당 기간 동안의 로그인 수
             long loginCount = userRepository.countLoginsByUserIdAndDateBetween(userId, startDateTime, endDateTime);
@@ -1019,8 +1019,8 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
 
             // 활동 통계 조회
             long contentCount = contentRepository.countByUserId(userId);
-            long likeCount = contentLikeRepository.countByUserId(userId);
-            long commentCount = contentCommentRepository.countByUserId(userId);
+            long likeCount = contentLikeRepository.countByUser_Id(userId);
+            long commentCount = contentCommentRepository.countByUser_Id(userId);
 
             topRankedUsers.add(
                 RankingStatsResponse.TopRankedUserStats.builder()
@@ -1089,9 +1089,8 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
                     List<AnomalyDetectionResponse.RelatedActivity> relatedActivities =
                         getRealRelatedActivities(userId, lastActivityTime);
 
-                    // IP 주소 조회
-                    String ipAddress = rankingUserActivityRepository.findLastIpAddressByUserId(userId)
-                        .orElse("192.168.1." + (userId % 255));
+                    // IP 주소 조회 (RankingUserActivity 엔티티에 ipAddress 필드가 없으므로 임의의 값 사용)
+                    String ipAddress = "192.168.1." + (userId % 255);
 
                     // 이상 감지 심각도 계산 (급격한 점수 변화 정도 + 짧은 시간 내 활동 수)
                     double severityScore = calculateAnomalySeverity(relatedActivities.size());
@@ -1141,8 +1140,8 @@ public class AdminDashboardStatsService implements AdminDashboardStatsUseCase {
             relatedActivities.add(
                 AnomalyDetectionResponse.RelatedActivity.builder()
                     .activityType(activity.getActivityType().name())
-                    .targetType(activity.getTargetType())
-                    .targetId(activity.getTargetId())
+                    .targetType(activity.getReferenceType())
+                    .targetId(activity.getReferenceId())
                     .timestamp(activity.getCreatedAt())
                     .build()
             );

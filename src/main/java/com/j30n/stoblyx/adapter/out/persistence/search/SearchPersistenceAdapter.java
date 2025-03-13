@@ -26,18 +26,18 @@ public class SearchPersistenceAdapter implements SearchPort {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Quote> findQuotesByKeywordAndCategory(String keyword, String category, Pageable pageable) {
-        return quoteRepository.findByKeywordAndCategory(keyword, category, pageable);
+    public Page<Quote> findQuotesByKeywordAndCategory(String searchTerm, String searchType, Pageable pageable) {
+        return quoteRepository.findByKeywordAndCategory(searchTerm, searchType, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Book> findBooksByKeywordAndCategory(String keyword, String category, Pageable pageable) {
-        return bookRepository.findByKeywordAndCategory(keyword, category, pageable);
+    public Page<Book> findBooksByKeywordAndCategory(String searchTerm, String searchType, Pageable pageable) {
+        return bookRepository.findByKeywordAndCategory(searchTerm, searchType, pageable);
     }
     
     @Override
-    public Search saveSearch(String keyword, String category, Long userId, Integer resultCount) {
+    public Search saveSearch(String searchTerm, String searchType, Long userId, Integer searchCount) {
         User user = null;
         if (userId != null) {
             user = userRepository.findById(userId)
@@ -45,10 +45,10 @@ public class SearchPersistenceAdapter implements SearchPort {
         }
         
         Search search = Search.builder()
-                .keyword(keyword)
-                .category(category)
+                .searchTerm(searchTerm)
+                .searchType(searchType)
                 .user(user)
-                .resultCount(resultCount)
+                .searchCount(searchCount)
                 .build();
         
         return searchRepository.save(search);

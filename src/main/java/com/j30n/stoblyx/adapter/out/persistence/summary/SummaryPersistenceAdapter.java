@@ -30,7 +30,7 @@ public class SummaryPersistenceAdapter implements SummaryPort {
 
     @Override
     public Page<Summary> findByBook(Book book, Pageable pageable) {
-        return summaryRepository.findByBookIdAndDeletedFalse(book.getId(), pageable);
+        return summaryRepository.findByBookIdAndIsDeletedFalse(book.getId(), pageable);
     }
 
     @Override

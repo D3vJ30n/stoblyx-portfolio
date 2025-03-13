@@ -1,15 +1,14 @@
 package com.j30n.stoblyx.domain.model;
 
+import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
-@Table(name = "content_bookmarks",
+@Table(name = "content_bookmark",
     uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "content_id"})
     })
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ContentBookmark {
+public class ContentBookmark extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,12 +28,4 @@ public class ContentBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id", nullable = false)
     private ShortFormContent content;
-
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-    }
 }

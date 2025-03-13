@@ -4,24 +4,28 @@ import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-
 /**
  * 사용자가 저장한 인용구 정보를 저장하는 엔티티
  */
 @Entity
-@Table(name = "saved_quotes")
+@Table(
+    name = "saved_quotes",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_saved_quotes", columnNames = {"user_id", "quote_id"})
+    }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@IdClass(SavedQuote.SavedQuoteId.class)
 public class SavedQuote extends BaseEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quote_id")
     private Quote quote;
@@ -41,16 +45,5 @@ public class SavedQuote extends BaseEntity {
      */
     public void updateNote(String note) {
         this.note = note;
-    }
-
-    /**
-     * SavedQuote 엔티티의 복합키 클래스
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class SavedQuoteId implements Serializable {
-        private Long user;
-        private Long quote;
     }
 } 

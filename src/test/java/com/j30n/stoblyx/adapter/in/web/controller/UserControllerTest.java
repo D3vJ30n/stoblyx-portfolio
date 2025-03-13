@@ -115,6 +115,7 @@ class UserControllerTest {
             .suspiciousActivity(false)
             .reportCount(0)
             .accountSuspended(false)
+            .isDeleted(false)
             .build();
             
         List<RankingUserScore> mockTopUsers = new ArrayList<>();
@@ -177,6 +178,7 @@ class UserControllerTest {
             .userId(1L)
             .currentScore(1500)
             .rankType(RankType.SILVER)
+            .isDeleted(false)
             .build();
             
         when(rankingUserScoreUseCase.getUserScore(any())).thenReturn(userScore);

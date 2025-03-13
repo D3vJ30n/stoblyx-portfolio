@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LikeRepository extends JpaRepository<Like, Like.LikeId> {
+public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("SELECT l FROM Like l WHERE l.user.id = :userId AND l.quote.id = :quoteId AND l.isDeleted = false")
     Optional<Like> findByUserIdAndQuoteId(@Param("userId") Long userId, @Param("quoteId") Long quoteId);
 

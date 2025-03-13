@@ -79,26 +79,26 @@ public class AdminRankingController {
     }
 
     /**
-     * 특정 IP 주소의 활동 내역 조회
+     * 특정 기간 내 활동 내역 조회
      *
-     * @param ipAddress IP 주소
+     * @param userId 사용자 ID (선택적)
      * @param startDate 시작 일시
      * @param endDate 종료 일시
      * @return 활동 내역 목록
      */
-    @GetMapping("/activities/ip/{ipAddress}")
-    public ResponseEntity<ApiResponse<List<AdminRankingActivityResponse>>> getActivitiesByIpAddress(
-            @PathVariable String ipAddress,
+    @GetMapping("/activities/date-range")
+    public ResponseEntity<ApiResponse<List<AdminRankingActivityResponse>>> getActivitiesByDateRange(
+            @RequestParam(required = false) Long userId,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         try {
-            List<AdminRankingActivityResponse> activities = adminRankingUseCase.findActivitiesByIpAddress(
-                    ipAddress, startDate, endDate);
-            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "IP 주소별 활동 내역을 조회했습니다.", activities));
+            List<AdminRankingActivityResponse> activities = adminRankingUseCase.findActivitiesByDateRange(
+                    userId, startDate, endDate);
+            return ResponseEntity.ok(new ApiResponse<>(SUCCESS, "기간 내 활동 내역을 조회했습니다.", activities));
         } catch (Exception e) {
-            log.error("IP 주소별 활동 내역 조회 중 오류 발생", e);
+            log.error("기간 내 활동 내역 조회 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(ERROR, "IP 주소별 활동 내역 조회 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ERROR, "기간 내 활동 내역 조회 중 오류가 발생했습니다: " + e.getMessage(), null));
         }
     }
 

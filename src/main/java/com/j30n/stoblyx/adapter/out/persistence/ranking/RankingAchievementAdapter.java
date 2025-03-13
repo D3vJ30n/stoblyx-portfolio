@@ -1,7 +1,6 @@
 package com.j30n.stoblyx.adapter.out.persistence.ranking;
 
 import com.j30n.stoblyx.application.port.out.ranking.RankingAchievementPort;
-import com.j30n.stoblyx.domain.enums.AchievementStatus;
 import com.j30n.stoblyx.domain.model.RankingAchievement;
 import com.j30n.stoblyx.domain.repository.RankingAchievementRepository;
 import org.springframework.data.domain.PageRequest;
@@ -73,38 +72,26 @@ public class RankingAchievementAdapter implements RankingAchievementPort {
     }
 
     /**
-     * 사용자 ID와 업적 상태로 업적 정보 목록 조회
+     * 뱃지 타입으로 업적 정보 조회
      *
-     * @param userId 사용자 ID
-     * @param status 업적 상태
-     * @return 업적 정보 목록
-     */
-    @Override
-    public List<RankingAchievement> findByUserIdAndStatus(Long userId, AchievementStatus status) {
-        return rankingAchievementRepository.findByUserIdAndStatus(userId, status);
-    }
-
-    /**
-     * 업적 코드로 업적 정보 조회
-     *
-     * @param achievementCode 업적 코드
+     * @param badgeType 뱃지 타입
      * @return 업적 정보
      */
     @Override
-    public Optional<RankingAchievement> findByAchievementCode(String achievementCode) {
-        return rankingAchievementRepository.findByAchievementCode(achievementCode);
+    public Optional<RankingAchievement> findByBadgeType(String badgeType) {
+        return rankingAchievementRepository.findByBadgeType(badgeType);
     }
 
     /**
-     * 사용자 ID와 업적 코드로 업적 정보 조회
+     * 사용자 ID와 뱃지 타입으로 업적 정보 조회
      *
-     * @param userId          사용자 ID
-     * @param achievementCode 업적 코드
+     * @param userId    사용자 ID
+     * @param badgeType 뱃지 타입
      * @return 업적 정보
      */
     @Override
-    public Optional<RankingAchievement> findByUserIdAndAchievementCode(Long userId, String achievementCode) {
-        return rankingAchievementRepository.findByUserIdAndAchievementCode(userId, achievementCode);
+    public Optional<RankingAchievement> findByUserIdAndBadgeType(Long userId, String badgeType) {
+        return rankingAchievementRepository.findByUserIdAndBadgeType(userId, badgeType);
     }
 
     /**
@@ -131,14 +118,14 @@ public class RankingAchievementAdapter implements RankingAchievementPort {
     }
 
     /**
-     * 특정 업적을 획득한 사용자 수 조회
+     * 특정 뱃지 타입을 획득한 사용자 수 조회
      *
-     * @param achievementCode 업적 코드
+     * @param badgeType 뱃지 타입
      * @return 사용자 수
      */
     @Override
-    public Long countByAchievementCode(String achievementCode) {
-        return rankingAchievementRepository.countByAchievementCode(achievementCode);
+    public Long countByBadgeType(String badgeType) {
+        return rankingAchievementRepository.countByBadgeType(badgeType);
     }
 
     /**
@@ -150,7 +137,8 @@ public class RankingAchievementAdapter implements RankingAchievementPort {
      */
     @Override
     public Double calculateUserAchievementRate(Long userId, int totalAchievements) {
-        Long completedAchievements = rankingAchievementRepository.countByUserIdAndStatus(userId, AchievementStatus.COMPLETED);
+        // 전체 업적 중 사용자가 달성한 업적 비율 계산
+        long completedAchievements = rankingAchievementRepository.countByUserId(userId);
         return (double) completedAchievements / totalAchievements * 100;
     }
 } 

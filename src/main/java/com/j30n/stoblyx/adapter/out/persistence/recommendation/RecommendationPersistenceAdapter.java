@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -20,6 +21,8 @@ import java.util.Optional;
 @Transactional
 public class RecommendationPersistenceAdapter implements RecommendationPort {
 
+    private static final String ERROR_USER_NOT_FOUND = "사용자를 찾을 수 없습니다: ";
+    
     private final SearchTermProfileRepository searchTermProfileRepository;
     private final UserSimilarityRepository userSimilarityRepository;
     private final PopularSearchTermRepository popularSearchTermRepository;
@@ -28,21 +31,20 @@ public class RecommendationPersistenceAdapter implements RecommendationPort {
     
     @Override
     public SearchTermProfile saveSearchTermProfile(Long userId, String term) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
+        // userId가 유효한지 확인 (사용자가 존재하는지)
+        userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_USER_NOT_FOUND + userId));
         
-        Optional<SearchTermProfile> existingTerm = searchTermProfileRepository.findByUserAndSearchTerm(user, term);
+        Optional<SearchTermProfile> existingTerm = searchTermProfileRepository.findBySearchTerm(term);
         
         if (existingTerm.isPresent()) {
             SearchTermProfile searchTermProfile = existingTerm.get();
-            searchTermProfile.incrementFrequency();
+            searchTermProfile.incrementSearchCount();
             return searchTermProfileRepository.save(searchTermProfile);
         } else {
             SearchTermProfile newTerm = SearchTermProfile.builder()
-                    .user(user)
                     .searchTerm(term)
-                    .searchFrequency(1)
-                    .termWeight(1.0)
+                    .searchCount(1)
                     .build();
             return searchTermProfileRepository.save(newTerm);
         }
@@ -51,10 +53,21 @@ public class RecommendationPersistenceAdapter implements RecommendationPort {
     @Override
     @Transactional(readOnly = true)
     public List<SearchTermProfile> getUserSearchTerms(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다: " + userId));
+        // 사용자의 최근 검색 기록에서 검색어 추출
+        List<String> searchTerms = searchRepository.findTop10ByUserOrderByLastSearchedAtDesc(
+                userRepository.findById(userId)
+                    .orElseThrow(() -> new IllegalArgumentException(ERROR_USER_NOT_FOUND + userId))
+            )
+            .stream()
+            .map(Search::getSearchTerm)
+            .distinct()
+            .toList();
         
-        return searchTermProfileRepository.findByUser(user);
+        // 검색어 하나씩 조회하여 리스트로 반환
+        return searchTerms.stream()
+                .map(term -> searchTermProfileRepository.findBySearchTerm(term).orElse(null))
+                .filter(Objects::nonNull)
+                .toList();
     }
     
     @Override
@@ -118,14 +131,14 @@ public class RecommendationPersistenceAdapter implements RecommendationPort {
     @Transactional(readOnly = true)
     public Map<String, Integer> getRecentSearchCounts(LocalDateTime since) {
         // 최근 검색 기록 조회
-        List<Search> recentSearches = searchRepository.findBySearchedAtBetween(since, LocalDateTime.now());
+        List<Search> recentSearches = searchRepository.findByLastSearchedAtBetween(since, LocalDateTime.now());
         
         // 검색어별 검색 횟수 집계
         Map<String, Integer> searchCounts = new HashMap<>();
         
         for (Search search : recentSearches) {
-            String keyword = search.getKeyword();
-            searchCounts.put(keyword, searchCounts.getOrDefault(keyword, 0) + 1);
+            String searchTerm = search.getSearchTerm();
+            searchCounts.put(searchTerm, searchCounts.getOrDefault(searchTerm, 0) + 1);
         }
         
         return searchCounts;
@@ -135,5 +148,30 @@ public class RecommendationPersistenceAdapter implements RecommendationPort {
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Long getCurrentUserId() {
+        // 현재 인증된 사용자의 ID를 가져오는 로직
+        // 실제 구현에서는 SecurityContextHolder 등을 사용하여 현재 인증된 사용자 정보를 가져옴
+        // 테스트 목적으로 임시 구현
+        return userRepository.findAll().stream()
+                .findFirst()
+                .map(User::getId)
+                .orElse(null);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<UserSimilarity> getWeeklyRecommendation(Long userId) {
+        // 사용자의 관심사와 검색 기록을 기반으로 주간 추천 정보를 생성하는 로직
+        // 실제 구현에서는 사용자의 관심사, 검색 기록, 다른 사용자와의 유사도 등을 고려하여 추천 정보 생성
+        // 테스트 목적으로 임시 구현
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_USER_NOT_FOUND + userId));
+        
+        // 가장 유사도가 높은 사용자 찾기
+        return userSimilarityRepository.findTopBySourceUserOrderBySimilarityScoreDesc(user);
     }
 } 

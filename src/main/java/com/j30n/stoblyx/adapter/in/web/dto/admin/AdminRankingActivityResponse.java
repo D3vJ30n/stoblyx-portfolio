@@ -30,12 +30,12 @@ public record AdminRankingActivityResponse(
             activity.getId(),
             activity.getUserId(),
             activity.getActivityType(),
-            activity.getScoreChange(),
-            activity.getIpAddress(),
-            activity.getTargetId(),
-            activity.getTargetType(),
+            activity.getPoints(),
+            "",
+            activity.getReferenceId(),
+            activity.getReferenceType(),
             activity.getCreatedAt(),
-            activity.getUpdatedAt()
+            activity.getModifiedAt()
         );
     }
 } 

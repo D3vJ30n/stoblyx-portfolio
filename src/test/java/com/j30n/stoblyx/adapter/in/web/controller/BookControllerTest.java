@@ -30,6 +30,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -77,6 +79,8 @@ class BookControllerTest {
         // given
         Long bookId = 1L;
         LocalDateTime now = LocalDateTime.now();
+        LocalDate publishDate = LocalDate.of(2023, 1, 1);
+        List<String> genres = Arrays.asList("소설", "판타지");
 
         BookResponse response = BookResponse.builder()
             .id(bookId)
@@ -88,7 +92,15 @@ class BookControllerTest {
             .description("도서 설명")
             .publicationYear(2023)
             .totalPages(300)
+            .publishDate(publishDate)
+            .genres(genres)
+            .avgReadingTime(120)
+            .averageRating(4.5)
+            .ratingCount(10)
+            .popularity(5)
             .createdAt(now)
+            .modifiedAt(now)
+            .deleted(false)
             .build();
 
         when(bookService.getBook(bookId)).thenReturn(response);
@@ -113,9 +125,17 @@ class BookControllerTest {
                         fieldWithPath("isbn").type(JsonFieldType.STRING).description("ISBN"),
                         fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).optional().description("도서 썸네일 URL"),
                         fieldWithPath("description").type(JsonFieldType.STRING).optional().description("도서 설명"),
+                        fieldWithPath("genres").type(JsonFieldType.ARRAY).description("책 장르 목록"),
                         fieldWithPath("publicationYear").type(JsonFieldType.NUMBER).optional().description("출판 연도"),
                         fieldWithPath("totalPages").type(JsonFieldType.NUMBER).optional().description("총 페이지 수"),
-                        fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일")
+                        fieldWithPath("publishDate").type(JsonFieldType.STRING).optional().description("출판일"),
+                        fieldWithPath("avgReadingTime").type(JsonFieldType.NUMBER).optional().description("평균 독서 시간"),
+                        fieldWithPath("averageRating").type(JsonFieldType.NUMBER).optional().description("평균 평점"),
+                        fieldWithPath("ratingCount").type(JsonFieldType.NUMBER).optional().description("평점 수"),
+                        fieldWithPath("popularity").type(JsonFieldType.NUMBER).optional().description("인기도"),
+                        fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일"),
+                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).optional().description("수정일"),
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).optional().description("삭제 여부")
                     )
             ));
 
@@ -127,6 +147,9 @@ class BookControllerTest {
     void getBooks() throws Exception {
         // given
         LocalDateTime now = LocalDateTime.now();
+        LocalDate publishDate = LocalDate.of(2023, 1, 1);
+        List<String> genres1 = Arrays.asList("소설", "판타지");
+        List<String> genres2 = Arrays.asList("역사", "에세이");
 
         List<BookResponse> books = List.of(
             BookResponse.builder()
@@ -139,7 +162,15 @@ class BookControllerTest {
                 .description("도서 설명 1")
                 .publicationYear(2023)
                 .totalPages(300)
+                .publishDate(publishDate)
+                .genres(genres1)
+                .avgReadingTime(120)
+                .averageRating(4.5)
+                .ratingCount(10)
+                .popularity(5)
                 .createdAt(now)
+                .modifiedAt(now)
+                .deleted(false)
                 .build(),
             BookResponse.builder()
                 .id(2L)
@@ -151,7 +182,15 @@ class BookControllerTest {
                 .description("도서 설명 2")
                 .publicationYear(2022)
                 .totalPages(250)
+                .publishDate(publishDate)
+                .genres(genres2)
+                .avgReadingTime(150)
+                .averageRating(4.2)
+                .ratingCount(8)
+                .popularity(4)
                 .createdAt(now)
+                .modifiedAt(now)
+                .deleted(false)
                 .build()
         );
 
@@ -184,9 +223,17 @@ class BookControllerTest {
                         fieldWithPath("isbn").type(JsonFieldType.STRING).description("ISBN"),
                         fieldWithPath("thumbnailUrl").type(JsonFieldType.STRING).optional().description("도서 썸네일 URL"),
                         fieldWithPath("description").type(JsonFieldType.STRING).optional().description("도서 설명"),
+                        fieldWithPath("genres").type(JsonFieldType.ARRAY).description("책 장르 목록"),
                         fieldWithPath("publicationYear").type(JsonFieldType.NUMBER).optional().description("출판 연도"),
                         fieldWithPath("totalPages").type(JsonFieldType.NUMBER).optional().description("총 페이지 수"),
-                        fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일")
+                        fieldWithPath("publishDate").type(JsonFieldType.STRING).optional().description("출판일"),
+                        fieldWithPath("avgReadingTime").type(JsonFieldType.NUMBER).optional().description("평균 독서 시간"),
+                        fieldWithPath("averageRating").type(JsonFieldType.NUMBER).optional().description("평균 평점"),
+                        fieldWithPath("ratingCount").type(JsonFieldType.NUMBER).optional().description("평점 수"),
+                        fieldWithPath("popularity").type(JsonFieldType.NUMBER).optional().description("인기도"),
+                        fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일"),
+                        fieldWithPath("modifiedAt").type(JsonFieldType.STRING).optional().description("수정일"),
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).optional().description("삭제 여부")
                     )
                     .and(
                         fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지 정보"),

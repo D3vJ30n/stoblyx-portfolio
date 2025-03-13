@@ -27,7 +27,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
@@ -38,12 +38,15 @@ spring:
         globally_quoted_identifiers: true
         id:
           new_generator_mappings: false
-    generate-ddl: true
-    defer-datasource-initialization: true
+    generate-ddl: false
+    defer-datasource-initialization: false
 
   sql:
     init:
       mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      continue-on-error: true
 
   data:
     redis:

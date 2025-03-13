@@ -45,9 +45,49 @@ public class UserInterestService implements UserInterestUseCase {
         UserInterest userInterest = userInterestPort.findByUserId(userId)
             .orElse(UserInterest.createEmpty(user));
 
-        userInterest.updateInterests(request.genres(), request.authors(), request.keywords());
+        // 관심사 정보를 JSON 문자열로 변환하여 저장
+        String interestsJson = convertToJson(request);
+        userInterest.updateInterests(interestsJson);
         userInterestPort.save(userInterest);
 
         return UserInterestResponse.from(userInterest);
+    }
+    
+    /**
+     * UserInterestRequest 객체를 JSON 문자열로 변환합니다.
+     * 
+     * @param request 사용자 관심사 요청 객체
+     * @return JSON 형식의 문자열
+     */
+    private String convertToJson(UserInterestRequest request) {
+        // 간단한 JSON 형식으로 변환
+        return String.format(
+            "{\"genres\":%s,\"authors\":%s,\"keywords\":%s}",
+            listToJsonArray(request.genres()),
+            listToJsonArray(request.authors()),
+            listToJsonArray(request.keywords())
+        );
+    }
+    
+    /**
+     * 문자열 리스트를 JSON 배열 형식의 문자열로 변환합니다.
+     * 
+     * @param list 문자열 리스트
+     * @return JSON 배열 형식의 문자열
+     */
+    private String listToJsonArray(java.util.List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return "[]";
+        }
+        
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < list.size(); i++) {
+            sb.append("\"").append(list.get(i).replace("\"", "\\\"")).append("\"");
+            if (i < list.size() - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

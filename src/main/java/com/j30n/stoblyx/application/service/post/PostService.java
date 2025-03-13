@@ -25,6 +25,8 @@ public class PostService implements PostUseCase {
 
     private final PostPort postPort;
     private final AuthPort authPort;
+    
+    private static final String POST_NOT_FOUND_MSG = "존재하지 않는 게시물입니다.";
 
     @Override
     @Transactional
@@ -36,7 +38,7 @@ public class PostService implements PostUseCase {
             .title(request.title())
             .content(request.content())
             .thumbnailUrl(request.thumbnailUrl())
-            .author(author)
+            .user(author)
             .build();
 
         Post savedPost = postPort.savePost(post);
@@ -48,9 +50,9 @@ public class PostService implements PostUseCase {
     @Transactional
     public PostResponse updatePost(Long postId, UpdatePostRequest request, Long userId) {
         Post post = postPort.findPostById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+            .orElseThrow(() -> new IllegalArgumentException(POST_NOT_FOUND_MSG));
 
-        if (!post.getAuthor().getId().equals(userId)) {
+        if (!post.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("게시물 수정 권한이 없습니다.");
         }
 
@@ -64,9 +66,9 @@ public class PostService implements PostUseCase {
     @Transactional
     public void deletePost(Long postId, Long userId) {
         Post post = postPort.findPostById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+            .orElseThrow(() -> new IllegalArgumentException(POST_NOT_FOUND_MSG));
 
-        if (!post.getAuthor().getId().equals(userId)) {
+        if (!post.getUser().getId().equals(userId)) {
             throw new IllegalArgumentException("게시물 삭제 권한이 없습니다.");
         }
 
@@ -78,7 +80,7 @@ public class PostService implements PostUseCase {
     @Transactional(readOnly = true)
     public PostResponse getPost(Long postId) {
         Post post = postPort.findPostById(postId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
+            .orElseThrow(() -> new IllegalArgumentException(POST_NOT_FOUND_MSG));
 
         return PostResponse.from(post);
     }

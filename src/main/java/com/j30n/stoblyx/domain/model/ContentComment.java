@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "content_comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ContentComment extends BaseEntity {
@@ -22,30 +23,19 @@ public class ContentComment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "content_id")
-    private ShortFormContent content;
+    private ShortFormContent shortFormContent;
 
-    @Column(nullable = false, length = 500)
-    private String commentText;
-
-    private int likeCount = 0;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private ContentComment parent;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String content;
 
     @Builder
-    public ContentComment(User user, ShortFormContent content, String commentText, ContentComment parent) {
+    public ContentComment(User user, ShortFormContent shortFormContent, String content) {
         this.user = user;
+        this.shortFormContent = shortFormContent;
         this.content = content;
-        this.commentText = commentText;
-        this.parent = parent;
     }
 
-    public void updateContent(String commentText) {
-        this.commentText = commentText;
-    }
-
-    public void updateLikeCount(int delta) {
-        this.likeCount += delta;
+    public void updateContent(String content) {
+        this.content = content;
     }
 }

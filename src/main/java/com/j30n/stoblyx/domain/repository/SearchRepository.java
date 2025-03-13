@@ -24,22 +24,27 @@ public interface SearchRepository extends JpaRepository<Search, Long> {
     Page<Search> findByUserId(Long userId, Pageable pageable);
     
     /**
-     * 카테고리별 검색 기록을 찾습니다.
+     * 검색 타입별 검색 기록을 찾습니다.
      */
-    Page<Search> findByCategory(String category, Pageable pageable);
+    Page<Search> findBySearchType(String searchType, Pageable pageable);
     
     /**
      * 특정 기간의 검색 기록을 찾습니다.
      */
-    List<Search> findBySearchedAtBetween(LocalDateTime start, LocalDateTime end);
+    List<Search> findByLastSearchedAtBetween(LocalDateTime start, LocalDateTime end);
     
     /**
-     * 특정 키워드를 포함하는 검색 기록을 찾습니다.
+     * 특정 검색어를 포함하는 검색 기록을 찾습니다.
      */
-    Page<Search> findByKeywordContaining(String keyword, Pageable pageable);
+    Page<Search> findBySearchTermContaining(String searchTerm, Pageable pageable);
     
     /**
      * 사용자 ID로 검색 기록을 삭제합니다.
      */
     void deleteByUserId(Long userId);
+    
+    /**
+     * 사용자의 최근 검색 기록을 찾습니다.
+     */
+    List<Search> findTop10ByUserOrderByLastSearchedAtDesc(User user);
 } 

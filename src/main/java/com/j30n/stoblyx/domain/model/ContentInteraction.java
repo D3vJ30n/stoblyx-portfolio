@@ -30,12 +30,16 @@ public class ContentInteraction extends BaseTimeEntity {
     private boolean liked;
     private boolean bookmarked;
     private LocalDateTime viewedAt;
+    
+    @Column(name = "is_deleted")
+    private boolean isDeleted = false;
 
     @Builder
     public ContentInteraction(User user, ShortFormContent content) {
         this.user = user;
         this.content = content;
         this.viewedAt = LocalDateTime.now();
+        this.isDeleted = false;
     }
 
     public void toggleLike() {
@@ -50,6 +54,14 @@ public class ContentInteraction extends BaseTimeEntity {
     public void updateViewedAt() {
         this.viewedAt = LocalDateTime.now();
         this.content.incrementViewCount();
+    }
+    
+    public void delete() {
+        this.isDeleted = true;
+    }
+    
+    public void restore() {
+        this.isDeleted = false;
     }
 
     // 테스트 데이터 초기화용 메서드

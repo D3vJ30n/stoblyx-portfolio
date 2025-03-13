@@ -31,14 +31,14 @@ public interface AdminRankingUseCase {
     List<AdminRankingActivityResponse> findAbnormalActivityPatterns(LocalDateTime startDate, LocalDateTime endDate, int activityThreshold);
     
     /**
-     * 특정 IP 주소의 활동 내역 조회
+     * 특정 기간 내 활동 내역 조회
      * 
-     * @param ipAddress IP 주소
+     * @param userId 사용자 ID (선택적)
      * @param startDate 시작 일시
      * @param endDate 종료 일시
      * @return 활동 내역 목록
      */
-    List<AdminRankingActivityResponse> findActivitiesByIpAddress(String ipAddress, LocalDateTime startDate, LocalDateTime endDate);
+    List<AdminRankingActivityResponse> findActivitiesByDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate);
     
     /**
      * 사용자 점수 수동 조정

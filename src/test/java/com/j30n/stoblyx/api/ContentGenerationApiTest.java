@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.equalTo;
 @ActiveProfiles("test")
 @DisplayName("콘텐츠 생성 API 테스트")
 @Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
-public class ContentGenerationApiTest extends RestAssuredConfig {
+class ContentGenerationApiTest extends RestAssuredConfig {
 
     @LocalServerPort
     private int port;
@@ -60,11 +60,11 @@ public class ContentGenerationApiTest extends RestAssuredConfig {
     private BookRepository bookRepository;
 
     private String accessToken;
-    private Long quoteId;
+    private Long savedQuoteId;
     private static ExtentTest extentTest;
 
     @BeforeAll
-    public static void setupReport() {
+    static void setupReport() {
         extentTest = ExtentReportManager.createTest(
             "콘텐츠 생성 API 테스트",
             "AI를 사용한 콘텐츠 생성 API 통합 테스트"
@@ -72,7 +72,7 @@ public class ContentGenerationApiTest extends RestAssuredConfig {
     }
 
     @AfterAll
-    public static void tearDownReport() {
+    static void tearDownReport() {
         ExtentReportManager.flush();
     }
 
@@ -89,7 +89,7 @@ public class ContentGenerationApiTest extends RestAssuredConfig {
             accessToken = loginAndGetToken();
             
             // 테스트용 문구 생성
-            quoteId = createTestQuote();
+            savedQuoteId = createTestQuote();
         } catch (Exception e) {
             // 로그인 또는 문구 생성 실패 시 로그 출력
             System.err.println("테스트 설정 중 오류 발생: " + e.getMessage());
@@ -105,7 +105,7 @@ public class ContentGenerationApiTest extends RestAssuredConfig {
         
         try {
             // given
-            String url = "/contents/quotes/" + quoteId;
+            String url = "/contents/quotes/" + savedQuoteId;
             extentTest.info("테스트 URL: " + url);
 
             // when
@@ -151,7 +151,7 @@ public class ContentGenerationApiTest extends RestAssuredConfig {
         
         try {
             // given
-            String url = "/contents/quotes/" + quoteId;
+            String url = "/contents/quotes/" + savedQuoteId;
             extentTest.info("테스트 URL: " + url);
 
             // when & then
@@ -271,9 +271,9 @@ public class ContentGenerationApiTest extends RestAssuredConfig {
                 .book(book)
                 .build();
 
-            Long quoteId = quoteRepository.save(quote).getId();
-            extentTest.info("테스트용 문구 생성 성공: ID=" + quoteId);
-            return quoteId;
+            Long savedQuoteId = quoteRepository.save(quote).getId();
+            extentTest.info("테스트용 문구 생성 성공: ID=" + savedQuoteId);
+            return savedQuoteId;
         } catch (Exception e) {
             extentTest.fail("테스트용 문구 생성 실패: " + e.getMessage());
             

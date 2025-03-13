@@ -15,7 +15,7 @@ import java.util.Optional;
  * 저장된 인용구 리포지토리
  */
 @Repository
-public interface SavedQuoteRepository extends JpaRepository<SavedQuote, SavedQuote.SavedQuoteId> {
+public interface SavedQuoteRepository extends JpaRepository<SavedQuote, Long> {
     
     /**
      * 사용자와 인용구로 저장된 인용구를 찾습니다.

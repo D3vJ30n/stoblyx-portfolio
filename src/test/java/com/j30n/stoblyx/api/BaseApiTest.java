@@ -1,6 +1,5 @@
 package com.j30n.stoblyx.api;
 
-import com.j30n.stoblyx.adapter.in.web.dto.auth.LoginRequest;
 import com.j30n.stoblyx.api.config.ApiTestListener;
 import com.j30n.stoblyx.api.config.RestAssuredConfig;
 import com.j30n.stoblyx.config.*;
@@ -37,14 +36,15 @@ import java.util.Map;
 })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(ApiTestListener.class)
-@Import({RedisTestConfig.class, SecurityTestConfig.class, ContextTestConfig.class, MockTestConfig.class, TestConfig.class})
+@Import({RedisTestConfig.class, SecurityTestConfig.class, ContextTestConfig.class, 
+        MockTestConfig.class, TestConfig.class, AlertTestConfig.class})
 public abstract class BaseApiTest extends RestAssuredConfig {
 
     // 테스트용 사용자 및 토큰 정보
     protected static final String TEST_USER_EMAIL = "test@example.com";
-    protected static final String TEST_USER_PASSWORD = "test1234";
+    protected static final String TEST_USER_PASSWORD = "Test1234!";
     protected static final String ADMIN_USER_EMAIL = "admin@example.com";
-    protected static final String ADMIN_USER_PASSWORD = "admin1234";
+    protected static final String ADMIN_USER_PASSWORD = "Admin1234!";
 
     protected String userToken;
     protected String adminToken;
@@ -57,11 +57,19 @@ public abstract class BaseApiTest extends RestAssuredConfig {
         try {
             setupRestAssured();
 
-            // 테스트 환경에서 실제 인증 과정을 거치지 않고 더미 토큰 사용
+            // 테스트 환경에서 실제 인증 과정을 거치지 않고 더미 토큰 사용 (관리자 권한 부여)
             userToken = "test_user_token_for_testing";
             adminToken = "test_admin_token_for_testing";
 
-            System.out.println("테스트 환경용 더미 토큰 초기화 완료: " + userToken);
+            System.out.println("테스트 환경용 더미 토큰 초기화 완료");
+            System.out.println("일반 사용자 토큰: " + userToken);
+            System.out.println("관리자 토큰: " + adminToken);
+            
+            // 테스트 헤더 설정을 통해 관리자 권한을 인식할 수 있게 함
+            if (requestSpec == null) {
+                setupRestAssured();
+            }
+            requestSpec = requestSpec.header("X-TEST-ROLE", "ROLE_ADMIN");
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("테스트 초기화 중 오류 발생: " + e.getMessage());
@@ -79,10 +87,17 @@ public abstract class BaseApiTest extends RestAssuredConfig {
      * @return JWT 토큰
      */
     protected String loginAndGetToken(String email, String password) {
-        LoginRequest loginRequest = new LoginRequest(email, password);
+        // 이메일을 사용자 이름으로도 사용
+        String username = email.split("@")[0];
+        
+        Map<String, String> loginRequestMap = new HashMap<>();
+        loginRequestMap.put("username", username);
+        loginRequestMap.put("email", email);
+        loginRequestMap.put("password", password);
 
         Response response = createRequestSpec()
-            .body(loginRequest)
+            .contentType(ContentType.JSON)
+            .body(loginRequestMap)
             .when()
             .post("/auth/login")
             .then()
@@ -113,6 +128,7 @@ public abstract class BaseApiTest extends RestAssuredConfig {
         registerRequest.put("email", email);
         registerRequest.put("password", password);
         registerRequest.put("nickname", email.split("@")[0]);
+        registerRequest.put("username", email.split("@")[0]);
 
         System.out.println("회원가입 요청 데이터: " + registerRequest);
 
@@ -121,7 +137,7 @@ public abstract class BaseApiTest extends RestAssuredConfig {
             .contentType(ContentType.JSON)
             .body(registerRequest)
             .when()
-            .post("/auth/register")
+            .post("/auth/signup")
             .then()
             .extract().response();
 
@@ -140,9 +156,16 @@ public abstract class BaseApiTest extends RestAssuredConfig {
         }
 
         // 회원가입 후 로그인 재시도
+        String username = email.split("@")[0];
+        
+        Map<String, String> loginRequestMap = new HashMap<>();
+        loginRequestMap.put("username", username);
+        loginRequestMap.put("email", email);
+        loginRequestMap.put("password", password);
+        
         Response loginResponse = createRequestSpec()
             .contentType(ContentType.JSON)
-            .body(new LoginRequest(email, password))
+            .body(loginRequestMap)
             .when()
             .post("/auth/login")
             .then()

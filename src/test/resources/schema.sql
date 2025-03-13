@@ -3,8 +3,8 @@ DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS saved_quotes CASCADE;
 DROP TABLE IF EXISTS quote_summaries CASCADE;
 DROP TABLE IF EXISTS summaries CASCADE;
-DROP TABLE IF EXISTS videos CASCADE;
 DROP TABLE IF EXISTS quotes CASCADE;
+DROP TABLE IF EXISTS book_genres CASCADE;
 DROP TABLE IF EXISTS book CASCADE;
 DROP TABLE IF EXISTS user_interests CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
@@ -90,6 +90,13 @@ CREATE TABLE book (
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
+CREATE TABLE book_genres (
+    book_id BIGINT NOT NULL,
+    genre VARCHAR(100) NOT NULL,
+    PRIMARY KEY (book_id, genre),
+    CONSTRAINT fk_book_genres_book FOREIGN KEY (book_id) REFERENCES book(id)
+);
+
 CREATE TABLE quotes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     content TEXT NOT NULL,
@@ -104,17 +111,6 @@ CREATE TABLE quotes (
     is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_quotes_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT fk_quotes_book FOREIGN KEY (book_id) REFERENCES book(id)
-);
-
-CREATE TABLE videos (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    quote_id BIGINT NOT NULL,
-    url VARCHAR(255) NOT NULL,
-    thumbnail_url VARCHAR(255),
-    created_at TIMESTAMP,
-    modified_at TIMESTAMP,
-    CONSTRAINT uk_videos_quote UNIQUE (quote_id),
-    CONSTRAINT fk_videos_quote FOREIGN KEY (quote_id) REFERENCES quotes(id)
 );
 
 CREATE TABLE comments (
@@ -134,6 +130,8 @@ CREATE TABLE likes (
     user_id BIGINT NOT NULL,
     quote_id BIGINT NOT NULL,
     created_at TIMESTAMP,
+    modified_at TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT uk_likes UNIQUE (user_id, quote_id),
     CONSTRAINT fk_likes_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT fk_likes_quote FOREIGN KEY (quote_id) REFERENCES quotes(id)
@@ -143,7 +141,10 @@ CREATE TABLE saved_quotes (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
     quote_id BIGINT NOT NULL,
+    note VARCHAR(255),
     created_at TIMESTAMP,
+    modified_at TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT uk_saved_quotes UNIQUE (user_id, quote_id),
     CONSTRAINT fk_saved_quotes_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT fk_saved_quotes_quote FOREIGN KEY (quote_id) REFERENCES quotes(id)
@@ -167,7 +168,6 @@ CREATE TABLE SHORT_FORM_CONTENTS (
     title VARCHAR(100) NOT NULL,
     description VARCHAR(1000),
     status VARCHAR(20) NOT NULL,
-    deleted BOOLEAN DEFAULT FALSE,
     duration INT,
     viewCount INT DEFAULT 0,
     likeCount INT DEFAULT 0,
@@ -296,7 +296,8 @@ CREATE TABLE ranking_user_score (
     modified_at TIMESTAMP,
     suspicious_activity BOOLEAN NOT NULL DEFAULT FALSE,
     report_count INT NOT NULL DEFAULT 0,
-    account_suspended BOOLEAN NOT NULL DEFAULT FALSE
+    account_suspended BOOLEAN NOT NULL DEFAULT FALSE,
+    is_deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE ranking_user_activity (
@@ -325,6 +326,7 @@ CREATE TABLE ranking_leaderboard (
     period_end_date TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL,
     modified_at TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_leaderboard_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -360,29 +362,24 @@ CREATE TABLE posts (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     user_id BIGINT NOT NULL,
-    post_type VARCHAR(50) NOT NULL,
-    view_count INT DEFAULT 0,
-    like_count INT DEFAULT 0,
-    comment_count INT DEFAULT 0,
-    status VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP,
+    thumbnail_url VARCHAR(255),
+    created_at TIMESTAMP NOT NULL,
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_posts_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+DROP TABLE IF EXISTS popular_search_terms CASCADE;
 CREATE TABLE popular_search_terms (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     search_term VARCHAR(255) NOT NULL,
     search_count INT NOT NULL DEFAULT 0,
-    last_searched_at TIMESTAMP,
-    period_type VARCHAR(20) NOT NULL,
-    period_start TIMESTAMP,
-    period_end TIMESTAMP,
+    popularity_score DOUBLE NOT NULL DEFAULT 1.0,
+    last_updated_at TIMESTAMP,
     created_at TIMESTAMP,
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
-    CONSTRAINT uk_term_period UNIQUE (search_term, period_type)
+    CONSTRAINT uk_search_term UNIQUE (search_term)
 );
 
 CREATE TABLE gamification_rewards (
@@ -431,7 +428,6 @@ CREATE TABLE summaries (
     content TEXT NOT NULL,
     chapter VARCHAR(100),
     page VARCHAR(50),
-    deleted BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP,
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,

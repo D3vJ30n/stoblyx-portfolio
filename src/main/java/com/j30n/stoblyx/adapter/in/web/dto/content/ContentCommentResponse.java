@@ -4,7 +4,6 @@ import com.j30n.stoblyx.domain.model.ContentComment;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 콘텐츠 댓글 응답 DTO
@@ -48,11 +47,11 @@ public record ContentCommentResponse(
     public static ContentCommentResponse from(ContentComment comment) {
         return new ContentCommentResponse(
             comment.getId(),
-            comment.getCommentText(),
+            comment.getContent(),
             UserInfo.from(comment.getUser()),
-            comment.getContent().getId(),
-            comment.getParent() != null ? comment.getParent().getId() : null,
-            comment.getLikeCount(),
+            comment.getShortFormContent().getId(),
+            null, // 부모 댓글 참조 필드가 없음
+            0, // likeCount 필드가 없음
             List.of(),
             comment.getCreatedAt(),
             comment.getModifiedAt()
@@ -65,14 +64,14 @@ public record ContentCommentResponse(
     public static ContentCommentResponse fromWithReplies(ContentComment comment, List<ContentComment> replies) {
         return new ContentCommentResponse(
             comment.getId(),
-            comment.getCommentText(),
+            comment.getContent(),
             UserInfo.from(comment.getUser()),
-            comment.getContent().getId(),
-            comment.getParent() != null ? comment.getParent().getId() : null,
-            comment.getLikeCount(),
+            comment.getShortFormContent().getId(),
+            null, // 부모 댓글 참조 필드가 없음
+            0, // likeCount 필드가 없음
             replies.stream()
                 .map(ContentCommentResponse::from)
-                .collect(Collectors.toList()),
+                .toList(),
             comment.getCreatedAt(),
             comment.getModifiedAt()
         );

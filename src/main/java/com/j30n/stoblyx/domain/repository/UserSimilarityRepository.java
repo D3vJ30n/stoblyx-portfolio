@@ -27,4 +27,12 @@ public interface UserSimilarityRepository extends JpaRepository<UserSimilarity, 
     Long countActiveSimilaritiesForUser(@Param("userId") Long userId);
     
     void deleteBySourceUserAndTargetUser(User sourceUser, User targetUser);
+    
+    /**
+     * 특정 사용자에 대해 유사도 점수가 가장 높은 UserSimilarity를 찾습니다.
+     *
+     * @param sourceUser 소스 사용자
+     * @return 유사도 점수가 가장 높은 UserSimilarity
+     */
+    Optional<UserSimilarity> findTopBySourceUserOrderBySimilarityScoreDesc(User sourceUser);
 } 

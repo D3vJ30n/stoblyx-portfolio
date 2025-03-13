@@ -32,7 +32,6 @@ import java.util.Map;
 public class AdminRankingService implements AdminRankingUseCase {
 
     private static final String SYSTEM_USER = "SYSTEM";
-    private static final String ADMIN_IP = "ADMIN_IP";
     
     private final RankingUserScoreService rankingUserScoreService;
     private final RankingUserActivityService rankingUserActivityService;
@@ -69,10 +68,10 @@ public class AdminRankingService implements AdminRankingUseCase {
         // 단순한 구현으로 대체
         List<RankingUserActivity> activities = new ArrayList<>();
         for (ActivityType type : ActivityType.values()) {
-            // 각 활동 유형별로 IP 주소로 그룹화하여 임계값 이상인 경우만 추출
-            rankingUserActivityService.getActivitiesByIpAddress("", startDate, endDate).stream()
+            // 각 활동 유형별로 사용자 ID로 그룹화하여 임계값 이상인 경우만 추출
+            rankingUserActivityService.getUserActivities(0L).stream()
                     .filter(activity -> activity.getActivityType() == type)
-                    .filter(activity -> activity.getScoreChange() > activityThreshold)
+                    .filter(activity -> activity.getPoints() > activityThreshold)
                     .forEach(activities::add);
         }
         
@@ -81,32 +80,43 @@ public class AdminRankingService implements AdminRankingUseCase {
                     activity.getId(),
                     activity.getUserId(),
                     activity.getActivityType(),
-                    activity.getScoreChange(),
-                    activity.getIpAddress(),
-                    activity.getTargetId(),
-                    activity.getTargetType(),
+                    activity.getPoints(),
+                    "", // IP 주소 필드가 없음
+                    activity.getReferenceId(),
+                    activity.getReferenceType(),
                     activity.getCreatedAt(),
-                    activity.getUpdatedAt()
+                    activity.getModifiedAt()
                 ))
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<AdminRankingActivityResponse> findActivitiesByIpAddress(String ipAddress, LocalDateTime startDate, LocalDateTime endDate) {
-        log.info("IP 주소별 활동 내역 조회 - IP: {}, 기간: {} ~ {}", ipAddress, startDate, endDate);
+    public List<AdminRankingActivityResponse> findActivitiesByDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+        log.info("기간 내 활동 내역 조회 - 사용자 ID: {}, 기간: {} ~ {}", userId, startDate, endDate);
         
-        return rankingUserActivityService.getActivitiesByIpAddress(ipAddress, startDate, endDate).stream()
+        // 사용자 ID에 따라 다른 활동 검색
+        List<RankingUserActivity> activities;
+        if (userId != null && userId > 0) {
+            activities = rankingUserActivityService.getUserActivitiesByPeriod(userId, startDate, endDate);
+        } else {
+            // 모든 사용자의 활동 검색
+            activities = rankingUserActivityService.getUserActivities(0L).stream()
+                .filter(activity -> activity.getCreatedAt().isAfter(startDate) && activity.getCreatedAt().isBefore(endDate))
+                .toList();
+        }
+        
+        return activities.stream()
                 .map(activity -> new AdminRankingActivityResponse(
                     activity.getId(),
                     activity.getUserId(),
                     activity.getActivityType(),
-                    activity.getScoreChange(),
-                    activity.getIpAddress(),
-                    activity.getTargetId(),
-                    activity.getTargetType(),
+                    activity.getPoints(),
+                    "", // IP 주소 필드가 없음
+                    activity.getReferenceId(),
+                    activity.getReferenceType(),
                     activity.getCreatedAt(),
-                    activity.getUpdatedAt()
+                    activity.getModifiedAt()
                 ))
                 .toList();
     }
@@ -127,8 +137,7 @@ public class AdminRankingService implements AdminRankingUseCase {
             userId, 
             0L, // 시스템 작업
             SYSTEM_USER, 
-            ActivityType.ADMIN_ADJUSTMENT, 
-            ADMIN_IP
+            ActivityType.ADMIN_ADJUSTMENT
         );
         
         // 업데이트된 정보 조회
@@ -165,8 +174,7 @@ public class AdminRankingService implements AdminRankingUseCase {
             userId, 
             0L, // 시스템 작업
             SYSTEM_USER, 
-            ActivityType.ADMIN_SUSPENSION, 
-            ADMIN_IP
+            ActivityType.ADMIN_SUSPENSION
         );
         
         // 업데이트된 정보 저장 및 조회
@@ -203,8 +211,7 @@ public class AdminRankingService implements AdminRankingUseCase {
             userId, 
             0L, // 시스템 작업
             SYSTEM_USER, 
-            ActivityType.ADMIN_UNSUSPENSION, 
-            ADMIN_IP
+            ActivityType.ADMIN_UNSUSPENSION
         );
         
         // 업데이트된 정보 저장 및 조회

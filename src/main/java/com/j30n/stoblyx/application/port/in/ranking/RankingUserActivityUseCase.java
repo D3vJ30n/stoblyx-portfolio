@@ -15,13 +15,12 @@ public interface RankingUserActivityUseCase {
      * 사용자 활동 기록 생성
      *
      * @param userId       사용자 ID
-     * @param targetId     대상 ID
-     * @param targetType   대상 유형
+     * @param referenceId     참조 ID
+     * @param referenceType   참조 유형
      * @param activityType 활동 유형
-     * @param ipAddress    IP 주소
      * @return 생성된 활동 기록
      */
-    RankingUserActivity createActivity(Long userId, Long targetId, String targetType, ActivityType activityType, String ipAddress);
+    RankingUserActivity createActivity(Long userId, Long referenceId, String referenceType, ActivityType activityType);
 
     /**
      * 사용자 활동 기록 조회
@@ -51,32 +50,11 @@ public interface RankingUserActivityUseCase {
     List<RankingUserActivity> getUserActivitiesByPeriod(Long userId, LocalDateTime startDate, LocalDateTime endDate);
 
     /**
-     * 특정 IP 주소에서 발생한 활동 기록 조회
+     * 특정 참조 ID와 참조 유형에 대한 활동 기록 조회
      *
-     * @param ipAddress IP 주소
-     * @param startDate 시작 일시
-     * @param endDate   종료 일시
+     * @param referenceId   참조 ID
+     * @param referenceType 참조 유형
      * @return 활동 기록 목록
      */
-    List<RankingUserActivity> getActivitiesByIpAddress(String ipAddress, LocalDateTime startDate, LocalDateTime endDate);
-
-    /**
-     * 특정 IP 주소에서 발생한 특정 활동 유형의 기록 조회
-     *
-     * @param ipAddress    IP 주소
-     * @param activityType 활동 유형
-     * @param startDate    시작 일시
-     * @param endDate      종료 일시
-     * @return 활동 기록 목록
-     */
-    List<RankingUserActivity> getActivitiesByIpAddressAndType(String ipAddress, ActivityType activityType, LocalDateTime startDate, LocalDateTime endDate);
-
-    /**
-     * 특정 대상에 대한 활동 기록 조회
-     *
-     * @param targetId   대상 ID
-     * @param targetType 대상 유형
-     * @return 활동 기록 목록
-     */
-    List<RankingUserActivity> getActivitiesByTarget(Long targetId, String targetType);
+    List<RankingUserActivity> getActivitiesByReference(Long referenceId, String referenceType);
 } 

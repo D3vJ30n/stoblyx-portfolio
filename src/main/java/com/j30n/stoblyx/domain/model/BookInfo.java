@@ -20,4 +20,6 @@ public class BookInfo {
     private final LocalDate publishDate;
     private final String thumbnailUrl;
     private final List<String> genres;
+    private final Integer publicationYear;
+    private final Integer totalPages;
 } 

@@ -1,6 +1,5 @@
 package com.j30n.stoblyx.application.port.in.gamification;
 
-import com.j30n.stoblyx.domain.enums.RankType;
 import com.j30n.stoblyx.domain.enums.RewardType;
 import com.j30n.stoblyx.domain.model.GamificationReward;
 
@@ -16,14 +15,13 @@ public interface GamificationRewardUseCase {
      * 사용자 보상 생성
      *
      * @param userId            사용자 ID
-     * @param rankType          랭크 타입
      * @param rewardType        보상 유형
      * @param rewardAmount      보상 금액
      * @param rewardDescription 보상 설명
      * @param expiryDate        만료 일시
      * @return 생성된 보상 정보
      */
-    GamificationReward createReward(Long userId, RankType rankType, RewardType rewardType, Integer rewardAmount, String rewardDescription, LocalDateTime expiryDate);
+    GamificationReward createReward(Long userId, RewardType rewardType, Integer rewardAmount, String rewardDescription, LocalDateTime expiryDate);
 
     /**
      * 사용자 보상 내역 조회
@@ -43,15 +41,6 @@ public interface GamificationRewardUseCase {
     List<GamificationReward> getUserRewardsByType(Long userId, RewardType rewardType);
 
     /**
-     * 사용자 랭크 타입별 보상 내역 조회
-     *
-     * @param userId   사용자 ID
-     * @param rankType 랭크 타입
-     * @return 보상 내역 목록
-     */
-    List<GamificationReward> getUserRewardsByRankType(Long userId, RankType rankType);
-
-    /**
      * 보상 지급 처리
      *
      * @param rewardId 보상 ID
@@ -67,14 +56,6 @@ public interface GamificationRewardUseCase {
     List<GamificationReward> getExpiredRewards();
 
     /**
-     * 특정 랭크 타입의 보상 내역 조회
-     *
-     * @param rankType 랭크 타입
-     * @return 보상 내역 목록
-     */
-    List<GamificationReward> getRewardsByRankType(RankType rankType);
-
-    /**
      * 특정 보상 유형의 보상 내역 조회
      *
      * @param rewardType 보상 유형
@@ -88,14 +69,4 @@ public interface GamificationRewardUseCase {
      * @return 보상 내역 목록
      */
     List<GamificationReward> getUnclaimedRewards();
-
-    /**
-     * 랭크 변경에 따른 보상 생성
-     *
-     * @param userId           사용자 ID
-     * @param previousRankType 이전 랭크 타입
-     * @param newRankType      새 랭크 타입
-     * @return 생성된 보상 정보 목록
-     */
-    List<GamificationReward> createRewardsForRankChange(Long userId, RankType previousRankType, RankType newRankType);
 } 

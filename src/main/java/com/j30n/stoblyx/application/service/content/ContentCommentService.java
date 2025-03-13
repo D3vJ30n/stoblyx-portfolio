@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 콘텐츠 댓글 서비스 구현체
@@ -35,17 +34,11 @@ public class ContentCommentService implements ContentCommentUseCase {
     public ContentCommentResponse createComment(Long contentId, ContentCommentCreateRequest request, Long userId) {
         User user = findUserById(userId);
         ShortFormContent content = findContentById(contentId);
-        
-        ContentComment parentComment = null;
-        if (request.parentId() != null) {
-            parentComment = findCommentById(request.parentId());
-        }
 
         ContentComment comment = ContentComment.builder()
             .user(user)
-            .content(content)
-            .commentText(request.commentText())
-            .parent(parentComment)
+            .shortFormContent(content)
+            .content(request.commentText())
             .build();
 
         return ContentCommentResponse.from(contentCommentPort.saveComment(comment));
@@ -74,19 +67,13 @@ public class ContentCommentService implements ContentCommentUseCase {
     @Transactional(readOnly = true)
     public Page<ContentCommentResponse> getTopLevelCommentsByContent(Long contentId, Pageable pageable) {
         return contentCommentPort.findTopLevelComments(contentId, pageable)
-            .map(comment -> {
-                List<ContentComment> replies = contentCommentPort.findRepliesByParentId(comment.getId());
-                return ContentCommentResponse.fromWithReplies(comment, replies);
-            });
+            .map(ContentCommentResponse::from);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<ContentCommentResponse> getRepliesByParentId(Long parentId) {
-        return contentCommentPort.findRepliesByParentId(parentId)
-            .stream()
-            .map(ContentCommentResponse::from)
-            .collect(Collectors.toList());
+        return List.of();
     }
 
     @Override

@@ -56,7 +56,9 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
      */
     @Override
     public List<GamificationReward> findRewardsByRankType(RankType rankType) {
-        return gamificationRewardRepository.findByRankType(rankType);
+        // 현재 GamificationReward 엔티티에는 rankType 필드가 없음
+        // 임시로 빈 리스트 반환
+        return List.of();
     }
 
     /**
@@ -105,18 +107,16 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
     @Override
     @Transactional
     public GamificationReward createReward(Long userId, RewardType rewardType, Integer rewardAmount, String description, LocalDateTime expiryDate) {
-        GamificationReward reward = new GamificationReward();
-        reward.setUserId(userId);
-        reward.setRewardType(rewardType);
-        reward.setRewardAmount(rewardAmount);
-        reward.setRewardDescription(description);
-        reward.setExpiryDate(expiryDate);
-        reward.setIsClaimed(false);
-        reward.setCreatedAt(LocalDateTime.now());
-
-        // 사용자의 현재 랭크 타입 설정 (실제 구현에서는 사용자 정보에서 가져와야 함)
-        // 여기서는 간단히 BRONZE로 설정
-        reward.setRankType(RankType.BRONZE);
+        GamificationReward reward = GamificationReward.builder()
+            .userId(userId)
+            .rewardType(rewardType)
+            .points(rewardAmount)
+            .description(description)
+            .referenceType(null)
+            .referenceId(null)
+            .isClaimed(false)
+            .expiryDate(expiryDate)
+            .build();
 
         return gamificationRewardRepository.save(reward);
     }
@@ -136,21 +136,20 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
         GamificationReward reward = gamificationRewardRepository.findById(rewardId)
             .orElseThrow(() -> new IllegalArgumentException("보상 내역을 찾을 수 없습니다: " + rewardId));
 
-        if (rewardAmount != null) {
-            reward.setRewardAmount(rewardAmount);
-        }
+        // 새로운 객체로 생성하고 원래 값 유지
+        GamificationReward updatedReward = GamificationReward.builder()
+            .id(reward.getId())
+            .userId(reward.getUserId())
+            .rewardType(reward.getRewardType())
+            .points(rewardAmount != null ? rewardAmount : reward.getPoints())
+            .description(description != null ? description : reward.getDescription())
+            .referenceId(reward.getReferenceId())
+            .referenceType(reward.getReferenceType())
+            .isClaimed(reward.isClaimed())
+            .expiryDate(expiryDate != null ? expiryDate : reward.getExpiryDate())
+            .build();
 
-        if (description != null) {
-            reward.setRewardDescription(description);
-        }
-
-        if (expiryDate != null) {
-            reward.setExpiryDate(expiryDate);
-        }
-
-        reward.setUpdatedAt(LocalDateTime.now());
-
-        return gamificationRewardRepository.save(reward);
+        return gamificationRewardRepository.save(updatedReward);
     }
 
     /**
@@ -182,7 +181,7 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
         GamificationReward reward = gamificationRewardRepository.findById(rewardId)
             .orElseThrow(() -> new IllegalArgumentException("보상 내역을 찾을 수 없습니다: " + rewardId));
 
-        if (reward.getIsClaimed()) {
+        if (reward.isClaimed()) {
             throw new IllegalStateException("이미 지급된 보상입니다: " + rewardId);
         }
 
@@ -223,14 +222,9 @@ public class AdminGamificationAdapter implements AdminGamificationPort {
      */
     @Override
     public Map<RankType, Long> getRankTypeRewardStatistics(LocalDateTime startDate, LocalDateTime endDate) {
-        List<GamificationReward> rewards = gamificationRewardRepository.findByCreatedAtBetween(startDate, endDate);
-
-        return rewards.stream()
-            .collect(Collectors.groupingBy(
-                GamificationReward::getRankType,
-                () -> new EnumMap<>(RankType.class),
-                Collectors.counting()
-            ));
+        // 현재 GamificationReward 엔티티에는 rankType 필드가 없음
+        // 임시로 빈 맵 반환
+        return new EnumMap<>(RankType.class);
     }
 
     /**

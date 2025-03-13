@@ -8,6 +8,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
@@ -23,7 +25,9 @@ import static org.hamcrest.Matchers.*;
  */
 @Import({RedisTestConfig.class, SecurityTestConfig.class, ContextTestConfig.class, MockTestConfig.class, XssExclusionTestConfig.class, TestConfig.class})
 @DisplayName("사용자 API 통합 테스트")
-public class UserApiTest extends BaseApiTest {
+class UserApiTest extends BaseApiTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserApiTest.class);
 
     private static final String USER_API_PATH = "/users";
     private static final String AUTH_API_PATH = "/auth";
@@ -32,18 +36,18 @@ public class UserApiTest extends BaseApiTest {
     private final List<Long> createdUserIds = new ArrayList<>();
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         // 테스트 실행 전 필요한 설정
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         // 테스트 중 생성된 사용자 삭제
         for (Long userId : createdUserIds) {
             try {
                 if (userId != null) {
-                    System.out.println("테스트 후 사용자 삭제: " + userId);
+                    logger.info("테스트 후 사용자 삭제: {}", userId);
                     givenAuth(adminToken)
                         .when()
                         .delete(USER_API_PATH + "/" + userId)
@@ -51,17 +55,17 @@ public class UserApiTest extends BaseApiTest {
                         .statusCode(anyOf(is(204), is(200), is(404), is(500)));
                 }
             } catch (Exception e) {
-                System.out.println("사용자 삭제 중 오류 발생: " + e.getMessage());
+                logger.error("사용자 삭제 중 오류 발생: {}", e.getMessage());
             }
         }
         createdUserIds.clear();
-        System.out.println("테스트 종료: " + System.currentTimeMillis());
+        logger.info("테스트 종료: {}", System.currentTimeMillis());
     }
 
     @Test
     @DisplayName("회원가입 API 테스트")
-    public void testRegister() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testRegister() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         Map<String, Object> userData = createUserData();
 
@@ -87,20 +91,20 @@ public class UserApiTest extends BaseApiTest {
                 Long userId = jsonPath.getLong("data.id");
                 if (userId != null && userId > 0) {
                     createdUserIds.add(userId);
-                    System.out.println("생성된 사용자 ID: " + userId);
+                    logger.info("생성된 사용자 ID: {}", userId);
                 }
             } else {
-                System.out.println("사용자 ID를 추출할 수 없습니다. 응답: " + response.asString());
+                logger.info("사용자 ID를 추출할 수 없습니다. 응답: {}", response.asString());
             }
         } catch (Exception e) {
-            System.out.println("사용자 ID 추출 중 오류 발생: " + e.getMessage());
+            logger.error("사용자 ID 추출 중 오류 발생: {}", e.getMessage());
         }
     }
 
     @Test
     @DisplayName("로그인 API 테스트")
-    public void testLogin() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testLogin() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         // 테스트용 사용자 생성
         Map<String, Object> userData = createUserData();
@@ -135,8 +139,8 @@ public class UserApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("로그아웃 API 테스트")
-    public void testLogout() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testLogout() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         givenAuth(userToken)
             .when()
@@ -148,8 +152,8 @@ public class UserApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("사용자 프로필 조회 API 테스트")
-    public void testGetProfile() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testGetProfile() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         givenAuth(userToken)
             .when()
@@ -161,8 +165,8 @@ public class UserApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("사용자 프로필 수정 API 테스트")
-    public void testUpdateProfile() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testUpdateProfile() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         Map<String, String> profileData = new HashMap<>();
         profileData.put("nickname", "Updated Name");
@@ -181,8 +185,8 @@ public class UserApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("비밀번호 변경 API 테스트")
-    public void testChangePassword() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testChangePassword() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         // 비밀번호 변경 요청
         Map<String, String> passwordData = new HashMap<>();
@@ -204,8 +208,8 @@ public class UserApiTest extends BaseApiTest {
 
     @Test
     @DisplayName("인증 없이 프로필 조회 시 실패 테스트")
-    public void testGetProfileWithoutAuth() {
-        System.out.println("테스트 시작: " + System.currentTimeMillis());
+    void testGetProfileWithoutAuth() {
+        logger.info("테스트 시작: {}", System.currentTimeMillis());
 
         given()
             .when()

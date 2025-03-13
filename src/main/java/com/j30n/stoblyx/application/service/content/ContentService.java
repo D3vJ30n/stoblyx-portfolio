@@ -12,16 +12,17 @@ import com.j30n.stoblyx.domain.repository.QuoteRepository;
 import com.j30n.stoblyx.domain.repository.ContentBookmarkRepository;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Lazy;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class ContentService implements ContentUseCase {
 
     private static final String CONTENT_NOT_FOUND_MSG = "콘텐츠를 찾을 수 없습니다. ID: ";
@@ -33,6 +34,21 @@ public class ContentService implements ContentUseCase {
     private final UserRepository userRepository;
     private final ContentBookmarkRepository bookmarkRepository;
     private final ContentGenerationService contentGenerationService;
+    private final ContentService self;
+    
+    public ContentService(ContentPort contentPort, 
+                         QuoteRepository quoteRepository, 
+                         UserRepository userRepository, 
+                         ContentBookmarkRepository bookmarkRepository, 
+                         ContentGenerationService contentGenerationService,
+                         @Lazy ContentService self) {
+        this.contentPort = contentPort;
+        this.quoteRepository = quoteRepository;
+        this.userRepository = userRepository;
+        this.bookmarkRepository = bookmarkRepository;
+        this.contentGenerationService = contentGenerationService;
+        this.self = self;
+    }
 
     @Override
     @Transactional
@@ -227,5 +243,63 @@ public class ContentService implements ContentUseCase {
     public Page<ContentResponse> getContentsByStatus(String status, Pageable pageable) {
         return contentPort.findByStatus(ContentStatus.valueOf(status.toUpperCase()), pageable)
             .map(content -> ContentResponse.from(content, false, false));
+    }
+
+    /**
+     * 현재 로그인한 사용자에게 추천 콘텐츠 목록을 제공합니다.
+     * 로그인하지 않은 경우 인기 콘텐츠를 반환합니다.
+     *
+     * @param pageable 페이징 정보
+     * @return 추천 콘텐츠 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<ContentResponse> getRecommendedContents(Pageable pageable) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        
+        // 인증된 사용자가 있는 경우
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getPrincipal().equals("anonymousUser")) {
+            try {
+                Long userId = Long.parseLong(authentication.getName());
+                return self.getRecommendedContents(userId, pageable);
+            } catch (NumberFormatException e) {
+                log.warn("사용자 ID를 파싱할 수 없습니다: {}", authentication.getName());
+            }
+        }
+        
+        // 인증된 사용자가 없거나 ID 파싱에 실패한 경우 인기 콘텐츠 반환
+        return self.getPopularContents(pageable);
+    }
+    
+    /**
+     * 특정 책과 유사한 장르의 콘텐츠를 추천합니다.
+     *
+     * @param bookId 책 ID
+     * @param pageable 페이징 정보
+     * @return 유사한 장르의 콘텐츠 목록
+     */
+    @Transactional(readOnly = true)
+    public Page<ContentResponse> getSimilarBookContents(Long bookId, Pageable pageable) {
+        // 현재 인증된 사용자 정보 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAuthenticated = authentication != null && authentication.isAuthenticated() && 
+                                !authentication.getPrincipal().equals("anonymousUser");
+        
+        // 책 ID로 콘텐츠 조회
+        return contentPort.findByBookId(bookId, pageable)
+            .map(content -> {
+                if (isAuthenticated && authentication != null) {
+                    try {
+                        Long userId = Long.parseLong(authentication.getName());
+                        boolean isLiked = contentPort.isLikedByUser(content.getId(), userId);
+                        boolean isBookmarked = bookmarkRepository.existsByUserIdAndContentId(userId, content.getId());
+                        return ContentResponse.from(content, isLiked, isBookmarked);
+                    } catch (NumberFormatException e) {
+                        log.warn("사용자 ID를 파싱할 수 없습니다: {}", authentication.getName());
+                    }
+                }
+                return ContentResponse.from(content, false, false);
+            });
     }
 }

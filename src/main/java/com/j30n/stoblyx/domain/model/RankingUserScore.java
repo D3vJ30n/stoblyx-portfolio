@@ -56,6 +56,9 @@ public class RankingUserScore {
     @Column(name = "account_suspended", nullable = false)
     private Boolean accountSuspended;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -77,6 +80,9 @@ public class RankingUserScore {
         }
         if (accountSuspended == null) {
             accountSuspended = false;
+        }
+        if (isDeleted == null) {
+            isDeleted = false;
         }
     }
 

@@ -8,7 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_similarities")
+@Table(
+    name = "user_similarities",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_user_similarities", columnNames = {"source_user_id", "target_user_id"})
+    }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserSimilarity extends BaseEntity {
@@ -25,10 +30,10 @@ public class UserSimilarity extends BaseEntity {
     @JoinColumn(name = "target_user_id")
     private User targetUser;
 
-    @Column(nullable = false)
+    @Column(name = "similarity_score", nullable = false)
     private Double similarityScore;
 
-    @Column(nullable = false)
+    @Column(name = "is_active", nullable = false)
     private Boolean isActive;
 
     @Builder

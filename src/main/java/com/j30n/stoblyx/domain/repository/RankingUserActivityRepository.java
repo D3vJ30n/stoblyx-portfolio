@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 사용자 활동 정보 레포지토리
@@ -49,43 +48,13 @@ public interface RankingUserActivityRepository extends JpaRepository<RankingUser
             @Param("endDate") LocalDateTime endDate);
 
     /**
-     * 특정 IP 주소에서 발생한 활동 내역 조회
-     * 
-     * @param ipAddress IP 주소
-     * @param startDate 시작 일시
-     * @param endDate 종료 일시
-     * @return 활동 내역 목록
-     */
-    @Query("SELECT a FROM RankingUserActivity a WHERE a.ipAddress = :ipAddress AND a.createdAt BETWEEN :startDate AND :endDate")
-    List<RankingUserActivity> findByIpAddressAndCreatedAtBetween(
-            @Param("ipAddress") String ipAddress,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate);
-
-    /**
-     * 특정 IP 주소에서 발생한 특정 활동 유형의 내역 조회
-     * 
-     * @param ipAddress IP 주소
-     * @param activityType 활동 유형
-     * @param startDate 시작 일시
-     * @param endDate 종료 일시
-     * @return 활동 내역 목록
-     */
-    @Query("SELECT a FROM RankingUserActivity a WHERE a.ipAddress = :ipAddress AND a.activityType = :activityType AND a.createdAt BETWEEN :startDate AND :endDate")
-    List<RankingUserActivity> findByIpAddressAndActivityTypeAndCreatedAtBetween(
-            @Param("ipAddress") String ipAddress,
-            @Param("activityType") ActivityType activityType,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate);
-
-    /**
      * 특정 대상에 대한 활동 내역 조회
      * 
      * @param targetId 대상 ID
      * @param targetType 대상 유형
      * @return 활동 내역 목록
      */
-    List<RankingUserActivity> findByTargetIdAndTargetType(Long targetId, String targetType);
+    List<RankingUserActivity> findByReferenceIdAndReferenceType(Long targetId, String targetType);
     
     /**
      * 특정 기간 내 모든 활동 내역 조회
@@ -106,11 +75,11 @@ public interface RankingUserActivityRepository extends JpaRepository<RankingUser
      * @param threshold 점수 증가 임계값
      * @return 의심스러운 활동 목록 [userId, totalScoreChange, activityCount, lastActivityTime]
      */
-    @Query("SELECT a.userId, SUM(a.scoreChange) as totalScoreChange, COUNT(a) as activityCount, MAX(a.createdAt) as lastActivityTime " +
+    @Query("SELECT a.userId, SUM(a.points) as totalScoreChange, COUNT(a) as activityCount, MAX(a.createdAt) as lastActivityTime " +
            "FROM RankingUserActivity a " +
            "WHERE a.createdAt >= :startDate " +
            "GROUP BY a.userId " +
-           "HAVING SUM(a.scoreChange) >= :threshold " +
+           "HAVING SUM(a.points) >= :threshold " +
            "ORDER BY totalScoreChange DESC")
     List<Object[]> findSuspiciousActivities(@Param("startDate") LocalDateTime startDate, @Param("threshold") int threshold);
 
@@ -126,15 +95,4 @@ public interface RankingUserActivityRepository extends JpaRepository<RankingUser
            "WHERE a.createdAt BETWEEN :startDate AND :endDate " +
            "GROUP BY HOUR(a.createdAt)")
     List<Object[]> countActivitiesByHourOfDay(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-
-    /**
-     * 특정 사용자의 마지막 IP 주소 조회
-     * 
-     * @param userId 사용자 ID
-     * @return 마지막 IP 주소
-     */
-    @Query("SELECT a.ipAddress FROM RankingUserActivity a " +
-           "WHERE a.userId = :userId " +
-           "ORDER BY a.createdAt DESC")
-    Optional<String> findLastIpAddressByUserId(@Param("userId") Long userId);
 } 

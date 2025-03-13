@@ -53,23 +53,29 @@ public class RankingLeaderboard {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
+    
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
+        modifiedAt = LocalDateTime.now();
         
         // 기본값 설정
         if (rankType == null) {
             rankType = RankType.fromScore(score);
         }
+        if (isDeleted == null) {
+            isDeleted = false;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        modifiedAt = LocalDateTime.now();
         
         // 점수에 따른 랭크 업데이트
         rankType = RankType.fromScore(score);

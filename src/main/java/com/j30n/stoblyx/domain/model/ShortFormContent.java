@@ -44,8 +44,6 @@ public class ShortFormContent extends BaseEntity {
     @Column(nullable = false)
     private ContentStatus status = ContentStatus.PROCESSING;
     @Column
-    private boolean deleted = false;
-    @Column
     private int duration;
     private int viewCount = 0;
     private int likeCount = 0;
@@ -135,8 +133,12 @@ public class ShortFormContent extends BaseEntity {
         }
     }
 
-    public void markAsDeleted() {
-        this.deleted = true;
+    /**
+     * 콘텐츠를 논리적으로 삭제합니다.
+     */
+    @Override
+    public void delete() {
+        super.delete();
     }
 
     public void setVideoUrl(String videoUrl) {

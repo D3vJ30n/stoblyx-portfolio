@@ -42,57 +42,57 @@ public class RedisTestConfig {
 
     @Bean
     public StringRedisTemplate stringRedisTemplate() {
-        return (StringRedisTemplate) mock(StringRedisTemplate.class);
+        return mock(StringRedisTemplate.class);
     }
-    
+
     @Bean(name = "cacheRedisTemplate")
     @Primary
     public RedisTemplate<String, Object> cacheRedisTemplate() {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
-        
+
         // 키 직렬화 설정
         template.setKeySerializer(new StringRedisSerializer());
-        
+
         // 값 직렬화 설정 (JSON)
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
-        
+
         // 해시 키/값 직렬화 설정
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
-        
+
         return template;
     }
-    
+
     @Bean
     @Primary
     public CacheManager cacheManager() {
         // 기본 캐시 설정
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(3600)) // 기본 TTL 1시간
-                .serializeKeysWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+            .entryTtl(Duration.ofSeconds(3600)) // 기본 TTL 1시간
+            .serializeKeysWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
         // 캐시별 TTL 설정
         Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
-        
+
         // 사용자 캐시 (12시간)
         cacheConfigurations.put("userCache", defaultConfig.entryTtl(Duration.ofHours(12)));
-        
+
         // 콘텐츠 캐시 (6시간)
         cacheConfigurations.put("contentCache", defaultConfig.entryTtl(Duration.ofHours(6)));
-        
+
         // 설정 캐시 (24시간)
         cacheConfigurations.put("settingCache", defaultConfig.entryTtl(Duration.ofHours(24)));
-        
+
         // 명언 캐시 (12시간)
         cacheConfigurations.put("quotesCache", defaultConfig.entryTtl(Duration.ofHours(12)));
 
         return RedisCacheManager.builder(redisConnectionFactory())
-                .cacheDefaults(defaultConfig)
-                .withInitialCacheConfigurations(cacheConfigurations)
-                .build();
+            .cacheDefaults(defaultConfig)
+            .withInitialCacheConfigurations(cacheConfigurations)
+            .build();
     }
 } 

@@ -13,7 +13,7 @@ public record BookDetailResponse(
     String publisher,
     Integer publicationYear,
     String coverImage,
-    List<String> categories,
+    List<String> genres,
     Integer totalPages,
     Integer avgReadingTime,
     Double averageRating,
@@ -30,7 +30,7 @@ public record BookDetailResponse(
             .publisher(book.getPublisher())
             .publicationYear(book.getPublicationYear())
             .coverImage(book.getThumbnailUrl())
-            .categories(book.getGenres())
+            .genres(book.getGenres())
             .totalPages(book.getTotalPages())
             .avgReadingTime(book.getAvgReadingTime())
             .averageRating(book.getAverageRating())
@@ -53,7 +53,7 @@ public record BookDetailResponse(
         private String publisher;
         private Integer publicationYear;
         private String coverImage;
-        private List<String> categories;
+        private List<String> genres;
         private Integer totalPages;
         private Integer avgReadingTime;
         private Double averageRating;
@@ -68,7 +68,7 @@ public record BookDetailResponse(
         public BookDetailResponseBuilder publisher(String publisher) { this.publisher = publisher; return this; }
         public BookDetailResponseBuilder publicationYear(Integer publicationYear) { this.publicationYear = publicationYear; return this; }
         public BookDetailResponseBuilder coverImage(String coverImage) { this.coverImage = coverImage; return this; }
-        public BookDetailResponseBuilder categories(List<String> categories) { this.categories = categories; return this; }
+        public BookDetailResponseBuilder genres(List<String> genres) { this.genres = genres; return this; }
         public BookDetailResponseBuilder totalPages(Integer totalPages) { this.totalPages = totalPages; return this; }
         public BookDetailResponseBuilder avgReadingTime(Integer avgReadingTime) { this.avgReadingTime = avgReadingTime; return this; }
         public BookDetailResponseBuilder averageRating(Double averageRating) { this.averageRating = averageRating; return this; }
@@ -77,7 +77,7 @@ public record BookDetailResponse(
         
         public BookDetailResponse build() {
             return new BookDetailResponse(id, title, author, isbn, description, publisher, publicationYear, coverImage, 
-                    categories, totalPages, avgReadingTime, averageRating, ratingCount, createdAt);
+                    genres, totalPages, avgReadingTime, averageRating, ratingCount, createdAt);
         }
     }
 } 

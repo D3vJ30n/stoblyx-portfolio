@@ -60,4 +60,25 @@ public class BookPersistenceAdapter implements BookPort {
     public Page<Book> findByGenre(String genre, Pageable pageable) {
         return bookRepository.findByGenresContainingAndIsDeletedFalse(genre, pageable);
     }
+
+    @Override
+    public Page<Book> getHistoryBasedRecommendations(Pageable pageable) {
+        // 실제 구현에서는 사용자의 검색 기록을 분석하여 추천 책을 제공
+        // 테스트 목적으로 임시 구현
+        return bookRepository.findByIsDeletedFalse(pageable);
+    }
+
+    @Override
+    public Page<Book> getInterestBasedRecommendations(Pageable pageable) {
+        // 실제 구현에서는 사용자의 관심사를 분석하여 추천 책을 제공
+        // 테스트 목적으로 임시 구현
+        return bookRepository.findByIsDeletedFalse(pageable);
+    }
+
+    @Override
+    public Page<Book> getDefaultRecommendations(Pageable pageable) {
+        // 실제 구현에서는 인기 있는 책이나 최신 책을 추천
+        // 테스트 목적으로 임시 구현
+        return bookRepository.findByIsDeletedFalse(pageable);
+    }
 }

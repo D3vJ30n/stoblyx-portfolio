@@ -30,8 +30,6 @@ public class Summary extends BaseEntity {
     @Column(length = 50)
     private String page;
 
-    private boolean deleted = false;
-
     @Builder
     public Summary(Book book, String content, String chapter, String page) {
         this.book = book;
@@ -47,8 +45,9 @@ public class Summary extends BaseEntity {
         updateModifiedAt();
     }
 
+    @Override
     public void delete() {
-        this.deleted = true;
+        super.delete();
         updateModifiedAt();
     }
 } 

@@ -32,7 +32,7 @@ public class ContentCommentPersistenceAdapter implements ContentCommentPort {
 
     @Override
     public Page<ContentComment> findCommentsByContentId(Long contentId, Pageable pageable) {
-        return contentCommentRepository.findByContent_IdAndIsDeletedFalse(contentId, pageable);
+        return contentCommentRepository.findByShortFormContent_IdAndIsDeletedFalse(contentId, pageable);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class ContentCommentPersistenceAdapter implements ContentCommentPort {
 
     @Override
     public List<ContentComment> findRepliesByParentId(Long parentId) {
-        return contentCommentRepository.findByParent_IdAndIsDeletedFalse(parentId);
+        return List.of();
     }
 
     @Override

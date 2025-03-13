@@ -46,9 +46,9 @@ public class Book extends BaseEntity {
     private List<String> genres = new ArrayList<>();
     private Integer publicationYear;
     private Integer totalPages;
-    private Integer avgReadingTime;
-    private Double averageRating;
-    private Integer ratingCount;
+    private Integer avgReadingTime = 0;
+    private Double averageRating = 0.0;
+    private Integer ratingCount = 0;
 
     /**
      * 책의 인기도 점수
@@ -65,6 +65,10 @@ public class Book extends BaseEntity {
         this.publisher = bookInfo.getPublisher();
         this.publishDate = bookInfo.getPublishDate();
         this.thumbnailUrl = bookInfo.getThumbnailUrl();
+        this.publicationYear = bookInfo.getPublicationYear();
+        this.totalPages = bookInfo.getTotalPages();
+        this.popularity = 0;
+        
         if (bookInfo.getGenres() != null) {
             this.genres = new ArrayList<>(bookInfo.getGenres());
         }
@@ -81,6 +85,15 @@ public class Book extends BaseEntity {
         this.publisher = bookInfo.getPublisher();
         this.publishDate = bookInfo.getPublishDate();
         this.thumbnailUrl = bookInfo.getThumbnailUrl();
+        
+        if (bookInfo.getPublicationYear() != null) {
+            this.publicationYear = bookInfo.getPublicationYear();
+        }
+        
+        if (bookInfo.getTotalPages() != null) {
+            this.totalPages = bookInfo.getTotalPages();
+        }
+        
         if (bookInfo.getGenres() != null) {
             this.genres = new ArrayList<>(bookInfo.getGenres());
         }

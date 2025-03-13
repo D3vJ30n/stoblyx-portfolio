@@ -24,10 +24,10 @@ public record SearchHistoryResponse(
     public static SearchHistoryResponse fromEntity(Search search) {
         return new SearchHistoryResponse(
             search.getId(),
-            search.getKeyword(),
-            search.getCategory(),
-            search.getResultCount(),
-            search.getSearchedAt(),
+            search.getSearchTerm(),
+            search.getSearchType(),
+            search.getSearchCount(),
+            search.getLastSearchedAt(),
             search.getUser() != null ? search.getUser().getId() : null
         );
     }

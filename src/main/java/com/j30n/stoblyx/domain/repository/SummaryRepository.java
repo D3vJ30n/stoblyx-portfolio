@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SummaryRepository extends JpaRepository<Summary, Long> {
     Page<Summary> findByBookId(Long bookId, Pageable pageable);
-    Page<Summary> findByBookIdAndDeletedFalse(Long bookId, Pageable pageable);
+    Page<Summary> findByBookIdAndIsDeletedFalse(Long bookId, Pageable pageable);
 } 

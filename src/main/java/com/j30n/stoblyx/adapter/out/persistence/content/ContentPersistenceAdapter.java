@@ -26,7 +26,7 @@ public class ContentPersistenceAdapter implements ContentPort {
 
     @Override
     public Optional<ShortFormContent> findById(Long id) {
-        return contentRepository.findByIdAndDeletedFalse(id);
+        return contentRepository.findByIdAndIsDeletedFalse(id);
     }
 
     @Override
@@ -37,22 +37,22 @@ public class ContentPersistenceAdapter implements ContentPort {
 
     @Override
     public Page<ShortFormContent> findAll(Pageable pageable) {
-        return contentRepository.findByDeletedFalse(pageable);
+        return contentRepository.findByIsDeletedFalse(pageable);
     }
 
     @Override
     public Page<ShortFormContent> findByUserId(Long userId, Pageable pageable) {
-        return contentRepository.findByQuote_User_IdAndDeletedFalse(userId, pageable);
+        return contentRepository.findByQuote_User_IdAndIsDeletedFalse(userId, pageable);
     }
 
     @Override
     public Page<ShortFormContent> findByBookId(Long bookId, Pageable pageable) {
-        return contentRepository.findByBook_IdAndDeletedFalse(bookId, pageable);
+        return contentRepository.findByBook_IdAndIsDeletedFalse(bookId, pageable);
     }
 
     @Override
     public Page<ShortFormContent> search(String keyword, Pageable pageable) {
-        return contentRepository.findBySubtitlesContainingAndDeletedFalse(keyword, pageable);
+        return contentRepository.findBySubtitlesContainingAndIsDeletedFalse(keyword, pageable);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ContentPersistenceAdapter implements ContentPort {
 
     @Override
     public boolean isLikedByUser(Long contentId, Long userId) {
-        return contentLikeRepository.existsByContentIdAndUserId(contentId, userId);
+        return contentLikeRepository.existsByContent_IdAndUser_Id(contentId, userId);
     }
 
     @Override
@@ -85,6 +85,6 @@ public class ContentPersistenceAdapter implements ContentPort {
 
     @Override
     public Page<ShortFormContent> findByStatus(ContentStatus status, Pageable pageable) {
-        return contentRepository.findByStatusAndDeletedFalse(status, pageable);
+        return contentRepository.findByStatusAndIsDeletedFalse(status, pageable);
     }
 }

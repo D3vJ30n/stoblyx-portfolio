@@ -8,7 +8,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "search_term_profiles")
+@Table(
+    name = "search_term_profiles",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_search_term", columnNames = {"search_term"})
+    }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SearchTermProfile extends BaseEntity {
@@ -17,32 +22,44 @@ public class SearchTermProfile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @Column(nullable = false, length = 100)
+    @Column(name = "search_term", nullable = false, length = 255)
     private String searchTerm;
 
-    @Column(nullable = false)
-    private Integer searchFrequency;
+    @Column(name = "search_count", nullable = false)
+    private Integer searchCount = 0;
 
-    @Column(nullable = false)
-    private Double termWeight;
+    @Column(name = "user_demographic_data", columnDefinition = "TEXT")
+    private String userDemographicData;
+
+    @Column(name = "related_terms", columnDefinition = "TEXT")
+    private String relatedTerms;
+
+    @Column(name = "trend_data", columnDefinition = "TEXT")
+    private String trendData;
 
     @Builder
-    public SearchTermProfile(User user, String searchTerm, Integer searchFrequency, Double termWeight) {
-        this.user = user;
+    public SearchTermProfile(String searchTerm, Integer searchCount, String userDemographicData, 
+                            String relatedTerms, String trendData) {
         this.searchTerm = searchTerm;
-        this.searchFrequency = searchFrequency != null ? searchFrequency : 1;
-        this.termWeight = termWeight != null ? termWeight : 1.0;
+        this.searchCount = searchCount != null ? searchCount : 0;
+        this.userDemographicData = userDemographicData;
+        this.relatedTerms = relatedTerms;
+        this.trendData = trendData;
     }
 
-    public void incrementFrequency() {
-        this.searchFrequency += 1;
+    public void incrementSearchCount() {
+        this.searchCount += 1;
     }
 
-    public void updateWeight(Double weight) {
-        this.termWeight = weight;
+    public void updateTrendData(String trendData) {
+        this.trendData = trendData;
+    }
+
+    public void updateRelatedTerms(String relatedTerms) {
+        this.relatedTerms = relatedTerms;
+    }
+
+    public void updateUserDemographicData(String userDemographicData) {
+        this.userDemographicData = userDemographicData;
     }
 } 

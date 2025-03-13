@@ -1,6 +1,5 @@
 package com.j30n.stoblyx.application.port.out.gamification;
 
-import com.j30n.stoblyx.domain.enums.RankType;
 import com.j30n.stoblyx.domain.enums.RewardType;
 import com.j30n.stoblyx.domain.model.GamificationReward;
 
@@ -46,15 +45,6 @@ public interface GamificationRewardPort {
     List<GamificationReward> findByUserIdAndRewardType(Long userId, RewardType rewardType);
 
     /**
-     * 사용자 ID와 랭크 타입으로 보상 내역 조회
-     *
-     * @param userId   사용자 ID
-     * @param rankType 랭크 타입
-     * @return 보상 내역 목록
-     */
-    List<GamificationReward> findByUserIdAndRankType(Long userId, RankType rankType);
-
-    /**
      * 보상 ID로 보상 정보 조회
      *
      * @param rewardId 보상 ID
@@ -78,14 +68,6 @@ public interface GamificationRewardPort {
      * @return 보상 내역 목록
      */
     List<GamificationReward> findExpiredRewards(LocalDateTime currentDate);
-
-    /**
-     * 특정 랭크 타입의 보상 내역 조회
-     *
-     * @param rankType 랭크 타입
-     * @return 보상 내역 목록
-     */
-    List<GamificationReward> findByRankType(RankType rankType);
 
     /**
      * 특정 보상 유형의 보상 내역 조회

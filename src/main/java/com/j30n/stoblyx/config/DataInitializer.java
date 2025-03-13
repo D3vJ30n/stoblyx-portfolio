@@ -416,8 +416,8 @@ public class DataInitializer {
         if (random.nextInt(10) < 3) {
             ContentComment comment = ContentComment.builder()
                 .user(user)
-                .content(content)
-                .commentText("이 콘텐츠에 대한 댓글: " + (random.nextInt(100) + 1))
+                .shortFormContent(content)
+                .content("이 콘텐츠에 대한 댓글: " + (random.nextInt(100) + 1))
                 .build();
             
             contentCommentRepository.save(comment);
@@ -455,39 +455,22 @@ public class DataInitializer {
     @Transactional
     public void initSearchHistory() {
         List<User> users = userRepository.findAll();
-        List<String> searchKeywords = Arrays.asList(
-            "철학", "소설", "자기계발", "역사", "과학", 
-            "에세이", "심리학", "정치", "경제", "문화"
-        );
-        
-        List<String> searchCategories = Arrays.asList(
-            "책", "저자", "내용", "장르", "출판사", "트렌드"
-        );
-        
-        for (User user : users) {
-            // 각 사용자당 5-10개의 검색 기록 생성
-            int searchCount = random.nextInt(6) + 5;
-            
-            for (int i = 0; i < searchCount; i++) {
-                String keyword = searchKeywords.get(random.nextInt(searchKeywords.size()));
-                String category = searchCategories.get(random.nextInt(searchCategories.size()));
-                
-                Search search = Search.builder()
-                    .user(user)
-                    .keyword(keyword)
-                    .category(category)
-                    .resultCount(random.nextInt(100))
+        List<String> searchKeywords = List.of("인공지능", "자기계발", "경영", "소설", "심리학", "철학", "역사");
+        List<String> searchCategories = List.of("BOOK", "SHORTFORM", "USER");
+
+        for (int i = 0; i < 20; i++) {
+            User randomUser = users.get(random.nextInt(users.size()));
+            String searchTerm = searchKeywords.get(random.nextInt(searchKeywords.size()));
+            String searchType = searchCategories.get(random.nextInt(searchCategories.size()));
+
+            Search search = Search.builder()
+                    .searchTerm(searchTerm)
+                    .searchCount(random.nextInt(10) + 1)
+                    .searchType(searchType)
+                    .user(randomUser)
                     .build();
-                
-                // 저장 전에 연도를 설정 (기본값은 현재 시간)
-                searchRepository.save(search);
-                
-                // 검색 시간이 이미 생성자에서 설정되었으므로 필요한 경우 업데이트
-                if (random.nextBoolean()) {
-                    search.setSearchedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
-                    searchRepository.save(search); // 변경된 시간으로 다시 저장
-                }
-            }
+
+            searchRepository.save(search);
         }
         
         log.info("사용자별 검색 기록이 생성되었습니다.");
