@@ -1366,57 +1366,43 @@ round(currentScore *(1-decayFactor));
 
 #### 회원가입 및 로그인
 
-<div align="center">
-  <img src="src/docs/diagrams/1_회원가입및로그인.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![회원가입 및 로그인 API 호출](src/docs/diagrams/1_회원가입및로그인.png)
 
 #### 검색 기능
 
-<div align="center">
-  <img src="src/docs/diagrams/2_검색기능.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![검색 기능 API 호출](src/docs/diagrams/2_검색기능.png)
 
 #### 콘텐츠 보기
 
-<div align="center">
-  <img src="src/docs/diagrams/3_콘텐츠보기.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![콘텐츠 보기 API 호출](src/docs/diagrams/3_콘텐츠보기.png)
 
 #### 사용자 상호작용
 
-<div align="center">
-  <img src="src/docs/diagrams/4_사용자상호작용.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![사용자 상호작용 API 호출](src/docs/diagrams/4_사용자상호작용.png)
 
 #### 새 콘텐츠 생성
 
-<div align="center">
-  <img src="src/docs/diagrams/5_새콘텐츠생성.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![새 콘텐츠 생성 API 호출](src/docs/diagrams/5_새콘텐츠생성.png)
 
 #### 추천 콘텐츠 및 도서 확인
 
-<div align="center">
-  <img src="src/docs/diagrams/6_추천콘텐츠및도서확인.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![추천 콘텐츠 및 도서 확인 API 호출](src/docs/diagrams/6_추천콘텐츠및도서확인.png)
 
 #### 랭킹 시스템 확인
 
-<div align="center">
-  <img src="src/docs/diagrams/7_랭킹시스템확인.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![랭킹시스템 확인 API 호출](src/docs/diagrams/7_랭킹시스템확인.png)
 
 #### 사용자 프로필 설정
 
-<div align="center">
-  <img src="src/docs/diagrams/8_사용자프로필설정.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![사용자 프로필 설정 API 호출](src/docs/diagrams/8_사용자프로필설정.png)
 
 #### 로그아웃
 
-<div align="center">
-  <img src="src/docs/diagrams/8_로그아웃및세션종료.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
-</div>
+![로그아웃 API 호출](src/docs/diagrams/9_로그아웃및세션종료.png)
+
+#### K6 테스트 결과
+
+![K6 테스트 결과](src/docs/diagrams/10_테스트결과.png)
 
 ---
 
