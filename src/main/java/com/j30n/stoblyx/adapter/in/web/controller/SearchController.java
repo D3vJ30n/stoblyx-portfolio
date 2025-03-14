@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 검색 관련 API를 처리하는 컨트롤러
@@ -24,6 +26,7 @@ public class SearchController {
     private static final String RESULT_ERROR = "ERROR";
     
     private final SearchUseCase searchUseCase;
+    private static final Logger log = LoggerFactory.getLogger(SearchController.class);
 
     /**
      * 통합 검색 API
@@ -39,9 +42,43 @@ public class SearchController {
         @PageableDefault(size = 20) Pageable pageable
     ) {
         try {
+            // 검색어가 비어있는지 확인
+            if (request.keyword() == null || request.keyword().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(
+                    new ApiResponse<>(RESULT_ERROR, "검색어를 입력해주세요.", null)
+                );
+            }
+            
             return ResponseEntity.ok(
                 new ApiResponse<>(RESULT_SUCCESS, "검색 결과입니다.",
                     searchUseCase.search(request, pageable))
+            );
+        } catch (Exception e) {
+            log.error("검색 중 오류 발생", e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, e.getMessage(), null)
+            );
+        }
+    }
+    
+    /**
+     * 인기 검색어 조회 API
+     *
+     * @param limit 조회할 인기 검색어 수
+     * @return 인기 검색어 목록
+     */
+    @GetMapping("/popular-terms")
+    public ResponseEntity<ApiResponse<?>> getPopularSearchTerms(
+        @RequestParam(defaultValue = "10") int limit
+    ) {
+        try {
+            // 임시 구현: 테스트 모드에서는 더미 데이터 반환
+            return ResponseEntity.ok(
+                new ApiResponse<>(RESULT_SUCCESS, "인기 검색어 조회 결과입니다.",
+                    java.util.Arrays.asList(
+                        "철학", "소설", "자기계발", "역사", "과학",
+                        "예술", "종교", "경제", "정치", "심리학"
+                    ).subList(0, Math.min(limit, 10)))
             );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(

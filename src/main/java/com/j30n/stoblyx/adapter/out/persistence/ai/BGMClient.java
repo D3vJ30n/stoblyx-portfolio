@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -164,8 +165,17 @@ public class BGMClient {
      * @return BGM 파일의 URL
      */
     public String getRandomBGM() {
-        // Implementation needed
-        throw new UnsupportedOperationException("Method not implemented");
+        log.info("무작위 BGM 선택");
+        
+        // 모든 BGM 파일 경로 리스트
+        List<String> allBgmPaths = new ArrayList<>(emotionBgmMap.values());
+        
+        // 랜덤 선택
+        int randomIndex = (int) (Math.random() * allBgmPaths.size());
+        String selectedBgm = allBgmPaths.get(randomIndex);
+        
+        log.info("무작위 선택된 BGM: {}", selectedBgm);
+        return selectedBgm;
     }
     
     /**
@@ -174,7 +184,31 @@ public class BGMClient {
      * @return BGM 파일의 URL
      */
     public String selectBGMByMood(String mood) {
-        // Implementation needed
-        throw new UnsupportedOperationException("Method not implemented");
+        log.info("분위기 기반 BGM 선택: {}", mood);
+        
+        if (mood == null || mood.trim().isEmpty()) {
+            log.info("분위기 키워드가 비어있어 기본 BGM을 선택합니다.");
+            return emotionBgmMap.get(EMOTION_NEUTRAL);
+        }
+        
+        // 소문자로 변환
+        String lowerMood = mood.toLowerCase().trim();
+        
+        // 감정 키워드 매칭 확인
+        for (Map.Entry<String, List<String>> entry : emotionKeywords.entrySet()) {
+            String emotion = entry.getKey();
+            List<String> keywords = entry.getValue();
+            
+            // 키워드 중 하나라도 포함되면 해당 감정의 BGM 반환
+            if (keywords.stream().anyMatch(lowerMood::contains) || lowerMood.contains(emotion)) {
+                String selectedBgm = emotionBgmMap.get(emotion);
+                log.info("분위기 '{}' -> 감정 '{}' -> BGM '{}'", mood, emotion, selectedBgm);
+                return selectedBgm;
+            }
+        }
+        
+        // 매칭되는 키워드가 없으면 기본 BGM 반환
+        log.info("분위기 '{}' 에 매칭되는 BGM이 없어 기본 BGM을 선택합니다.", mood);
+        return emotionBgmMap.get(EMOTION_NEUTRAL);
     }
 }

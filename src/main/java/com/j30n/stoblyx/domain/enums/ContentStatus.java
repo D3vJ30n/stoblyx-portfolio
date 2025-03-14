@@ -5,6 +5,11 @@ package com.j30n.stoblyx.domain.enums;
  */
 public enum ContentStatus {
     /**
+     * 콘텐츠가 초안 상태 (작성 중)
+     */
+    DRAFT,
+    
+    /**
      * 콘텐츠가 처리 중인 상태
      */
     PROCESSING,

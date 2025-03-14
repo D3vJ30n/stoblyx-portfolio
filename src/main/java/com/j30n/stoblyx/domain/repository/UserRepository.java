@@ -10,12 +10,58 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * 사용자 리포지토리 인터페이스
+ */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    
+    /**
+     * 사용자명으로 사용자 정보 조회
+     *
+     * @param username 사용자명
+     * @return 사용자 정보
+     */
     Optional<User> findByUsername(String username);
+    
+    /**
+     * 이메일로 사용자 정보 조회
+     *
+     * @param email 이메일
+     * @return 사용자 정보
+     */
     Optional<User> findByEmail(String email);
+    
+    /**
+     * 사용자명 존재 여부 확인
+     *
+     * @param username 사용자명
+     * @return 존재 여부
+     */
     boolean existsByUsername(String username);
+    
+    /**
+     * 이메일 존재 여부 확인
+     *
+     * @param email 이메일
+     * @return 존재 여부
+     */
     boolean existsByEmail(String email);
+    
+    /**
+     * 활성 상태인 사용자 수 조회
+     *
+     * @return 활성 상태인 사용자 수
+     */
+    Long countByIsDeletedFalse();
+    
+    /**
+     * 특정 역할을 가진 사용자 목록 조회
+     *
+     * @param role 역할
+     * @return 해당 역할을 가진 사용자 목록
+     */
+    List<User> findByRole(String role);
 
     /**
      * 특정 날짜 이후에 생성된 사용자 수를 조회합니다.

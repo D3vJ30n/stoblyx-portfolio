@@ -23,23 +23,106 @@ VALUES
     (1, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test-refresh-token-1', 'BEARER', DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 7 DAY), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     (2, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test-refresh-token-2', 'BEARER', DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 7 DAY), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0);
 
--- 테스트 도서 데이터 (book): 콘텐츠의 기본이 되는 도서 정보
-INSERT IGNORE INTO book (title, author, isbn, description, publisher, publishDate, thumbnailUrl, publicationYear, totalPages, avgReadingTime, averageRating, ratingCount, popularity, created_at, modified_at, is_deleted)
+-- 테스트 도서 데이터 (books): 콘텐츠의 기본이 되는 도서 정보
+INSERT IGNORE INTO books (title, author, isbn, description, publisher, publishDate, thumbnailUrl, publicationYear, totalPages, avgReadingTime, averageRating, ratingCount, popularity, created_at, modified_at, is_deleted)
 VALUES 
-    ('철학의 즐거움', '알랭 드 보통', '9788900000000', '현대인의 일상 속에서 철학이 어떻게 적용될 수 있는지 쉽고 재미있게 설명하는 책입니다. 플라톤부터 니체까지, 위대한 철학자들의 사상을 현대적 관점에서 재해석합니다.', '세계출판사', '2023-03-15', 'https://images.pexels.com/photos/3747139/pexels-photo-3747139.jpeg', 2023, 328, 840, 4.7, 1243, 78, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0);
+    ('철학의 즐거움', '알랭 드 보통', '9788900000000', '현대인의 일상 속에서 철학이 어떻게 적용될 수 있는지 쉽고 재미있게 설명하는 책입니다. 플라톤부터 니체까지, 위대한 철학자들의 사상을 현대적 관점에서 재해석합니다.', '세계출판사', '2023-03-15', 'https://images.pexels.com/photos/3747139/pexels-photo-3747139.jpeg', 2023, 328, 840, 4.7, 1243, 78, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    ('사피엔스: 유인원에서 인공지능까지, 인간 역사의 대담한 질문', '유발 하라리', '9788934972464', '인류의 역사와 미래에 대한 통찰력 있는 분석을 제공하는 세계적 베스트셀러. 인간이 어떻게 지구의 지배자가 되었는지, 그리고 어떻게 인지혁명, 농업혁명, 과학혁명을 통해 발전해왔는지를 설명합니다. 저자는 인류의 유전자와 환경보다는 허구를 믿는 능력이 인류 발전의 원동력이었다고 주장합니다.', '김영사', '2015-11-24', 'https://image.aladin.co.kr/product/5464/98/cover500/8934972467_1.jpg', 2015, 432, 840, 4.7, 1243, 78, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    ('코스모스', '칼 세이건', '9788983711892', 
+    '우주의 탄생부터 인류 문명의 발전까지 과학적 시각으로 바라본 세계적인 과학 교양서. 칼 세이건은 복잡한 우주 과학을 일반인도 이해할 수 있는 언어로 풀어내며, 인류가 우주에서 차지하는 위치와 의미를 성찰하게 합니다.', 
+    '사이언스북스', '2006-12-20', 'https://images.pexels.com/photos/2150/sky-space-dark-galaxy.jpg', 
+    2006, 680, 1200, 4.8, 1578, 92, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('1984', '조지 오웰', '9788937460777', 
+    '빅브라더가 지배하는 디스토피아 세계를 그린 20세기 최고의 정치 소설. 전체주의 사회의 언어 통제, 사상 감시, 역사 왜곡을 통해 인간성이 파괴되는 과정을 생생하게 묘사하며, 현대 사회에도 여전히 유효한 경고를 담고 있습니다.', 
+    '민음사', '2012-08-01', 'https://images.pexels.com/photos/267669/pexels-photo-267669.jpeg', 
+    2012, 355, 780, 4.6, 1892, 88, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('해리 포터와 마법사의 돌', 'J.K. 롤링', '9788983920997', 
+    '11살 소년 해리 포터가 자신이 마법사임을 알게 되면서 마법 세계에서 벌어지는 모험을 그린 판타지 소설. 호그와트 마법학교를 배경으로 우정, 용기, 선과 악의 대립을 다루며 전 세계적인 열풍을 일으켰습니다.', 
+    '문학수첩', '2019-11-15', 'https://images.pexels.com/photos/1294886/pexels-photo-1294886.jpeg', 
+    2019, 302, 720, 4.9, 2541, 96, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('데미안', '헤르만 헤세', '9788931005882', 
+    '에밀 싱클레어라는 소년이 자아를 찾아가는 성장 과정을 그린 소설. 세계 1차 대전의 혼란 속에서 출간된 이 작품은 인간의 내면과 영혼의 성찰을 통해 진정한 자아 발견의 여정을 담고 있습니다.', 
+    '민음사', '2009-04-20', 'https://images.pexels.com/photos/3747139/pexels-photo-3747139.jpeg', 
+    2009, 248, 540, 4.5, 1245, 84, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('이기적 유전자', '리처드 도킨스', '9788932916675', 
+    '진화론의 새로운 관점을 제시한 과학서. 도킨스는 생존과 번식의 주체가 개체가 아닌 유전자라는 혁신적인 이론을 펼치며, 인간 행동의 생물학적 기반에 대한 깊은 통찰을 제공합니다.', 
+    '을유문화사', '2018-10-20', 'https://images.pexels.com/photos/256262/pexels-photo-256262.jpeg', 
+    2018, 516, 1100, 4.7, 1426, 87, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('잃어버린 시간을 찾아서', '마르셀 프루스트', '9788937461033', 
+    '20세기 최고의 프랑스 소설로 평가받는 대작. 주인공의 기억을 통해 펼쳐지는 방대한 이야기는 시간, 예술, 사랑, 질투 등 인간 존재의 복잡한 층위를 탐구합니다.', 
+    '민음사', '2012-10-15', 'https://images.pexels.com/photos/9006136/pexels-photo-9006136.jpeg', 
+    2012, 420, 950, 4.4, 856, 72, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('소나기', '황순원', '9788937460104', 
+    '순수한 소년과 소녀의 사랑을 그린 한국 문학의 명작 단편소설. 아름답고 서정적인 문체와 비극적 결말을 통해 순수한 사랑의 아름다움과 덧없음을 표현했습니다.', 
+    '민음사', '2015-05-10', 'https://images.pexels.com/photos/531880/pexels-photo-531880.jpeg', 
+    2015, 128, 320, 4.8, 1865, 85, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('채식주의자', '한강', '9788936433598', 
+    '2016년 인터내셔널 부커상을 수상한 한국 소설. 육식을 거부하게 된 여성의 이야기를 통해 폭력과 욕망, 인간성에 대한 근본적인 질문을 던집니다.', 
+    '창비', '2007-10-30', 'https://images.pexels.com/photos/1414651/pexels-photo-1414651.jpeg', 
+    2007, 247, 580, 4.6, 1342, 90, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('스티브 잡스', '월터 아이작슨', '9788934972464', 
+    '애플 창업자 스티브 잡스의 공식 전기. 잡스 본인의 협조로 작성된 이 책은 그의 열정, 완벽주의, 혁신에 대한 집념, 그리고 그 이면의 복잡한 인물상을 생생하게 담아냅니다.', 
+    '민음사', '2011-10-24', 'https://images.pexels.com/photos/38568/apple-imac-ipad-workplace-38568.jpeg', 
+    2011, 758, 1400, 4.7, 2134, 91, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('타이탄의 도구들', '팀 페리스', '9791195089192', 
+    '세계적인 기업가, 운동선수, 예술가 등 200명 이상의 성공한 인물들의 습관과 전략을 분석한 자기계발서. 그들의 사고방식, 일상 루틴, 생산성 향상법 등 실용적인 조언을 담고 있습니다.', 
+    '토네이도', '2017-04-03', 'https://images.pexels.com/photos/4238496/pexels-photo-4238496.jpeg', 
+    2017, 675, 1250, 4.5, 1624, 86, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0);
 
--- 테스트 도서 장르 데이터 (book_genres): book 테이블 참조
+-- 테스트 도서 장르 데이터 (book_genres): books 테이블 참조
 INSERT IGNORE INTO book_genres (book_id, genre)
 VALUES
     (1, '철학'),
     (1, '자기계발'),
-    (1, '인문학');
+    (1, '인문학'),
+    (2, '역사'),
+    (2, '과학'),
+    (2, '인문학'),
+    (3, '과학'),
+    (3, '우주'),
+    (3, '교양'),
+    (4, '소설'),
+    (4, '고전'),
+    (4, '디스토피아'),
+    (5, '판타지'),
+    (5, '소설'),
+    (5, '청소년'),
+    (6, '소설'),
+    (6, '고전'),
+    (6, '철학'),
+    (7, '과학'),
+    (7, '생물학'),
+    (7, '진화론'),
+    (8, '소설'),
+    (8, '고전'),
+    (8, '프랑스문학'),
+    (9, '소설'),
+    (9, '한국문학'),
+    (9, '단편'),
+    (10, '소설'),
+    (10, '한국문학'),
+    (10, '현대문학'),
+    (11, '전기'),
+    (11, '경영'),
+    (11, '기술'),
+    (12, '자기계발'),
+    (12, '경영'),
+    (12, '생산성');
 
 -- --------------------------------------------------------
 -- 콘텐츠 및 상호작용 데이터
 -- --------------------------------------------------------
 
--- 테스트 문구 데이터 (quotes): users와 book 테이블 참조
+-- 테스트 문구 데이터 (quotes): users와 books 테이블 참조
 INSERT IGNORE INTO quotes (content, page, memo, like_count, save_count, user_id, book_id, created_at, modified_at, is_deleted)
 VALUES 
     ('진정한 지혜는 자신이 모른다는 것을 아는 데서 시작한다.', 42, '소크라테스의 명언. 자기 자신에 대한 성찰의 중요성을 강조한다.', 203, 87, 1, 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
@@ -203,7 +286,7 @@ VALUES
 -- 요약 데이터
 -- --------------------------------------------------------
 
--- 테스트 요약 데이터 (summaries): book 테이블 참조
+-- 테스트 요약 데이터 (summaries): books 테이블 참조
 INSERT IGNORE INTO summaries (book_id, content, chapter, page, created_at, modified_at, is_deleted)
 VALUES
     (1, '이 장에서는 소크라테스, 플라톤, 아리스토텔레스 등 고대 그리스 철학자들의 주요 사상을 소개하며, 이들이 서양 철학의 기초를 어떻게 세웠는지 설명합니다. 특히 소크라테스의 대화법과 플라톤의 이데아론, 아리스토텔레스의 실천적 지혜 개념을 중점적으로 다룹니다.', '1장: 고대 그리스 철학의 기원', '1-32', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),

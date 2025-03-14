@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS quote_summaries CASCADE;
 DROP TABLE IF EXISTS summaries CASCADE;
 DROP TABLE IF EXISTS quotes CASCADE;
 DROP TABLE IF EXISTS book_genres CASCADE;
-DROP TABLE IF EXISTS book CASCADE;
+DROP TABLE IF EXISTS books CASCADE;
 DROP TABLE IF EXISTS user_interests CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS SHORT_FORM_CONTENTS CASCADE;
@@ -70,7 +70,7 @@ CREATE TABLE auth (
     CONSTRAINT fk_auth_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE book (
+CREATE TABLE books (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     author VARCHAR(100) NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE book_genres (
     book_id BIGINT NOT NULL,
     genre VARCHAR(100) NOT NULL,
     PRIMARY KEY (book_id, genre),
-    CONSTRAINT fk_book_genres_book FOREIGN KEY (book_id) REFERENCES book(id)
+    CONSTRAINT fk_book_genres_book FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
 CREATE TABLE quotes (
@@ -110,7 +110,7 @@ CREATE TABLE quotes (
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_quotes_user FOREIGN KEY (user_id) REFERENCES users(id),
-    CONSTRAINT fk_quotes_book FOREIGN KEY (book_id) REFERENCES book(id)
+    CONSTRAINT fk_quotes_book FOREIGN KEY (book_id) REFERENCES books(id)
 );
 
 CREATE TABLE comments (
@@ -183,7 +183,7 @@ CREATE TABLE SHORT_FORM_CONTENTS (
     book_id BIGINT,
     quote_id BIGINT,
     is_deleted BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_short_form_contents_book FOREIGN KEY (book_id) REFERENCES book(id),
+    CONSTRAINT fk_short_form_contents_book FOREIGN KEY (book_id) REFERENCES books(id),
     CONSTRAINT fk_short_form_contents_quote FOREIGN KEY (quote_id) REFERENCES quotes(id)
 );
 
@@ -431,5 +431,5 @@ CREATE TABLE summaries (
     created_at TIMESTAMP,
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_summaries_book FOREIGN KEY (book_id) REFERENCES book(id)
+    CONSTRAINT fk_summaries_book FOREIGN KEY (book_id) REFERENCES books(id)
 );

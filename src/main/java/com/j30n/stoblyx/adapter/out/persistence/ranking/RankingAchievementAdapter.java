@@ -45,12 +45,12 @@ public class RankingAchievementAdapter implements RankingAchievementPort {
      * @return 저장된 업적 정보 목록
      */
     @Override
-    public List<RankingAchievement> saveAllAchievements(List<RankingAchievement> achievements) {
+    public List<RankingAchievement> saveAll(List<RankingAchievement> achievements) {
         return rankingAchievementRepository.saveAll(achievements);
     }
 
     /**
-     * 업적 ID로 업적 정보 조회
+     * ID로 업적 정보 조회
      *
      * @param achievementId 업적 ID
      * @return 업적 정보
@@ -69,6 +69,41 @@ public class RankingAchievementAdapter implements RankingAchievementPort {
     @Override
     public List<RankingAchievement> findByUserId(Long userId) {
         return rankingAchievementRepository.findByUserId(userId);
+    }
+
+    /**
+     * 사용자 ID와 배지 ID로 업적 존재 여부 확인
+     *
+     * @param userId 사용자 ID
+     * @param badgeId 배지 ID
+     * @return 존재 여부
+     */
+    @Override
+    public boolean existsByUserIdAndBadgeId(Long userId, Long badgeId) {
+        return rankingAchievementRepository.existsByUserIdAndBadgeId(userId, badgeId);
+    }
+
+    /**
+     * 사용자 ID와 배지 ID로 업적 정보 조회
+     *
+     * @param userId  사용자 ID
+     * @param badgeId 배지 ID
+     * @return 업적 정보
+     */
+    @Override
+    public Optional<RankingAchievement> findByUserIdAndBadgeId(Long userId, Long badgeId) {
+        return rankingAchievementRepository.findByUserIdAndBadgeId(userId, badgeId);
+    }
+
+    /**
+     * 배지 ID로 획득한 사용자 수 조회
+     *
+     * @param badgeId 배지 ID
+     * @return 획득한 사용자 수
+     */
+    @Override
+    public Long countByBadgeId(Long badgeId) {
+        return rankingAchievementRepository.countByBadgeId(badgeId);
     }
 
     /**

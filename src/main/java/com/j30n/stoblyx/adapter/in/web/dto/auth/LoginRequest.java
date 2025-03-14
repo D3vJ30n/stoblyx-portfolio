@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotBlank;
  * username 또는 email을 사용하여 로그인 가능
  */
 public record LoginRequest(
-    @NotBlank(message = "사용자 이름은 필수입니다")
     String username,
     
     String email,
@@ -22,6 +21,11 @@ public record LoginRequest(
     public LoginRequest {
         if (username != null) username = username.trim();
         if (email != null) email = email.trim();
+        
+        // 로그인 식별자(username 또는 email) 중 하나는 반드시 있어야 함
+        if ((username == null || username.isEmpty()) && (email == null || email.isEmpty())) {
+            throw new IllegalArgumentException("사용자 이름 또는 이메일은 필수입니다");
+        }
     }
     
     /**
@@ -39,6 +43,6 @@ public record LoginRequest(
      */
     @JsonIgnore
     public String getLoginIdentifier() {
-        return email != null && !email.isEmpty() ? email : username;
+        return (email != null && !email.isEmpty()) ? email : username;
     }
 } 

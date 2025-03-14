@@ -58,6 +58,28 @@ public class RankingBadgeAdapter implements RankingBadgePort {
     public Optional<RankingBadge> findById(Long badgeId) {
         return rankingBadgeRepository.findById(badgeId);
     }
+    
+    /**
+     * 모든 배지 목록 조회
+     *
+     * @return 모든 배지 목록
+     */
+    @Override
+    public List<RankingBadge> findAll() {
+        return rankingBadgeRepository.findAll();
+    }
+    
+    /**
+     * 특정 요구사항 타입과 임계값 이하의 배지 목록 조회
+     *
+     * @param requirementType 요구사항 타입
+     * @param thresholdValue 임계값
+     * @return 조건에 맞는 배지 목록
+     */
+    @Override
+    public List<RankingBadge> findByRequirementTypeAndThresholdValueLessThanEqual(String requirementType, Integer thresholdValue) {
+        return rankingBadgeRepository.findByRequirementTypeAndThresholdValueLessThanEqual(requirementType, thresholdValue);
+    }
 
     /**
      * 가장 많이 획득된 뱃지 목록 조회

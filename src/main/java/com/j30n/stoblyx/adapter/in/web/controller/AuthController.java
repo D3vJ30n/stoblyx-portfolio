@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,6 +29,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+    private static final String RESULT_SUCCESS = "SUCCESS";
+    private static final String RESULT_ERROR = "ERROR";
+    
     private final AuthService authService;
     private final TokenExtractor tokenExtractor;
 
@@ -38,10 +43,26 @@ public class AuthController {
      * @return 회원가입 결과
      */
     @PostMapping("/signup")
-    public ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest request) {
-        log.info("회원가입 요청: {}", request.email());
-        authService.signUp(request);
-        return ApiResponse.success("회원가입이 완료되었습니다.");
+    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
+        try {
+            log.info("회원가입 요청: {}", request.email());
+            authService.signUp(request);
+            
+            log.info("회원가입 완료: {}", request.email());
+            return ResponseEntity.ok(
+                new ApiResponse<>(RESULT_SUCCESS, "회원가입이 완료되었습니다.", null)
+            );
+        } catch (IllegalArgumentException e) {
+            log.warn("회원가입 실패(유효성 오류): {}, 원인: {}", request.email(), e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "회원가입 실패: " + e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("회원가입 실패(서버 오류): {}, 원인: {}", request.email(), e.getMessage(), e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "회원가입 처리 중 오류가 발생했습니다: " + e.getMessage(), null)
+            );
+        }
     }
 
     /**
@@ -52,9 +73,26 @@ public class AuthController {
      * @return 인증 토큰 정보 (Access Token, Refresh Token)
      */
     @PostMapping("/login")
-    public ApiResponse<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        TokenResponse tokenResponse = authService.login(request);
-        return ApiResponse.success("로그인이 완료되었습니다.", tokenResponse);
+    public ResponseEntity<ApiResponse<TokenResponse>> login(@Valid @RequestBody LoginRequest request) {
+        try {
+            log.info("로그인 시도: {}", request.getLoginIdentifier());
+            TokenResponse tokenResponse = authService.login(request);
+            
+            log.info("로그인 성공: {}", request.getLoginIdentifier());
+            return ResponseEntity.ok(
+                new ApiResponse<>(RESULT_SUCCESS, "로그인이 완료되었습니다.", tokenResponse)
+            );
+        } catch (IllegalArgumentException e) {
+            log.warn("로그인 실패(유효성 오류): {}, 원인: {}", request.getLoginIdentifier(), e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("로그인 실패: {}, 원인: {}", request.getLoginIdentifier(), e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ApiResponse<>(RESULT_ERROR, "아이디 또는 비밀번호가 잘못되었습니다.", null)
+            );
+        }
     }
 
     /**
@@ -65,10 +103,27 @@ public class AuthController {
      * @return 새로 발급된 인증 토큰 정보
      */
     @PostMapping("/refresh")
-    public ApiResponse<TokenResponse> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
-        String refreshToken = tokenExtractor.extractToken(bearerToken);
-        TokenResponse tokenResponse = authService.refreshToken(refreshToken);
-        return ApiResponse.success("토큰이 갱신되었습니다.", tokenResponse);
+    public ResponseEntity<ApiResponse<TokenResponse>> refresh(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        try {
+            log.info("토큰 갱신 요청");
+            String refreshToken = tokenExtractor.extractToken(bearerToken);
+            TokenResponse tokenResponse = authService.refreshToken(refreshToken);
+            
+            log.info("토큰 갱신 성공");
+            return ResponseEntity.ok(
+                new ApiResponse<>(RESULT_SUCCESS, "토큰이 갱신되었습니다.", tokenResponse)
+            );
+        } catch (IllegalArgumentException e) {
+            log.warn("토큰 갱신 실패(유효성 오류): {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "토큰 갱신 실패: " + e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("토큰 갱신 실패: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new ApiResponse<>(RESULT_ERROR, "토큰 갱신에 실패했습니다.", null)
+            );
+        }
     }
 
     /**
@@ -79,10 +134,27 @@ public class AuthController {
      * @return 로그아웃 처리 결과
      */
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
-        String accessToken = tokenExtractor.extractToken(bearerToken);
-        authService.logout(accessToken);
-        return ApiResponse.success("로그아웃이 완료되었습니다.");
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(HttpHeaders.AUTHORIZATION) String bearerToken) {
+        try {
+            log.info("로그아웃 요청");
+            String accessToken = tokenExtractor.extractToken(bearerToken);
+            authService.logout(accessToken);
+            
+            log.info("로그아웃 완료");
+            return ResponseEntity.ok(
+                new ApiResponse<>(RESULT_SUCCESS, "로그아웃이 완료되었습니다.", null)
+            );
+        } catch (IllegalArgumentException e) {
+            log.warn("로그아웃 실패(유효성 오류): {}", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "로그아웃 실패: " + e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("로그아웃 실패: {}", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "로그아웃 처리 중 오류가 발생했습니다.", null)
+            );
+        }
     }
 
     /**
@@ -94,15 +166,37 @@ public class AuthController {
      * @return 비밀번호 변경 결과
      */
     @PutMapping("/password")
-    public ApiResponse<Void> changePassword(
+    public ResponseEntity<ApiResponse<Void>> changePassword(
         @CurrentUser UserPrincipal userPrincipal,
         @Valid @RequestBody PasswordChangeRequest request
     ) {
-        if (userPrincipal == null) {
-            throw new IllegalArgumentException("인증된 사용자 정보를 찾을 수 없습니다.");
+        try {
+            if (userPrincipal == null) {
+                log.warn("비밀번호 변경 실패: 인증된 사용자 정보 없음");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                    new ApiResponse<>(RESULT_ERROR, "인증된 사용자 정보를 찾을 수 없습니다.", null)
+                );
+            }
+            
+            log.info("비밀번호 변경 요청: 사용자 ID={}", userPrincipal.getId());
+            authService.changePassword(userPrincipal.getId(), request);
+            
+            log.info("비밀번호 변경 완료: 사용자 ID={}", userPrincipal.getId());
+            return ResponseEntity.ok(
+                new ApiResponse<>(RESULT_SUCCESS, "비밀번호가 성공적으로 변경되었습니다.", null)
+            );
+        } catch (IllegalArgumentException e) {
+            log.warn("비밀번호 변경 실패(유효성 오류): 사용자 ID={}, 원인={}", 
+                userPrincipal != null ? userPrincipal.getId() : "unknown", e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "비밀번호 변경 실패: " + e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("비밀번호 변경 실패: 사용자 ID={}, 원인={}", 
+                userPrincipal != null ? userPrincipal.getId() : "unknown", e.getMessage(), e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(RESULT_ERROR, "비밀번호 변경 중 오류가 발생했습니다.", null)
+            );
         }
-        
-        authService.changePassword(userPrincipal.getId(), request);
-        return ApiResponse.success("비밀번호가 성공적으로 변경되었습니다.");
     }
 }

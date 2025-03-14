@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.infrastructure.config;
 
+import com.j30n.stoblyx.adapter.out.persistence.auth.AuthAdapter;
 import com.j30n.stoblyx.domain.repository.UserRepository;
 import com.j30n.stoblyx.infrastructure.security.CustomUserDetailsService;
 import com.j30n.stoblyx.infrastructure.security.JwtAuthenticationFilter;
@@ -39,6 +40,7 @@ public class SecurityConfig {
     private final PasswordEncoder passwordEncoder;
     private final RedisTemplate<String, String> redisTemplate;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final AuthAdapter authAdapter;
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -104,7 +106,7 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .authenticationProvider(authenticationProvider)
-            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, redisTemplate, authAdapter), UsernamePasswordAuthenticationFilter.class)
             .build();
     }
 }

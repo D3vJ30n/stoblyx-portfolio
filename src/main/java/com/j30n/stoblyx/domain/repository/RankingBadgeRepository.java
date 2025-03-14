@@ -4,6 +4,7 @@ import com.j30n.stoblyx.domain.model.RankingBadge;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,6 +14,17 @@ import java.util.List;
  */
 @Repository
 public interface RankingBadgeRepository extends JpaRepository<RankingBadge, Long> {
+
+    /**
+     * 요구사항 타입과 임계값 이하인 배지 목록 조회
+     * 
+     * @param requirementType 요구사항 타입
+     * @param thresholdValue 임계값
+     * @return 조건에 맞는 배지 목록
+     */
+    List<RankingBadge> findByRequirementTypeAndThresholdValueLessThanEqual(
+            @Param("requirementType") String requirementType, 
+            @Param("thresholdValue") Integer thresholdValue);
 
     /**
      * 가장 많이 획득된 뱃지 목록 조회

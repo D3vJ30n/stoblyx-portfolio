@@ -38,6 +38,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     Optional<Book> findByIdAndIsDeletedFalse(Long id);
     
     @EntityGraph(attributePaths = {"genres"})
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false")
     @NonNull Page<Book> findByIsDeletedFalse(@NonNull Pageable pageable);
 
     @Query("SELECT DISTINCT b FROM Book b LEFT JOIN b.genres g WHERE " +
@@ -97,4 +98,84 @@ public interface BookRepository extends JpaRepository<Book, Long> {
             @Param("lastPopularity") Integer lastPopularity,
             @Param("lastId") Long lastId,
             Pageable pageable);
+            
+    /**
+     * 인기도 순으로 도서 목록 조회
+     *
+     * @param pageable 페이징 정보
+     * @return 인기도 순으로 정렬된 도서 목록
+     */
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false ORDER BY b.popularity DESC")
+    @NonNull
+    Page<Book> findMostPopularBooks(@NonNull Pageable pageable);
+    
+    /**
+     * 특정 장르의 도서 목록 조회
+     *
+     * @param genre 장르
+     * @param pageable 페이징 정보
+     * @return 특정 장르의 도서 목록
+     */
+    @Query("SELECT DISTINCT b FROM Book b WHERE b.isDeleted = false AND :genre MEMBER OF b.genres ORDER BY b.popularity DESC")
+    @NonNull
+    Page<Book> findByGenre(@Param("genre") String genre, @NonNull Pageable pageable);
+    
+    /**
+     * 특정 저자의 다른 도서 목록 조회
+     *
+     * @param author 저자
+     * @param excludeBookId 제외할 도서 ID
+     * @param pageable 페이징 정보
+     * @return 특정 저자의 다른 도서 목록
+     */
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false AND b.author = :author AND b.id != :excludeBookId")
+    @NonNull
+    Page<Book> findByAuthorAndIdNot(@Param("author") String author, @Param("excludeBookId") Long excludeBookId, @NonNull Pageable pageable);
+    
+    /**
+     * 인기도 순으로 도서 목록 조회
+     *
+     * @param pageable 페이징 정보
+     * @return 인기도 순으로 정렬된 도서 목록
+     */
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false ORDER BY b.popularity DESC")
+    @NonNull
+    Page<Book> findByIsDeletedFalseOrderByPopularityDesc(@NonNull Pageable pageable);
+    
+    /**
+     * 최신 생성일 순으로 도서 목록 조회
+     *
+     * @param pageable 페이징 정보
+     * @return 최신 생성일 순으로 정렬된 도서 목록
+     */
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false ORDER BY b.createdAt DESC")
+    @NonNull
+    Page<Book> findByIsDeletedFalseOrderByCreatedAtDesc(@NonNull Pageable pageable);
+    
+    /**
+     * 삭제되지 않은 모든 도서 목록 조회
+     *
+     * @return 모든 도서 목록
+     */
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false")
+    @NonNull
+    List<Book> findByIsDeletedFalse();
+    
+    /**
+     * 장르 정보를 포함한 모든 도서 목록 조회
+     *
+     * @return 장르 정보를 포함한 모든 도서 목록
+     */
+    @EntityGraph(attributePaths = {"genres"})
+    @Query("SELECT b FROM Book b WHERE b.isDeleted = false")
+    @NonNull
+    List<Book> findAllWithGenres();
+
+    /**
+     * 삭제되지 않은 책의 개수를 조회합니다.
+     * 
+     * @return 삭제되지 않은 책의 개수
+     */
+    @Query("SELECT COUNT(b) FROM Book b WHERE b.isDeleted = false")
+    long countByIsDeletedFalse();
 }

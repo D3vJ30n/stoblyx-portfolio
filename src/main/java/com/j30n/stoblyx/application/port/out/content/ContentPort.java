@@ -28,4 +28,13 @@ public interface ContentPort {
      * @return 콘텐츠 목록
      */
     Page<ShortFormContent> findByStatus(ContentStatus status, Pageable pageable);
+    
+    /**
+     * 콘텐츠 상호작용을 저장합니다.
+     *
+     * @param userId 사용자 ID
+     * @param contentId 콘텐츠 ID
+     * @param interactionType 상호작용 유형
+     */
+    void saveInteraction(Long userId, Long contentId, String interactionType);
 }

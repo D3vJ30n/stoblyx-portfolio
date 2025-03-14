@@ -28,7 +28,7 @@ public class Quote extends BaseEntity {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
+    @JoinColumn(name = "book_id", nullable = false, foreignKey = @ForeignKey(name = "FK_QUOTE_BOOK"))
     private Book book;
 
     @Column(columnDefinition = "TEXT")

@@ -2,10 +2,10 @@
 # 스토블릭스 테스트 데이터베이스 초기화 및 테스트 데이터 적용 스크립트
 
 # Docker MySQL 컨테이너 정보 (환경에 맞게 수정하세요)
-CONTAINER_NAME="stoblyx-mysql"
-DB_USER="stoblyx_user"
-DB_PASS="6188"
-DB_NAME="stoblyx_sandbox_db"
+CONTAINER_NAME=""
+DB_USER=""
+DB_PASS=""
+DB_NAME=""
 
 # 색상 변수 설정
 GREEN='\033[0;32m'

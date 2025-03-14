@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.config;
 
+import com.j30n.stoblyx.adapter.out.persistence.auth.AuthAdapter;
 import com.j30n.stoblyx.domain.model.User;
 import com.j30n.stoblyx.domain.model.UserRole;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
@@ -39,6 +40,7 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,49 +73,76 @@ public class SecurityTestConfig {
             String testAuthHeader = request.getHeader("X-TEST-AUTH");
             String testRoleHeader = request.getHeader("X-TEST-ROLE");
             String testUserIdHeader = request.getHeader("X-TEST-USER-ID");
+            String requestURI = request.getRequestURI();
             
-            // 테스트 인증 헤더가 있거나 Authorization 헤더가 있는 경우 인증 처리
-            if (testAuthHeader != null && testAuthHeader.equals("true")) {
-                // 헤더에서 지정한 역할 사용, 지정하지 않으면 기본값으로 ADMIN 사용
-                UserRole role = UserRole.ADMIN;
+            logger.info("테스트 인증 필터 실행: " + requestURI);
+            
+            // 테스트 모드 또는 테스트 토큰 확인
+            boolean isTestMode = testAuthHeader != null && testAuthHeader.equals("true");
+            boolean isTestToken = authHeader != null && authHeader.equals("Bearer mock-token-for-testing");
+            
+            if (isTestMode || isTestToken) {
+                // 헤더에서 지정한 역할 사용, 지정하지 않으면 기본값으로 USER 사용
+                UserRole role = UserRole.USER;
                 
                 if (testRoleHeader != null) {
                     try {
                         role = UserRole.valueOf(testRoleHeader.replace("ROLE_", ""));
                     } catch (IllegalArgumentException e) {
-                        logger.warn("유효하지 않은 역할: " + testRoleHeader + ", 기본값 ADMIN 사용");
+                        logger.warn("유효하지 않은 역할: " + testRoleHeader + ". 기본값 USER 사용");
                     }
                 }
                 
-                // 사용자 ID가 지정된 경우 사용, 아니면 기본값 2L(ADMIN) 또는 1L(USER) 사용
+                // 사용자 ID가 지정된 경우 사용, 아니면 기본값 1L(USER) 또는 2L(ADMIN) 사용
                 Long userId = (role == UserRole.ADMIN) ? 2L : 1L;
                 if (testUserIdHeader != null) {
                     try {
                         userId = Long.parseLong(testUserIdHeader);
                     } catch (NumberFormatException e) {
-                        logger.warn("유효하지 않은 사용자 ID: " + testUserIdHeader + ", 기본값 " + userId + " 사용");
+                        logger.warn("유효하지 않은 사용자 ID: " + testUserIdHeader + ". 기본값 " + userId);
                     }
                 }
                 
                 // 테스트 사용자 인증 객체 생성
                 UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role, userId);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.info("테스트 인증 설정됨 (" + role + ") - 사용자: " + authentication.getName() + ", ID: " + userId);
+                request.setAttribute("userId", userId); // 사용자 ID를 요청 속성에 추가
+                
+                logger.info("테스트 인증 설정됨: 역할=" + role + ", 사용자=" + authentication.getName() + 
+                    ", ID=" + userId + ", URI=" + requestURI);
             }
             else if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                // 테스트용 토큰 처리
+                // 일반 Bearer 토큰 처리 (테스트용 토큰이 아닌 경우)
                 String token = authHeader.substring(7);
                 
-                if (token.startsWith("test_")) {
-                    // 테스트 환경에서는 항상 관리자 권한 부여
-                    UserRole role = UserRole.ADMIN;
-                    Long userId = 2L; // 관리자 ID는 2L로 고정
-                    
-                    // 테스트 사용자 인증 객체 생성
-                    UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role, userId);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    logger.info("Bearer 토큰 인증 설정됨 (관리자 권한): " + authentication.getName() + ", ID: " + userId);
+                // 테스트 환경에서는 모든 토큰을 유효한 것으로 처리
+                UserRole role = UserRole.USER;
+                Long userId = 1L;
+                
+                // 헤더에서 역할과 ID 추출 시도
+                if (testRoleHeader != null) {
+                    try {
+                        role = UserRole.valueOf(testRoleHeader.replace("ROLE_", ""));
+                    } catch (IllegalArgumentException e) {
+                        logger.warn("유효하지 않은 역할: " + testRoleHeader + ". 기본값 USER 사용");
+                    }
                 }
+                
+                if (testUserIdHeader != null) {
+                    try {
+                        userId = Long.parseLong(testUserIdHeader);
+                    } catch (NumberFormatException e) {
+                        logger.warn("유효하지 않은 사용자 ID: " + testUserIdHeader + ". 기본값 " + userId);
+                    }
+                }
+                
+                // 테스트 사용자 인증 객체 생성
+                UsernamePasswordAuthenticationToken authentication = createTestAuthentication(role, userId);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                request.setAttribute("userId", userId); // 사용자 ID를 요청 속성에 추가
+                
+                logger.info("Bearer 토큰 인증 설정됨: 역할=" + role + ", 사용자=" + authentication.getName() + 
+                    ", ID=" + userId + ", URI=" + requestURI);
             }
             
             filterChain.doFilter(request, response);
@@ -251,5 +280,56 @@ public class SecurityTestConfig {
     @Bean
     public com.j30n.stoblyx.domain.repository.RankingUserScoreRepository rankingUserScoreRepository() {
         return Mockito.mock(com.j30n.stoblyx.domain.repository.RankingUserScoreRepository.class);
+    }
+
+    /**
+     * 테스트용 AuthAdapter Mock 빈
+     */
+    @Bean
+    @Primary
+    public AuthAdapter authAdapter() {
+        AuthAdapter mockAuthAdapter = Mockito.mock(AuthAdapter.class);
+        
+        // 기본 동작 설정
+        Mockito.when(mockAuthAdapter.isTokenBlacklisted(Mockito.anyString())).thenReturn(false);
+        
+        // 테스트용 사용자 생성
+        User testUser = User.builder()
+            .username("testuser")
+            .email("test@example.com")
+            .nickname("테스트 사용자")
+            .role(UserRole.USER)
+            .build();
+        
+        User testAdmin = User.builder()
+            .username("testadmin")
+            .email("admin@example.com")
+            .nickname("테스트 관리자")
+            .role(UserRole.ADMIN)
+            .build();
+        
+        // ID 설정을 위한 리플렉션 사용
+        try {
+            java.lang.reflect.Field idField = User.class.getDeclaredField("id");
+            idField.setAccessible(true);
+            idField.set(testUser, 1L);
+            idField.set(testAdmin, 2L);
+        } catch (Exception e) {
+            logger.error("테스트 사용자 ID 설정 실패", e);
+        }
+        
+        // findUserById 메서드
+        Mockito.when(mockAuthAdapter.findUserById(1L)).thenReturn(Optional.of(testUser));
+        Mockito.when(mockAuthAdapter.findUserById(2L)).thenReturn(Optional.of(testAdmin));
+        
+        // findUserByEmail 메서드
+        Mockito.when(mockAuthAdapter.findUserByEmail("test@example.com")).thenReturn(Optional.of(testUser));
+        Mockito.when(mockAuthAdapter.findUserByEmail("admin@example.com")).thenReturn(Optional.of(testAdmin));
+        
+        // 기타 메서드 설정
+        Mockito.when(mockAuthAdapter.saveUser(Mockito.any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        
+        logger.info("테스트용 AuthAdapter mock 빈 생성 완료");
+        return mockAuthAdapter;
     }
 }

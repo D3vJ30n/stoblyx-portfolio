@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
  * 검색 요청을 위한 DTO
  */
 public record SearchRequest(
-    @NotBlank(message = "검색어를 입력해주세요.")
     String keyword,
     SearchType type,
     String category,

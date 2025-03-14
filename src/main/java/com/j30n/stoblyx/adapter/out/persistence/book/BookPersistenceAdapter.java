@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -37,7 +39,12 @@ public class BookPersistenceAdapter implements BookPort {
 
     @Override
     public Page<Book> findAll(Pageable pageable) {
-        return bookRepository.findByIsDeletedFalse(pageable);
+        List<Book> books = bookRepository.findAllWithGenres();
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), books.size());
+        
+        List<Book> pageContent = start < end ? books.subList(start, end) : new ArrayList<>();
+        return new org.springframework.data.domain.PageImpl<>(pageContent, pageable, books.size());
     }
 
     @Override
@@ -63,22 +70,44 @@ public class BookPersistenceAdapter implements BookPort {
 
     @Override
     public Page<Book> getHistoryBasedRecommendations(Pageable pageable) {
-        // 실제 구현에서는 사용자의 검색 기록을 분석하여 추천 책을 제공
-        // 테스트 목적으로 임시 구현
-        return bookRepository.findByIsDeletedFalse(pageable);
+        // 실제 구현은 사용자의 검색 기록을 분석해야 함
+        // 임시로 인기있는 책 반환
+        return findPopularBooks(pageable);
     }
 
     @Override
     public Page<Book> getInterestBasedRecommendations(Pageable pageable) {
-        // 실제 구현에서는 사용자의 관심사를 분석하여 추천 책을 제공
-        // 테스트 목적으로 임시 구현
-        return bookRepository.findByIsDeletedFalse(pageable);
+        // 실제 구현은 사용자의 관심사를 분석해야 함
+        // 임시로 최신 책 반환
+        return bookRepository.findByIsDeletedFalseOrderByCreatedAtDesc(pageable);
     }
 
     @Override
     public Page<Book> getDefaultRecommendations(Pageable pageable) {
-        // 실제 구현에서는 인기 있는 책이나 최신 책을 추천
-        // 테스트 목적으로 임시 구현
-        return bookRepository.findByIsDeletedFalse(pageable);
+        // 기본 추천은 인기도가 높은 책
+        return findPopularBooks(pageable);
+    }
+
+    @Override
+    public Page<Book> findPopularBooks(Pageable pageable) {
+        return bookRepository.findByIsDeletedFalseOrderByPopularityDesc(pageable);
+    }
+
+    @Override
+    public Optional<Book> findBookById(Long bookId) {
+        return bookRepository.findByIdAndIsDeletedFalse(bookId);
+    }
+
+    @Override
+    public List<Book> findAllBooks() {
+        return bookRepository.findAllWithGenres();
+    }
+
+    /**
+     * 디버깅 및 테스트 목적으로 BookRepository 객체에 접근할 수 있는 메서드
+     * @return BookRepository 객체
+     */
+    public BookRepository getBookRepository() {
+        return bookRepository;
     }
 }

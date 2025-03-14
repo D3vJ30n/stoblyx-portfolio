@@ -302,4 +302,45 @@ public class ContentService implements ContentUseCase {
                 return ContentResponse.from(content, false, false);
             });
     }
+
+    /**
+     * 콘텐츠 상호작용을 기록합니다.
+     *
+     * @param userId 사용자 ID
+     * @param contentId 콘텐츠 ID
+     * @param interactionType 상호작용 유형
+     */
+    @Transactional
+    public void recordInteraction(Long userId, Long contentId, String interactionType) {
+        ShortFormContent content = contentPort.findById(contentId)
+            .orElseThrow(() -> new EntityNotFoundException(CONTENT_NOT_FOUND_MSG + contentId));
+        
+        // 상호작용 유형에 따른 처리
+        switch (interactionType) {
+            case "LIKE":
+                self.toggleLike(userId, contentId);
+                break;
+            case "BOOKMARK":
+                self.toggleBookmark(userId, contentId);
+                break;
+            case "SHARE":
+                self.incrementShareCount(contentId);
+                break;
+            case "VIEW":
+                self.incrementViewCount(contentId);
+                break;
+            case "COMMENT":
+                // 댓글 관련 상호작용은 별도 처리 (향후 구현)
+                log.info("댓글 상호작용 기록: userId={}, contentId={}", userId, contentId);
+                break;
+            default:
+                throw new IllegalArgumentException("지원하지 않는 상호작용 유형입니다: " + interactionType);
+        }
+        
+        // 상호작용 이력 저장
+        contentPort.saveInteraction(userId, contentId, interactionType);
+        
+        // 로그 기록
+        log.info("콘텐츠 상호작용 기록 완료: userId={}, contentId={}, type={}", userId, contentId, interactionType);
+    }
 }

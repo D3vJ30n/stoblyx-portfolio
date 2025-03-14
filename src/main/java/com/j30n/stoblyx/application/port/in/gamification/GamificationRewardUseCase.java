@@ -69,4 +69,13 @@ public interface GamificationRewardUseCase {
      * @return 보상 내역 목록
      */
     List<GamificationReward> getUnclaimedRewards();
+    
+    /**
+     * 보상 ID로 보상 정보 조회
+     *
+     * @param rewardId 보상 ID
+     * @return 보상 정보
+     * @throws IllegalArgumentException 해당 ID의 보상이 없을 경우
+     */
+    GamificationReward findById(Long rewardId);
 } 

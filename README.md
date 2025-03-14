@@ -1,5 +1,8 @@
 ## 스토블릭스 (Stoblyx) - 이야기의 오벨리스크
 
+이 프로젝트는 사용자들이 책을 더 효율적으로 접하고 이해할 수 있도록 도와주는 AI 기반 독서 요약 플랫폼입니다.
+인공지능 기술을 활용하여 책의 핵심 내용을 요약하고, 사용자 맞춤형 독서 경험을 제공합니다.
+
 ### **Stoblyx = Story + Obelisk**
 
 "책 속의 한 문장은 사라지지 않는다. 그것은 오벨리스크처럼 남아, 사람들에게 영감을 준다."
@@ -15,9 +18,49 @@
 **프로젝트명:** 스토블릭스 (Stoblyx)  
 **개발 기간:** ![Timeline](https://img.shields.io/badge/Timeline-2025.02~2025.03-informational?style=flat-square)
 
+## 2. Why Stoblyx?
+
+### 문제 인식
+
+- MZ세대의 독서율 감소 현상
+- 숏폼 콘텐츠 소비 증가 추세
+- 기존 독서 플랫폼의 젊은 세대 유입 한계
+
+### 해결 방안
+
+- 검색 기반 도서 정보 제공 및 멀티미디어 콘텐츠 경험
+- 책 내용 관련 이미지/영상, BGM, 자막 제공으로 몰입감 증대
+- 게이미피케이션을 통한 독서 동기 부여
+- 소셜 기능을 통한 독서 커뮤니티 형성
+
+### 기대 효과
+
+- 독서 문화의 디지털 전환 및 활성화
+- 지식 공유 플랫폼으로서의 성장 가능성
+- 세대 간 독서 격차 해소 및 독서 습관 형성
+
+---
+
+## Stoblyx만의 차별점
+
+### 1. 검색부터 멀티미디어 경험까지 통합 서비스
+
+- 검색어 관련 책 정보 및 표지 제공
+- 책 클릭 시 관련 이미지/영상, BGM, 자막 음성 읽기 기능
+- 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
+
+### 2. 검색어 기반 유저 추천
+
+- 협업 필터링을 활용한 사용자 맞춤 추천 시스템
+- 추천 기준: 최근 검색어, 좋아요/저장 데이터, 활동 패턴
+
 ### 기술 스택
 
+STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여 다음과 같은 기술 스택을 선택했습니다. 각 기술은 특정 문제 영역을 해결하기 위해 신중하게 선택되었습니다.
+
 #### Backend
+
+> Java 17과 Spring Boot 3.3.9를 선택한 이유는 강력한 타입 안정성, 풍부한 라이브러리 생태계, 그리고 확장 가능한 엔터프라이즈급 애플리케이션 개발에 적합하기 때문입니다. 특히 Spring MVC와 Spring Data JPA는 RESTful API 구현과 데이터베이스 접근을 단순화합니다.
 
 ![Java 17](https://img.shields.io/badge/Java-17-orange?style=flat-square&logo=openjdk)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.9-6DB33F?style=flat-square&logo=spring-boot)
@@ -31,11 +74,89 @@
 
 #### Database
 
+> MySQL을 주 데이터베이스로, Redis를 캐싱 솔루션으로 선택했습니다. MySQL은 안정성과 신뢰성이 검증된 관계형 데이터베이스이며, 트랜잭션 처리와 복잡한 쿼리를 지원합니다. JPA는 객체-관계 매핑을 간소화하고 데이터베이스 독립적인 코드 작성을 가능하게 합니다.
+
 ![MySQL](https://img.shields.io/badge/MySQL-8.0.41-4479A1?style=flat-square&logo=mysql)
 ![Redis](https://img.shields.io/badge/Redis-7.0.15-DC382D?style=flat-square&logo=redis)
 ![JPA](https://img.shields.io/badge/Spring_Data_JPA-3.3.9-6DB33F?style=flat-square&logo=spring)
 ![H2 Database](https://img.shields.io/badge/H2_Database-테스트용-01A5EC?style=flat-square&logo=h2)
 ![Caffeine](https://img.shields.io/badge/Caffeine-인메모리_캐싱-0051BA?style=flat-square&logo=caffeine)
+
+#### Security
+
+> 보안은 최우선 과제입니다. JWT 기반 인증과 Spring Security를 사용하여 안전한 API 접근과 사용자 인증을 구현했습니다.
+
+![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=flat-square&logo=json-web-tokens)
+![Spring Security](https://img.shields.io/badge/Spring_Security-3.3.9-6DB33F?style=flat-square&logo=spring-security)
+
+#### CI/CD & Testing
+
+> 지속적 통합 및 배포를 위해 GitHub Actions를 활용하고, 테스트 자동화를 위해 JUnit과 Mockito를 사용합니다. 이를 통해 코드 품질을 유지하고 배포 프로세스를 간소화합니다.
+
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
+![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
+![Mockito](https://img.shields.io/badge/Mockito-테스트-25A162?style=flat-square&logo=mockito)
+
+#### Messaging & Async
+
+> 비동기 처리와 시스템 성능 향상을 위해 RabbitMQ와 Spring Async를 도입했습니다. 이를 통해 사용자 요청에 대한 응답 시간을 최소화하고, 시스템 부하를 분산시킵니다.
+
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-비동기_처리-FF6600?style=flat-square&logo=rabbitmq)
+![Spring Async](https://img.shields.io/badge/Spring_Async-비동기_처리-6DB33F?style=flat-square&logo=spring)
+
+#### AI Integration
+
+> AI 기술은 독서 경험을 향상시키는 핵심 요소입니다. KoBART와 Hugging Face 모델을 활용하여 한국어 자연어 처리와 감정 분석을 구현하고, 멀티미디어 콘텐츠 통합을 위해 다양한 API를 활용합니다.
+
+![KoBART](https://img.shields.io/badge/KoBART-자연어_처리-FF6F00?style=flat-square&logo=tensorflow)
+![pyttsx3](https://img.shields.io/badge/pyttsx3-감정_분석-3776AB?style=flat-square&logo=python)
+![Pexels API](https://img.shields.io/badge/Pexels_API-이미지_검색-05A081?style=flat-square&logo=pexels)
+![감정 분석](https://img.shields.io/badge/감정_분석-자체_개발_알고리즘-1DB954?style=flat-square&logo=spotify)
+![Hugging Face Transformers](https://img.shields.io/badge/Hugging_Face-Transformers-FFD21E?style=flat-square&logo=huggingface)
+
+#### Algorithms & Data Science
+
+> 사용자 경험 개인화와 콘텐츠 추천을 위해 다양한 알고리즘을 구현했습니다. EWMA는 사용자 활동 점수를 계산하고, 협업 필터링은 맞춤형 추천을 제공하며, TF-IDF와 페이지랭크 변형은 검색 및 콘텐츠 인기도 측정에 활용됩니다.
+
+![EWMA](https://img.shields.io/badge/EWMA-사용자_점수_계산-4285F4?style=flat-square&logo=function)
+![협업 필터링](https://img.shields.io/badge/협업_필터링-추천_시스템-FF9900?style=flat-square&logo=amazon-dynamodb)
+![TF-IDF](https://img.shields.io/badge/TF--IDF-검색_관련성_점수-00ADD8?style=flat-square&logo=go)
+![감정 분석 모델](https://img.shields.io/badge/감정_분석-텍스트_감정_추출-FF5733?style=flat-square&logo=tensorflow)
+![페이지랭크 변형](https://img.shields.io/badge/페이지랭크_변형-콘텐츠_인기도_측정-0088CC?style=flat-square&logo=pagekit)
+![LRU 캐싱](https://img.shields.io/badge/LRU_캐싱-검색어_캐싱-06B6D4?style=flat-square&logo=tailwindcss)
+
+#### Environment & Configuration
+
+> 개발 및 운영 환경 설정을 위해 Spring dotenv와 Jakarta Validation을 활용합니다. 이를 통해 환경별 설정을 쉽게 관리하고, 입력 데이터 유효성을 검증합니다.
+
+![Spring dotenv](https://img.shields.io/badge/Spring_dotenv-2.5.4-6DB33F?style=flat-square&logo=spring)
+![Jakarta Validation](https://img.shields.io/badge/Jakarta_Validation-3.0.2-FE8B2C?style=flat-square&logo=jakarta)
+
+#### 테스트
+
+> 철저한 테스트를 위해 JUnit, Mockito, H2 테스트 데이터베이스를 사용하고, K6를 통해 성능 및 사용자 흐름 테스트를 수행합니다. 이를 통해 코드 품질과 시스템 안정성을 보장합니다.
+
+![JUnit 5](https://img.shields.io/badge/JUnit_5-5.10.1-25A162?style=flat-square&logo=junit5)
+![Mockito](https://img.shields.io/badge/Mockito-5.4.0-C5D9E8?style=flat-square)
+![H2 Database](https://img.shields.io/badge/H2_테스트_DB-2.2.224-01A5EC?style=flat-square&logo=h2)
+![K6](https://img.shields.io/badge/K6-성능_및_기능_테스트-7D64FF?style=flat-square&logo=k6)
+
+#### Deployment
+
+> Docker를 통해 애플리케이션을 컨테이너화하고, Koyeb을 통해 클라우드 환경에 배포합니다. 이를 통해 확장성과 이식성을 확보하고, 배포 프로세스를 단순화합니다.
+
+![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat-square&logo=docker)
+![Koyeb](https://img.shields.io/badge/Koyeb-Hosting-121212?style=flat-square&logo=koyeb)
+
+## 개발 도구
+
+![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-IDE-000000?style=flat-square&logo=intellij-idea)
+![Git](https://img.shields.io/badge/Git-버전_관리-F05032?style=flat-square&logo=git)
+![GitHub](https://img.shields.io/badge/GitHub-협업_도구-181717?style=flat-square&logo=github)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
+![SonarQube](https://img.shields.io/badge/SonarQube-코드_품질-4E9BCD?style=flat-square&logo=sonarqube)
+![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
+![Mockito](https://img.shields.io/badge/Mockito-테스트_목업-C5D9E8?style=flat-square)
 
 ### 데이터베이스 스키마 표준화
 
@@ -64,9 +185,9 @@ RankingLeaderboard)는 필요에 따라 별도로 필드가 추가되었습니�
 
 #### 참고사항
 
-- 테스트 데이터 로드 시 외래 키 제약 조건으로 인한 오류가 발생할 수 있습니다. 이를 방지하기 위해 `data.sql` 파일에서는 `SET FOREIGN_KEY_CHECKS = 0;`로 제약 조건을 비활성화하고, 데이터 삽입 후 `SET FOREIGN_KEY_CHECKS = 1;`로 다시 활성화합니다.
+- 테스트 데이터 로드 시 외래 키 제약 조건으로 인한 오류가 발생할 수 있습니다. 이를 방지하기 위해 `data_utf8.sql` 파일에서는 `SET FOREIGN_KEY_CHECKS = 0;`로 제약 조건을 비활성화하고, 데이터 삽입 후 `SET FOREIGN_KEY_CHECKS = 1;`로 다시 활성화합니다.
 - 실제 운영 환경에서 데이터를 삽입할 때는 테이블 간의 관계를 고려하여 적절한 순서로 삽입해야 합니다.
-- 개발 환경에서 데이터베이스를 초기화하려면 다음의 명령어를 사용할 수 있습니다:
+- 개발 환경에서 데이터베이스를 초기화하려면 다음의 명령어를 사용할 수 있습니다.
   ```sql
   DROP DATABASE IF EXISTS stoblyx_sandbox_db;
   CREATE DATABASE stoblyx_sandbox_db;
@@ -77,7 +198,7 @@ RankingLeaderboard)는 필요에 따라 별도로 필드가 추가되었습니�
 
 테스트 데이터베이스를 초기화하고 테스트 데이터를 적용하기 위한 스크립트를 제공합니다.
 
-1. **Linux/Mac 환경:**
+1. **Linux/Mac 환경**
 
 ```bash
 # 실행 권한 부여
@@ -86,7 +207,7 @@ chmod +x reset_test_db.sh
 ./reset_test_db.sh
 ```
 
-2. **Windows 환경:**
+2. **Windows 환경**
 
 ```
 reset_test_db.bat
@@ -130,93 +251,6 @@ SOURCE src/test/resources/data.sql;
 2. **외래 키 제약 조건 오류** - 참조하는 데이터가 없는 경우 발생합니다.
 
    해결 방법: `data.sql` 파일 시작 부분에 `SET FOREIGN_KEY_CHECKS = 0;`를 추가하고 끝 부분에 `SET FOREIGN_KEY_CHECKS = 1;`을 추가하여 외래 키 제약 조건을 임시로 비활성화합니다.
-
-#### Security
-
-![JWT](https://img.shields.io/badge/JWT-Auth-000000?style=flat-square&logo=json-web-tokens)
-![Spring Security](https://img.shields.io/badge/Spring_Security-3.3.9-6DB33F?style=flat-square&logo=spring-security)
-![Lucy-XSS-Filter](https://img.shields.io/badge/Lucy_XSS_Filter-2.0.1-FF5733?style=flat-square&logo=shield)
-
-#### CI/CD & Testing
-
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
-![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
-![Mockito](https://img.shields.io/badge/Mockito-테스트-25A162?style=flat-square&logo=mockito)
-
-#### Messaging & Async
-
-![RabbitMQ](https://img.shields.io/badge/RabbitMQ-비동기_처리-FF6600?style=flat-square&logo=rabbitmq)
-![Spring Async](https://img.shields.io/badge/Spring_Async-비동기_처리-6DB33F?style=flat-square&logo=spring)
-
-#### AI Integration
-
-![KoBART](https://img.shields.io/badge/KoBART-자연어_처리-FF6F00?style=flat-square&logo=tensorflow)
-![pyttsx3](https://img.shields.io/badge/pyttsx3-감사-3776AB?style=flat-square&logo=python)
-![Pexels API](https://img.shields.io/badge/Pexels_API-이미지_검색-05A081?style=flat-square&logo=pexels)
-![감정 분석](https://img.shields.io/badge/감정_분석-자체_개발_알고리즘-1DB954?style=flat-square&logo=spotify)
-![Hugging Face Transformers](https://img.shields.io/badge/Hugging_Face-Transformers-FFD21E?style=flat-square&logo=huggingface)
-
-#### Environment & Configuration
-
-![Spring dotenv](https://img.shields.io/badge/Spring_dotenv-2.5.4-6DB33F?style=flat-square&logo=spring)
-![Jakarta Validation](https://img.shields.io/badge/Jakarta_Validation-3.0.2-FE8B2C?style=flat-square&logo=jakarta)
-
-#### 테스트
-
-![JUnit 5](https://img.shields.io/badge/JUnit_5-5.10.1-25A162?style=flat-square&logo=junit5)
-![Mockito](https://img.shields.io/badge/Mockito-5.4.0-C5D9E8?style=flat-square)
-![H2 Database](https://img.shields.io/badge/H2_테스트_DB-2.2.224-01A5EC?style=flat-square&logo=h2)
-
-#### Deployment
-
-![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat-square&logo=docker)
-![Koyeb](https://img.shields.io/badge/Koyeb-Hosting-121212?style=flat-square&logo=koyeb)
-
-## 개발 도구
-
-![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ_IDEA-IDE-000000?style=flat-square&logo=intellij-idea)
-![Git](https://img.shields.io/badge/Git-버전_관리-F05032?style=flat-square&logo=git)
-![GitHub](https://img.shields.io/badge/GitHub-협업_도구-181717?style=flat-square&logo=github)
-![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI/CD-2088FF?style=flat-square&logo=github-actions)
-![SonarQube](https://img.shields.io/badge/SonarQube-코드_품질-4E9BCD?style=flat-square&logo=sonarqube)
-![JUnit 5](https://img.shields.io/badge/JUnit_5-테스트-25A162?style=flat-square&logo=junit5)
-![Mockito](https://img.shields.io/badge/Mockito-테스트_목업-C5D9E8?style=flat-square)
-
-## 2. Why Stoblyx?
-
-### 문제 인식
-
-- MZ세대의 독서율 감소 현상
-- 숏폼 콘텐츠 소비 증가 추세
-- 기존 독서 플랫폼의 젊은 세대 유입 한계
-
-### 해결 방안
-
-- 검색 기반 도서 정보 제공 및 멀티미디어 콘텐츠 경험
-- 책 내용 관련 이미지/영상, BGM, 자막 제공으로 몰입감 증대
-- 게이미피케이션을 통한 독서 동기 부여
-- 소셜 기능을 통한 독서 커뮤니티 형성
-
-### 기대 효과
-
-- 독서 문화의 디지털 전환 및 활성화
-- 지식 공유 플랫폼으로서의 성장 가능성
-- 세대 간 독서 격차 해소 및 독서 습관 형성
-
----
-
-## 3. Stoblyx만의 차별점
-
-### 1. 검색부터 멀티미디어 경험까지 통합 서비스
-
-- 검색어 관련 책 정보 및 표지 제공
-- 책 클릭 시 관련 이미지/영상, BGM, 자막 음성 읽기 기능
-- 비동기 처리 및 폴백 전략으로 안정적인 서비스 제공
-
-### 2. 검색어 기반 유저 추천
-
-- 협업 필터링을 활용한 사용자 맞춤 추천 시스템
-- 추천 기준: 최근 검색어, 좋아요/저장 데이터, 활동 패턴
 
 ### 3. 게이미피케이션 & 랭킹 시스템
 
@@ -304,11 +338,11 @@ round(currentScore *(1-decayFactor));
 
 #### 5. 데이터베이스 모델
 
-데이터베이스는 사용자, 콘텐츠, 상호작용, 랭킹 시스템 등 다양한 도메인으로.구성된 총 30개 이상의 테이블을 포함합니다.
+데이터베이스는 사용자, 콘텐츠, 상호작용, 랭킹 시스템 등 다양한 도메인으로.구성된 총 29개의 테이블을 포함합니다.
 
 **주요 콘텐츠 관련 테이블**
 
-- `book`: 도서 정보 (제목, 저자, ISBN, 출판사 등)
+- `books`: 도서 정보 (제목, 저자, ISBN, 출판사 등)
 - `quotes`: 도서에서 발췌한 인용구
 - `summaries`: 도서 요약 정보
 - `quote_summaries`: 인용구에 대한 AI 생성 요약
@@ -423,7 +457,7 @@ round(currentScore *(1-decayFactor));
 
 - **Book (도서)**
 
-  - 테이블: `book`
+  - 테이블: `books`
   - 필드
     - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     - title: VARCHAR(255) - 도서 제목, @NotEmpty
@@ -1328,39 +1362,61 @@ round(currentScore *(1-decayFactor));
 - `POST /admin/ranking/users/{userId}/suspend` - 사용자 계정 정지 (관리자)
 - `POST /admin/ranking/users/{userId}/unsuspend` - 사용자 계정 정지 해제 (관리자)
 
-### AI 콘텐츠 생성 API
+### 단위테스트 -> 통합테스트 -> E2E테스트 -> K6 테스트를 통한 사용자 흐름 시나리오 API 호출 결과
 
-**엔드포인트:** `/contents/quotes/{quoteId}`  
-**메서드:** POST  
-**권한:** 인증 필요
+#### 회원가입 및 로그인
 
-#### 요청 예시
+<div align="center">
+  <img src="src/docs/diagrams/1_회원가입및로그인.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
 
-```
-POST /contents/quotes/123
-Authorization: Bearer {token}
-```
+#### 검색 기능
 
-#### 응답 예시 (200 OK)
+<div align="center">
+  <img src="src/docs/diagrams/2_검색기능.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
 
-```json
-{
-  "result": "SUCCESS",
-  "message": "콘텐츠가 생성되었습니다",
-  "data": {
-    "id": 456,
-    "subtitles": "생성된 콘텐츠 내용",
-    "status": "PUBLISHED",
-    "videoUrl": "https://cdn.stoblyx.com/videos/456.mp4",
-    "thumbnailUrl": "https://cdn.stoblyx.com/thumbnails/456.jpg",
-    "bgmUrl": "https://cdn.stoblyx.com/audio/456.mp3",
-    "viewCount": 0,
-    "likeCount": 0,
-    "createdAt": "2025-03-10T12:34:56",
-    "modifiedAt": "2025-03-10T12:34:56"
-  }
-}
-```
+#### 콘텐츠 보기
+
+<div align="center">
+  <img src="src/docs/diagrams/3_콘텐츠보기.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 사용자 상호작용
+
+<div align="center">
+  <img src="src/docs/diagrams/4_사용자상호작용.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 새 콘텐츠 생성
+
+<div align="center">
+  <img src="src/docs/diagrams/5_새콘텐츠생성.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 추천 콘텐츠 및 도서 확인
+
+<div align="center">
+  <img src="src/docs/diagrams/6_추천콘텐츠및도서확인.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 랭킹 시스템 확인
+
+<div align="center">
+  <img src="src/docs/diagrams/7_랭킹시스템확인.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 사용자 프로필 설정
+
+<div align="center">
+  <img src="src/docs/diagrams/8_사용자프로필설정.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
+
+#### 로그아웃
+
+<div align="center">
+  <img src="src/docs/diagrams/8_로그아웃및세션종료.png" alt="시스템 흐름도" style="max-width: 800px; width: 100%; height: auto;">
+</div>
 
 ---
 
@@ -1728,7 +1784,7 @@ src/
 
 ![Copyright](https://img.shields.io/badge/©_2025-Stoblyx-blue?style=flat-square)
 
-## 7. 시작하는 방법
+## 시작하는 방법
 
 ### 필요 조건
 
@@ -1739,14 +1795,14 @@ src/
 
 ### 환경 설정
 
-1. 저장소를 클론합니다:
+1. 저장소를 클론합니다.
 
    ```bash
    git clone https://github.com/yourusername/stoblyx-portfolio.git
    cd stoblyx-portfolio
    ```
 
-2. `.env.example` 파일을 복사하여 `.env` 파일을 생성합니다:
+2. `.env.example` 파일을 복사하여 `.env` 파일을 생성합니다.
 
    ```bash
    cp .env.example .env
@@ -1800,11 +1856,3 @@ docker run -p 8080:8080 --env-file .env stoblyx
 # 특정 테스트 실행
 ./gradlew test --tests "com.j30n.stoblyx.application.service.*"
 ```
-
-## 8. 최근 업데이트
-
-- **2025-03-13:** 데이터베이스 스키마 표준화 - `deleted` 필드를 `is_deleted`로 통일
-- **2025-03-10:** 랭킹 시스템 모니터링 구현
-- **2025-03-09:** 성능 최적화 및 캐싱 전략 구현
-- **2025-02-25:** 숏폼 콘텐츠 생성 AI 모듈 개선
-- **2025-02-17:** 프로젝트 초기 설정 및 기본 구조 구현

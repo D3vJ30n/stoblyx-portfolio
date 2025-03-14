@@ -6,6 +6,7 @@ import com.j30n.stoblyx.application.port.in.summary.SummaryUseCase;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 책 요약 관련 API를 처리하는 컨트롤러
  */
+@Slf4j
 @RestController
 @RequestMapping("/books/{bookId}/summaries")
 @RequiredArgsConstructor
 public class SummaryController {
     private static final String SUCCESS = "SUCCESS";
+    private static final String ERROR = "ERROR";
     private final SummaryUseCase summaryUseCase;
 
     /**
@@ -34,10 +37,23 @@ public class SummaryController {
         @PathVariable Long bookId,
         @Valid @RequestBody SummaryRequest request
     ) {
-        return ResponseEntity.ok(
-            new ApiResponse<>(SUCCESS, "요약이 생성되었습니다.",
-                summaryUseCase.createSummary(bookId, request))
-        );
+        try {
+            log.info("책 요약 생성 요청: bookId={}", bookId);
+            SummaryResponse response = summaryUseCase.createSummary(bookId, request);
+            return ResponseEntity.ok(
+                new ApiResponse<>(SUCCESS, "요약이 생성되었습니다.", response)
+            );
+        } catch (IllegalArgumentException e) {
+            log.error("책 요약 생성 실패: bookId={}, 원인={}", bookId, e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("책 요약 생성 중 서버 오류 발생: bookId={}", bookId, e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, "요약 생성 중 오류가 발생했습니다.", null)
+            );
+        }
     }
 
     /**
@@ -52,10 +68,23 @@ public class SummaryController {
         @PathVariable Long bookId,
         @PathVariable Long summaryId
     ) {
-        return ResponseEntity.ok(
-            new ApiResponse<>(SUCCESS, "요약 조회에 성공했습니다.",
-                summaryUseCase.getSummary(summaryId))
-        );
+        try {
+            log.info("책 요약 조회 요청: bookId={}, summaryId={}", bookId, summaryId);
+            SummaryResponse response = summaryUseCase.getSummary(summaryId);
+            return ResponseEntity.ok(
+                new ApiResponse<>(SUCCESS, "요약 조회에 성공했습니다.", response)
+            );
+        } catch (IllegalArgumentException e) {
+            log.error("책 요약 조회 실패: bookId={}, summaryId={}, 원인={}", bookId, summaryId, e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("책 요약 조회 중 서버 오류 발생: bookId={}, summaryId={}", bookId, summaryId, e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, "요약 조회 중 오류가 발생했습니다.", null)
+            );
+        }
     }
 
     /**
@@ -70,10 +99,23 @@ public class SummaryController {
         @PathVariable Long bookId,
         @PageableDefault(size = 20) Pageable pageable
     ) {
-        return ResponseEntity.ok(
-            new ApiResponse<>(SUCCESS, "요약 목록 조회에 성공했습니다.",
-                summaryUseCase.getSummaries(bookId, pageable))
-        );
+        try {
+            log.info("책 요약 목록 조회 요청: bookId={}", bookId);
+            Page<SummaryResponse> response = summaryUseCase.getSummaries(bookId, pageable);
+            return ResponseEntity.ok(
+                new ApiResponse<>(SUCCESS, "요약 목록 조회에 성공했습니다.", response)
+            );
+        } catch (IllegalArgumentException e) {
+            log.error("책 요약 목록 조회 실패: bookId={}, 원인={}", bookId, e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("책 요약 목록 조회 중 서버 오류 발생: bookId={}", bookId, e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, "요약 목록 조회 중 오류가 발생했습니다.", null)
+            );
+        }
     }
 
     /**
@@ -90,10 +132,23 @@ public class SummaryController {
         @PathVariable Long summaryId,
         @Valid @RequestBody SummaryRequest request
     ) {
-        return ResponseEntity.ok(
-            new ApiResponse<>(SUCCESS, "요약이 수정되었습니다.",
-                summaryUseCase.updateSummary(summaryId, request))
-        );
+        try {
+            log.info("책 요약 수정 요청: bookId={}, summaryId={}", bookId, summaryId);
+            SummaryResponse response = summaryUseCase.updateSummary(summaryId, request);
+            return ResponseEntity.ok(
+                new ApiResponse<>(SUCCESS, "요약이 수정되었습니다.", response)
+            );
+        } catch (IllegalArgumentException e) {
+            log.error("책 요약 수정 실패: bookId={}, summaryId={}, 원인={}", bookId, summaryId, e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("책 요약 수정 중 서버 오류 발생: bookId={}, summaryId={}", bookId, summaryId, e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, "요약 수정 중 오류가 발생했습니다.", null)
+            );
+        }
     }
 
     /**
@@ -108,9 +163,22 @@ public class SummaryController {
         @PathVariable Long bookId,
         @PathVariable Long summaryId
     ) {
-        summaryUseCase.deleteSummary(summaryId);
-        return ResponseEntity.ok(
-            new ApiResponse<>(SUCCESS, "요약이 삭제되었습니다.", null)
-        );
+        try {
+            log.info("책 요약 삭제 요청: bookId={}, summaryId={}", bookId, summaryId);
+            summaryUseCase.deleteSummary(summaryId);
+            return ResponseEntity.ok(
+                new ApiResponse<>(SUCCESS, "요약이 삭제되었습니다.", null)
+            );
+        } catch (IllegalArgumentException e) {
+            log.error("책 요약 삭제 실패: bookId={}, summaryId={}, 원인={}", bookId, summaryId, e.getMessage());
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, e.getMessage(), null)
+            );
+        } catch (Exception e) {
+            log.error("책 요약 삭제 중 서버 오류 발생: bookId={}, summaryId={}", bookId, summaryId, e);
+            return ResponseEntity.badRequest().body(
+                new ApiResponse<>(ERROR, "요약 삭제 중 오류가 발생했습니다.", null)
+            );
+        }
     }
 }

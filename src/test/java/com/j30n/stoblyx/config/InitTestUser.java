@@ -25,28 +25,58 @@ public class InitTestUser {
     public CommandLineRunner initTestData() {
         return args -> {
             // 테스트 사용자 생성
-            createTestUser();
+            createAllTestUsers();
         };
     }
 
     @Transactional
-    public void createTestUser() {
-        // 테스트 사용자가 이미 존재하는지 확인
-        if (userRepository.findByUsername("testuser").isPresent()) {
+    public void createAllTestUsers() {
+        // 일반 테스트 사용자 생성
+        if (!userRepository.findByUsername("testuser").isPresent()) {
+            User testUser = User.builder()
+                    .username("testuser")
+                    .email("testuser@example.com")
+                    .password(passwordEncoder.encode("Password123!"))
+                    .nickname("테스트 사용자")
+                    .role(UserRole.USER)
+                    .build();
+
+            userRepository.save(testUser);
+            log.info("테스트 사용자가 생성되었습니다: {}", testUser.getUsername());
+        } else {
             log.info("테스트 사용자가 이미 존재합니다.");
-            return;
         }
+        
+        // 관리자 권한을 가진 테스트 사용자 생성
+        if (!userRepository.findByUsername("testadmin").isPresent()) {
+            User testAdmin = User.builder()
+                    .username("testadmin")
+                    .email("testadmin@example.com")
+                    .password(passwordEncoder.encode("Password123!"))
+                    .nickname("테스트 관리자")
+                    .role(UserRole.ADMIN)
+                    .build();
 
-        // 테스트 사용자 생성 및 저장
-        User testUser = User.builder()
-                .username("testuser")
-                .email("testuser@example.com")
-                .password(passwordEncoder.encode("Password123!"))
-                .nickname("테스트 사용자")
-                .role(UserRole.USER)
-                .build();
+            userRepository.save(testAdmin);
+            log.info("테스트 관리자가 생성되었습니다: {}", testAdmin.getUsername());
+        } else {
+            log.info("테스트 관리자가 이미 존재합니다.");
+        }
+        
+        // K6 테스트용 사용자 생성
+        if (!userRepository.findByUsername("k6testuser").isPresent()) {
+            User k6TestUser = User.builder()
+                    .username("k6testuser")
+                    .email("k6test@example.com")
+                    .password(passwordEncoder.encode("Test1234!"))
+                    .nickname("K6 테스트 사용자")
+                    .role(UserRole.USER)
+                    .build();
 
-        userRepository.save(testUser);
-        log.info("테스트 사용자가 생성되었습니다: {}", testUser.getUsername());
+            userRepository.save(k6TestUser);
+            log.info("K6 테스트 사용자가 생성되었습니다: {}", k6TestUser.getUsername());
+        } else {
+            log.info("K6 테스트 사용자가 이미 존재합니다.");
+        }
     }
 } 

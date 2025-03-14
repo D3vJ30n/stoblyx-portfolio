@@ -113,80 +113,90 @@ public class DataInitializer {
 
     @Transactional
     public void initBooks() {
+        // 기존 책 샘플이 있는 경우 생성하지 않음
+        if (bookRepository.count() > 0) {
+            log.info("책 데이터가 이미 존재합니다.");
+            return;
+        }
+        
+        // 테스트용 책 데이터 생성
         List<Book> books = new ArrayList<>();
         
-        // 첫 번째 책
-        books.add(Book.builder()
-            .bookInfo(BookInfo.builder()
-                .title("철학의 위안")
-                .author("알랭 드 보통")
-                .isbn("9788937834790")
-                .description("철학을 통해 일상의 문제들을 해결하는 방법을 제시하는 책")
-                .publisher("민음사")
-                .publishDate(LocalDate.of(2000, 5, 20))
-                .thumbnailUrl("https://example.com/images/philosophy.jpg")
-                .genres(Arrays.asList("철학", "교양"))
-                .build())
-            .build());
+        // ID가 1인 테스트용 책 (명시적으로 테스트용으로 표시)
+        BookInfo testBookInfo = BookInfo.builder()
+            .title("테스트용 책")
+            .author("테스트 작가")
+            .isbn("979-11-00000-00-1")
+            .description("K6 테스트를 위한 테스트용 책입니다.")
+            .publisher("테스트 출판사")
+            .publishDate(LocalDate.of(2023, 1, 1))
+            .thumbnailUrl("https://example.com/test-book.jpg")
+            .genres(Arrays.asList("테스트", "자기계발"))
+            .build();
         
-        // 두 번째 책
-        books.add(Book.builder()
-            .bookInfo(BookInfo.builder()
-                .title("사피엔스")
-                .author("유발 하라리")
-                .isbn("9788934972464")
-                .description("인류의 역사와 문명의 발전 과정을 다룬 책")
-                .publisher("김영사")
-                .publishDate(LocalDate.of(2015, 11, 24))
-                .thumbnailUrl("https://example.com/images/sapiens.jpg")
-                .genres(Arrays.asList("역사", "인류학", "과학"))
-                .build())
-            .build());
+        Book testBook = Book.builder()
+            .bookInfo(testBookInfo)
+            .build();
+        books.add(testBook);
         
-        // 세 번째 책
-        books.add(Book.builder()
-            .bookInfo(BookInfo.builder()
-                .title("소크라테스의 변명")
-                .author("플라톤")
-                .isbn("9788937462344")
-                .description("소크라테스의 재판과 그의 철학적 사상을 담은 대화록")
-                .publisher("문예출판사")
-                .publishDate(LocalDate.of(2003, 8, 10))
-                .thumbnailUrl("https://example.com/images/socrates.jpg")
-                .genres(Arrays.asList("철학", "고전"))
-                .build())
-            .build());
+        // 추가 책 데이터 생성
+        String[] titles = {
+            "철학의 위안", "사피엔스", "소크라테스의 변명", "당신 인생의 이야기", 
+            "아몬드", "곰팡이의 정원", "체리새우: 비밀글입니다", "빛의 과거", 
+            "말의 품격", "지적 대화를 위한 넓고 얇은 지식"
+        };
         
-        // 네 번째 책
-        books.add(Book.builder()
-            .bookInfo(BookInfo.builder()
-                .title("데미안")
-                .author("헤르만 헤세")
-                .isbn("9788937460449")
-                .description("자아의 발견과 성장을 다룬 소설")
-                .publisher("민음사")
-                .publishDate(LocalDate.of(1997, 3, 15))
-                .thumbnailUrl("https://example.com/images/demian.jpg")
-                .genres(Arrays.asList("소설", "성장"))
-                .build())
-            .build());
+        String[] authors = {
+            "알랭 드 보통", "유발 하라리", "플라톤", "테드 창", 
+            "손원평", "이불", "황영미", "은희경", 
+            "이기주", "채사장"
+        };
         
-        // 다섯 번째 책
-        books.add(Book.builder()
-            .bookInfo(BookInfo.builder()
-                .title("1984")
-                .author("조지 오웰")
-                .isbn("9788937461057")
-                .description("전체주의 사회를 묘사한 디스토피아 소설")
-                .publisher("문학동네")
-                .publishDate(LocalDate.of(2009, 7, 1))
-                .thumbnailUrl("https://example.com/images/1984.jpg")
-                .genres(Arrays.asList("소설", "디스토피아", "고전"))
-                .build())
-            .build());
+        String[] publishers = {
+            "철학연구원", "사피엔스출판사", "고전출판", "과학문학사", 
+            "창작사", "만화출판", "청소년문학사", "한국문학출판", 
+            "국어연구원", "지식출판사"
+        };
+        
+        String[][] genresList = {
+            {"철학", "에세이"}, {"역사", "인문"}, {"고전", "철학"}, {"SF", "소설"}, 
+            {"소설", "한국문학"}, {"만화", "그래픽노블"}, {"청소년", "소설"}, {"소설", "한국문학"}, 
+            {"에세이", "언어"}, {"인문", "교양"}
+        };
+        
+        String[] descriptions = {
+            "철학적 사고를 통해 현대인의 불안과 고통을 위로하는 책",
+            "인류의 역사를 거시적 관점에서 바라본 문명사",
+            "소크라테스가 재판에서 자신을 변호하는 내용을 담은 플라톤의 저서",
+            "외계 생명체와의 접촉을 통해 인간 언어와 사고의 본질을 탐구하는 SF소설",
+            "감정을 느끼지 못하는 소년이 타인의 감정을 이해하게 되는 과정을 그린 소설",
+            "독특한 세계관을 가진 판타지 만화",
+            "비밀일기를 통해 펼쳐지는 10대들의 우정과 성장 이야기",
+            "한 여성의 삶을 통해 한국 현대사를 조명하는 소설",
+            "말과 언어의 중요성에 대해 생각해보게 하는 에세이",
+            "다양한 분야의 기초 지식을 소개하는 교양서"
+        };
+        
+        for (int i = 0; i < titles.length; i++) {
+            BookInfo bookInfo = BookInfo.builder()
+                .title(titles[i])
+                .author(authors[i])
+                .isbn("979-11-" + (10000 + i) + "-" + (10 + i) + "-" + (1 + i % 9))
+                .description(descriptions[i])
+                .publisher(publishers[i])
+                .publishDate(LocalDate.of(2020 + i % 5, (i % 12) + 1, (i % 28) + 1))
+                .thumbnailUrl("https://example.com/book" + (i + 1) + ".jpg")
+                .genres(Arrays.asList(genresList[i]))
+                .build();
+            
+            Book book = Book.builder()
+                .bookInfo(bookInfo)
+                .build();
+            books.add(book);
+        }
         
         bookRepository.saveAll(books);
-        log.info("도서 {} 권이 생성되었습니다.", books.size());
+        log.info("책 {} 권이 생성되었습니다.", books.size());
     }
 
     @Transactional

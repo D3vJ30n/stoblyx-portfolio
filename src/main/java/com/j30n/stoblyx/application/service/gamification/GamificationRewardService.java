@@ -145,4 +145,16 @@ public class GamificationRewardService implements GamificationRewardUseCase {
     public List<GamificationReward> getUnclaimedRewards() {
         return gamificationRewardPort.findByIsClaimedFalse();
     }
+    
+    /**
+     * 보상 ID로 보상 정보 조회
+     *
+     * @param rewardId 보상 ID
+     * @return 보상 정보
+     * @throws IllegalArgumentException 해당 ID의 보상이 없을 경우
+     */
+    @Override
+    public GamificationReward findById(Long rewardId) {
+        return gamificationRewardPort.findById(rewardId);
+    }
 } 

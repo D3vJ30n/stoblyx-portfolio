@@ -15,7 +15,7 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: classpath:e2e-test-data.sql
+      data-locations: classpath:data_utf8.sql
       continue-on-error: true
   data:
     redis:
@@ -48,5 +48,5 @@ jwt:
 # KoBart API 설정 (테스트용 더미 값)
 kobart:
   api:
-    url: http://localhost:8081/api/kobart
+    url: http://localhost:8091/api/kobart
     key: test-api-key

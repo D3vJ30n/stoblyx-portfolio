@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.context.annotation.Lazy;
+import java.util.List;
+import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -72,8 +74,26 @@ public class BookService implements BookUseCase {
     @Override
     @Transactional(readOnly = true)
     public Page<BookResponse> getAllBooks(Pageable pageable) {
-        return bookPort.findAll(pageable)
-            .map(BookResponse::from);
+        log.info("모든 책 목록 조회 시작");
+        
+        try {
+            // bookPort.findAllBooks()를 사용
+            List<Book> books = bookPort.findAllBooks();
+            
+            log.info("조회된 책 수: {}", books.size());
+            
+            // Page로 변환
+            int start = (int) pageable.getOffset();
+            int end = Math.min((start + pageable.getPageSize()), books.size());
+            List<Book> pageContent = start < end ? books.subList(start, end) : new ArrayList<>();
+            
+            Page<Book> bookPage = new org.springframework.data.domain.PageImpl<>(pageContent, pageable, books.size());
+            
+            return bookPage.map(BookResponse::from);
+        } catch (Exception e) {
+            log.error("모든 책 목록 조회 중 오류 발생: {}", e.getMessage(), e);
+            return Page.empty(pageable);
+        }
     }
 
     @Override

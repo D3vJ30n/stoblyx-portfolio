@@ -1,6 +1,7 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.application.service.like.LikeService;
+import com.j30n.stoblyx.application.service.content.ContentService;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import com.j30n.stoblyx.infrastructure.annotation.CurrentUser;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
@@ -26,6 +27,7 @@ public class LikeController {
     private static final String RESULT_ERROR = "ERROR";
 
     private final LikeService likeService;
+    private final ContentService contentService;
 
     /**
      * 특정 문구에 좋아요를 표시합니다.
@@ -160,6 +162,29 @@ public class LikeController {
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                 .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), null));
+        }
+    }
+
+    /**
+     * 특정 콘텐츠에 좋아요를 토글합니다.
+     *
+     * @param currentUser 현재 인증된 사용자
+     * @param contentId 좋아요할 콘텐츠의 ID
+     * @return 좋아요 처리 결과 (true: 성공, false: 실패)
+     * @throws IllegalArgumentException 콘텐츠가 존재하지 않는 경우
+     */
+    @PostMapping("/content/{contentId}")
+    public ResponseEntity<ApiResponse<Boolean>> toggleContentLike(
+        @CurrentUser UserPrincipal currentUser,
+        @PathVariable Long contentId
+    ) {
+        try {
+            contentService.toggleLike(currentUser.getId(), contentId);
+            return ResponseEntity.ok()
+                .body(new ApiResponse<>(RESULT_SUCCESS, "콘텐츠 좋아요가 토글되었습니다.", true));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                .body(new ApiResponse<>(RESULT_ERROR, e.getMessage(), false));
         }
     }
 }
