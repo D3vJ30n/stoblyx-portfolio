@@ -19,50 +19,33 @@ spring:
       - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
 
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    username: sa
-    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3307/stoblyx_sandbox_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: stoblyx_user
+    password: 6188
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
         highlight_sql: true
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         globally_quoted_identifiers: true
         id:
           new_generator_mappings: false
-    generate-ddl: false
+    generate-ddl: true
     defer-datasource-initialization: false
 
   sql:
     init:
-      mode: always
-      schema-locations: classpath:schema.sql
-      data-locations: classpath:data.sql
-      continue-on-error: true
-
-  data:
-    redis:
-      enabled: true
-      host: 127.0.0.1
-      port: 6379
-      password:
-      database: 0
+      mode: never
 
   security:
-    oauth2:
-      client:
-        registration:
-          github:
-            client-id: test-client-id
-            client-secret: test-client-secret
     user:
       name: test
       password: test
@@ -76,15 +59,11 @@ spring:
       accept-empty-string-as-null-object: true
 
 jwt:
-  secret: test_jwt_secret_key_for_testing_purposes_only
+  secret: test_secret_key_for_integration_tests_must_be_at_least_32_bytes_long
   expiration: 3600
   refresh-expiration: 86400
   access-token-validity-in-seconds: 3600
   refresh-token-validity-in-seconds: 86400
-
-kobart:
-  api:
-    url: http://localhost:5000
 
 server:
   port: 0
@@ -100,17 +79,18 @@ logging:
     org.springframework.test: DEBUG
     org.springframework.jdbc.datasource.init: DEBUG
 
-xss:
-  filter:
-    exclusions:
-      - /auth/.*
-      - /docs/.*
-      - /books/.*
-      - /quotes/.*
-      - /test/.*
-
 test:
   skip-jwt-verify: true
+  admin:
+    username: test_admin
+    password: test1234
+  user:
+    username: test_user
+    password: test1234
+
+kobart:
+  api:
+    url: http://localhost:8000
 
 entity-scan:
   packages: com.j30n.stoblyx.domain.model

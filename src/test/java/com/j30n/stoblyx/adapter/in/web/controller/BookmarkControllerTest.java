@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BulkDeleteRequest;
 import com.j30n.stoblyx.application.service.bookmark.BookmarkService;
+import com.j30n.stoblyx.application.service.content.ContentService;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
@@ -68,6 +69,9 @@ class BookmarkControllerTest {
 
     @MockBean
     private BookmarkService bookmarkService;
+
+    @MockBean
+    private ContentService contentService;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {

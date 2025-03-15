@@ -88,6 +88,7 @@ Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 
 * `POST /quotes` - 문구 생성
 * `GET /quotes/{id}` - 문구 조회
 * `GET /quotes` - 문구 목록 조회
+* `GET /quotes?contentId={contentId}` - 콘텐츠별 문구 목록 조회
 * `PUT /quotes/{id}` - 문구 수정
 * `DELETE /quotes/{id}` - 문구 삭제
 * `POST /quotes/{quoteId}/save` - 문구 저장
@@ -113,6 +114,7 @@ Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 
 * `GET /contents/{id}` - 콘텐츠 상세 조회
 * `POST /contents/{id}/like` - 콘텐츠 좋아요 토글
 * `POST /contents/{id}/bookmark` - 콘텐츠 북마크 토글
+* `POST /contents/create` - 새 콘텐츠 생성
 * `POST /contents/quotes/{quoteId}` - 문구로부터 콘텐츠 생성
 
 === 콘텐츠 댓글 API
@@ -192,6 +194,8 @@ Stoblyx는 책에서 인용구를 발견하고 AI를 통해 숏폼 콘텐츠를 
 === 랭킹 사용자 점수 API
 
 * `GET /admin/ranking/users/{userId}/score` - 사용자 점수 조회
+* `GET /ranking/users` - 랭킹 사용자 목록 조회
+* `GET /ranking/users?rankType={rankType}` - 특정 랭크 타입의 사용자 목록 조회
 * `GET /admin/ranking/users/scores` - 모든 사용자 점수 조회
 * `GET /admin/ranking/users/scores/top` - 상위 랭킹 사용자 조회
 * `GET /admin/ranking/users/scores/recent-changes` - 최근 점수 변경 내역 조회
@@ -890,46 +894,6 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 특정 문구를 삭제합니다.
 작성자만 삭제 가능합니다.
 
-=== 문구 좋아요
-
-`POST /likes/quotes/{quoteId}`
-
-특정 문구에 좋아요를 표시합니다.
-
-==== 응답 필드
-
-* `true`: 좋아요 성공
-
-=== 문구 좋아요 취소
-
-`DELETE /likes/quotes/{quoteId}`
-
-특정 문구의 좋아요를 취소합니다.
-
-==== 응답 필드
-
-* `false`: 좋아요 취소 성공
-
-=== 문구 좋아요 상태 조회
-
-`GET /likes/quotes/{quoteId}/status`
-
-현재 사용자가 특정 문구에 좋아요를 했는지 확인합니다.
-
-==== 응답 필드
-
-* `true`/`false`: 좋아요 여부
-
-=== 문구 좋아요 수 조회
-
-`GET /likes/quotes/{quoteId}/count`
-
-특정 문구의 좋아요 수를 조회합니다.
-
-==== 응답 필드
-
-* 좋아요 수 (정수)
-
 === 문구 저장
 
 `POST /quotes/{quoteId}/save`
@@ -1599,9 +1563,10 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 * `id`: Long - 사용자 ID
 * `email`: String - 이메일
 * `password`: String - 암호화된 비밀번호
-* `name`: String - 이름
+* `username`: String - 사용자 이름 
 * `nickname`: String - 닉네임
 * `profileImage`: String - 프로필 이미지 URL
+* `profileImageUrl`: String - 프로필 이미지 URL(대체 필드)
 * `role`: Enum - 사용자 역할 (USER, EDITOR, WRITER, ADMIN)
 * `bio`: String - 자기소개
 * `interests`: List<String> - 관심사
@@ -1618,10 +1583,14 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 * `isbn`: String - ISBN
 * `publicationYear`: Integer - 출판연도
 * `description`: String - 설명
-* `genre`: String - 장르
-* `coverImage`: String - 표지 이미지 URL
+* `genres`: List<String> - 장르 목록
+* `thumbnailUrl`: String - 표지 이미지 URL
+* `avgReadingTime`: Integer - 평균 읽기 시간(분)
+* `totalPages`: Integer - 총 페이지 수
+* `averageRating`: Double - 평균 평점
+* `popularity`: Integer - 인기도
 * `createdAt`: LocalDateTime - 등록일시
-* `updatedAt`: LocalDateTime - 수정일시
+* `modifiedAt`: LocalDateTime - 수정일시
 
 === Quote 모델
 
@@ -1719,8 +1688,10 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 * `id`: Long - 점수 ID
 * `userId`: Long - 사용자 ID
 * `currentScore`: Integer - 현재 점수
+* `score`: Integer - 점수(대체 필드)
 * `previousScore`: Integer - 이전 점수
 * `rankType`: Enum - 랭크 유형 (BRONZE, SILVER, GOLD, PLATINUM, DIAMOND)
+* `rankDisplayName`: String - 랭크 표시 이름 (예: "브론즈", "실버")
 * `lastActivityDate`: LocalDateTime - 마지막 활동 일시
 * `suspiciousActivity`: Boolean - 의심스러운 활동 여부
 * `reportCount`: Integer - 신고 횟수
@@ -1747,8 +1718,9 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 * `id`: Long - ID
 * `searchTerm`: String - 검색어
 * `searchCount`: Integer - 검색 횟수
-* `popularityScore`: Double - 인기도 점수
-* `lastUpdatedAt`: LocalDateTime - 마지막 업데이트 일시
+* `userDemographicData`: String - 사용자 인구통계 데이터
+* `relatedTerms`: String - 관련 검색어
+* `trendData`: String - 트렌드 데이터
 * `createdAt`: LocalDateTime - 생성일시
 * `modifiedAt`: LocalDateTime - 수정일시
 * `isDeleted`: Boolean - 삭제 여부
@@ -1776,20 +1748,12 @@ API 요청 시 JWT 토큰을 사용하여 인증합니다.
 * `id`: Long - 상호작용 ID
 * `user`: User - 사용자
 * `content`: ShortFormContent - 콘텐츠
+* `interactionType`: String - 상호작용 유형 (VIEW, LIKE, BOOKMARK, SHARE, COMMENT 등)
 * `liked`: Boolean - 좋아요 여부
 * `bookmarked`: Boolean - 북마크 여부
 * `viewedAt`: LocalDateTime - 조회 일시
 * `createdAt`: LocalDateTime - 생성일시
 * `modifiedAt`: LocalDateTime - 수정일시
-
-=== ContentLike 모델
-
-* `id`: Long - 좋아요 ID
-* `user`: User - 사용자
-* `content`: ShortFormContent - 콘텐츠
-* `createdAt`: LocalDateTime - 생성일시
-* `modifiedAt`: LocalDateTime - 수정일시
-* `isDeleted`: Boolean - 삭제 여부
 
 === UserInterest 모델
 

@@ -6,6 +6,7 @@ import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.domain.repository.BookRepository;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -60,6 +61,9 @@ class BookControllerTest {
 
     @MockBean
     private BookService bookService;
+    
+    @MockBean
+    private BookRepository bookRepository;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {

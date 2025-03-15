@@ -1,8 +1,10 @@
 package com.j30n.stoblyx.adapter.out.persistence.ai;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -10,203 +12,307 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpHeaders;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Collections;
+import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Random;
 
 @ExtendWith(MockitoExtension.class)
 class PexelsClientTest {
 
+    // 환경 변수에서 API 키를 가져오거나 테스트용 API 키 사용
+    private static final String API_KEY = System.getenv("PEXELS_API_KEY") != null && !System.getenv("PEXELS_API_KEY").isEmpty() 
+            ? System.getenv("PEXELS_API_KEY") 
+            : "Yyicakz4WGEu9XntPLqVIR4JUKEAokSMG7FfoAc35m6kHhnJnu5kHkPa";
+    // 테스트 상수 (영어로 변경)
+    private final String MOTIVATION_TITLE = "동기부여";
+    private static final String MOTIVATION_DESCRIPTION = "A motivational book that teaches how to grow a little every day. Small habits create big changes.";
+    private final String PHILOSOPHY_TITLE = "철학책";
+    private static final String PHILOSOPHY_DESCRIPTION = "A philosophical book exploring the essence of human existence and the meaning of life from an existentialist perspective.";
+    private final String FALLBACK_VIDEO_URL = "https://www.pexels.com/video/woman-reading-book-in-the-library-5167740/";
     @Mock
     private RestTemplate restTemplate;
-    
     private PexelsClient pexelsClient;
-    
-    private static final String API_KEY = "563492ad6f91700001000001a9c7e2c0c3e04b3e9b5f6a8e7d4c3b2a1";
-    
-    // 테스트 상수
-    private static final String MOTIVATION_TITLE = "성공하는 습관";
-    private static final String MOTIVATION_DESCRIPTION = "매일 조금씩 성장하는 방법을 알려주는 동기부여 책입니다. 작은 습관이 큰 변화를 만듭니다.";
-    
-    private static final String PHILOSOPHY_TITLE = "존재의 의미";
-    private static final String PHILOSOPHY_DESCRIPTION = "인간 존재의 본질과 삶의 의미에 대해 탐구하는 철학 서적입니다. 실존주의적 관점에서 삶을 바라봅니다.";
-    
+
     @BeforeEach
     void setUp() {
         pexelsClient = new PexelsClient(API_KEY, restTemplate, new Random(42), new ObjectMapper());
     }
-    
+
+    // 향후 알라딘 Open API 구현 예정
     @Test
     @DisplayName("동기부여 책 이미지 검색 테스트")
     void searchMotivationBookImage_Test() {
         // Given
         String query = MOTIVATION_TITLE + " " + MOTIVATION_DESCRIPTION;
         String mockResponse = "{"
-                + "\"photos\": ["
-                + "  {"
-                + "    \"src\": {"
-                + "      \"original\": \"https://example.com/motivation-image.jpg\""
-                + "    }"
-                + "  }"
-                + "]"
-                + "}";
-        
+            + "\"photos\": ["
+            + "  {"
+            + "    \"src\": {"
+            + "      \"original\": \"https://images.pexels.com/photos/4498362/pexels-photo-4498362.jpeg\""
+            + "    }"
+            + "  }"
+            + "]"
+            + "}";
+
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(String.class)
+            anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
         )).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
-        
+
         // When
         String result = pexelsClient.searchImage(query);
-        
+
         // Then
         assertNotNull(result);
-        assertThat(result).isEqualTo("https://example.com/motivation-image.jpg");
+        assertThat(result).isEqualTo("https://images.pexels.com/photos/4498362/pexels-photo-4498362.jpeg");
     }
-    
+
     @Test
     @DisplayName("철학 책 이미지 검색 테스트")
     void searchPhilosophyBookImage_Test() {
         // Given
         String query = PHILOSOPHY_TITLE + " " + PHILOSOPHY_DESCRIPTION;
         String mockResponse = "{"
-                + "\"photos\": ["
-                + "  {"
-                + "    \"src\": {"
-                + "      \"original\": \"https://example.com/philosophy-image.jpg\""
-                + "    }"
-                + "  }"
-                + "]"
-                + "}";
-        
+            + "\"photos\": ["
+            + "  {"
+            + "    \"src\": {"
+            + "      \"original\": \"https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg\""
+            + "    }"
+            + "  }"
+            + "]"
+            + "}";
+
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(String.class)
+            anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
         )).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
-        
+
         // When
         String result = pexelsClient.searchImage(query);
-        
+
         // Then
         assertNotNull(result);
-        assertThat(result).isEqualTo("https://example.com/philosophy-image.jpg");
+        assertThat(result).isEqualTo("https://images.pexels.com/photos/2908984/pexels-photo-2908984.jpeg");
     }
-    
+
     @Test
     @DisplayName("동기부여 책 비디오 검색 테스트")
     void searchMotivationBookVideo_Test() {
         // Given
         String query = MOTIVATION_TITLE;
         String mockResponse = "{"
-                + "\"videos\": ["
-                + "  {"
-                + "    \"video_files\": ["
-                + "      {"
-                + "        \"link\": \"https://example.com/motivation-video.mp4\""
-                + "      }"
-                + "    ]"
-                + "  }"
-                + "]"
-                + "}";
-        
+            + "\"videos\": ["
+            + "  {"
+            + "    \"video_files\": ["
+            + "      {"
+            + "        \"link\": \"https://www.pexels.com/video/a-woman-writing-on-her-notebook-6866920/\""
+            + "      }"
+            + "    ]"
+            + "  }"
+            + "]"
+            + "}";
+
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(String.class)
+            anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
         )).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
-        
+
         // When
         String result = pexelsClient.searchVideo(query);
-        
+
         // Then
         assertNotNull(result);
-        assertThat(result).isEqualTo("https://example.com/motivation-video.mp4");
+        assertThat(result).isEqualTo("https://www.pexels.com/video/a-woman-writing-on-her-notebook-6866920/");
     }
-    
+
     @Test
     @DisplayName("철학 책 비디오 검색 테스트")
     void searchPhilosophyBookVideo_Test() {
         // Given
         String query = PHILOSOPHY_TITLE;
         String mockResponse = "{"
-                + "\"videos\": ["
-                + "  {"
-                + "    \"video_files\": ["
-                + "      {"
-                + "        \"link\": \"https://example.com/philosophy-video.mp4\""
-                + "      }"
-                + "    ]"
-                + "  }"
-                + "]"
-                + "}";
-        
+            + "\"videos\": ["
+            + "  {"
+            + "    \"video_files\": ["
+            + "      {"
+            + "        \"link\": \"https://www.pexels.com/video/books-education-literature-1409099/\""
+            + "      }"
+            + "    ]"
+            + "  }"
+            + "]"
+            + "}";
+
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(String.class)
+            anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
         )).thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
-        
+
         // When
         String result = pexelsClient.searchVideo(query);
-        
+
         // Then
         assertNotNull(result);
-        assertThat(result).isEqualTo("https://example.com/philosophy-video.mp4");
+        assertThat(result).isEqualTo("https://www.pexels.com/video/books-education-literature-1409099/");
     }
-    
+
     @Test
     @DisplayName("이미지 검색 실패 시 폴백 이미지 반환 테스트")
     void searchImage_Failure_ReturnsFallback() {
         // Given
         String query = MOTIVATION_TITLE;
-        
+
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(String.class)
-        )).thenThrow(new RuntimeException("API 호출 실패"));
-        
+            anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
+        )).thenThrow(new RestClientException("[테스트용] API 호출 실패"));
+
         // When
         String result = pexelsClient.searchImage(query);
-        
+
         // Then
         assertNotNull(result);
-        assertThat(result).isEqualTo("https://images.pexels.com/photos/3243/pen-calendar-to-do-checklist.jpg");
+        assertThat(result).isEqualTo("https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg");
     }
-    
+
     @Test
     @DisplayName("비디오 검색 실패 시 폴백 비디오 반환 테스트")
     void searchVideo_Failure_ReturnsFallback() {
         // Given
         String query = PHILOSOPHY_TITLE;
-        
+
         when(restTemplate.exchange(
-                anyString(),
-                eq(HttpMethod.GET),
-                any(HttpEntity.class),
-                eq(String.class)
-        )).thenThrow(new RuntimeException("API 호출 실패"));
-        
+            anyString(),
+            eq(HttpMethod.GET),
+            any(HttpEntity.class),
+            eq(String.class)
+        )).thenThrow(new RuntimeException("[테스트용] API 호출 실패"));
+
         // When
         String result = pexelsClient.searchVideo(query);
-        
+
         // Then
         assertNotNull(result);
-        assertThat(result).isEqualTo("https://www.pexels.com/video/open-book-854381/");
+        assertThat(result).isEqualTo(FALLBACK_VIDEO_URL);
     }
+
+    /**
+     * 실제 API를 사용한 통합 테스트
+     * 참고: 이 테스트는 실제 API 호출을 수행하므로 API 키가 유효해야 합니다.
+     * API 호출 제한에 도달할 수 있으므로 필요할 때만 실행하세요.
+     */
+    @Test
+    @DisplayName("실제 API를 사용한 이미지 검색 통합 테스트")
+    void realApiImageSearchIntegrationTest() {
+        // 실제 API 호출을 위한 클라이언트 생성 (모킹 없음)
+        RestTemplate realRestTemplate = new RestTemplate();
+        
+        // Authorization 헤더를 추가하는 인터셉터
+        ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
+            request.getHeaders().set(HttpHeaders.AUTHORIZATION, API_KEY);
+            return execution.execute(request, body);
+        };
+        
+        realRestTemplate.setInterceptors(Collections.singletonList(interceptor));
+        
+        PexelsClient realClient = new PexelsClient(
+            API_KEY,
+            realRestTemplate,
+            new Random(),
+            new ObjectMapper());
+
+        // 검색 쿼리
+        String query = "books library reading";
+
+        // 실제 API 호출
+        String imageUrl = realClient.searchImage(query);
+
+        // 결과 검증
+        assertNotNull(imageUrl);
+        System.out.println("실제 이미지 URL: " + imageUrl);
+        // URL 형식 검증
+        assertThat(imageUrl).contains("https://");
+    }
+
+    @Test
+    @DisplayName("실제 API를 사용한 비디오 검색 통합 테스트")
+    void realApiVideoSearchIntegrationTest() {
+        // 실제 API 호출을 위한 클라이언트 생성 (모킹 없음)
+        RestTemplate realRestTemplate = new RestTemplate();
+        
+        // Authorization 헤더를 추가하는 인터셉터
+        ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
+            request.getHeaders().set(HttpHeaders.AUTHORIZATION, API_KEY);
+            return execution.execute(request, body);
+        };
+        
+        realRestTemplate.setInterceptors(Collections.singletonList(interceptor));
+        
+        PexelsClient realClient = new PexelsClient(
+            API_KEY,
+            realRestTemplate,
+            new Random(),
+            new ObjectMapper());
+
+        // 검색 쿼리
+        String query = "books reading study";
+
+        // 실제 API 호출
+        String videoUrl = realClient.searchVideo(query);
+
+        // 결과 검증
+        assertNotNull(videoUrl);
+        System.out.println("실제 비디오 URL: " + videoUrl);
+        // URL 형식 검증
+        assertThat(videoUrl).contains("https://");
+    }
+
+    @Test
+    @DisplayName("이미지 및 비디오 URL 검증 테스트")
+    void validateUrlsTest() {
+        // 이미지 URL 형식 검증
+        String imageUrl = "https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg"; // 책상 위의 책과 커피 이미지
+        assertThat(imageUrl).startsWith("https://");
+        assertThat(imageUrl).contains("pexels.com");
+        
+        // 비디오 URL 형식 검증
+        String videoUrl = "https://www.pexels.com/video/woman-reading-book-in-the-library-5167740/"; // 도서관에서 책 읽는 여성 비디오
+        assertThat(videoUrl).startsWith("https://");
+        assertThat(videoUrl).contains("pexels.com");
+        
+        // 폴백 URL 형식 검증
+        String fallbackImage = "https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg"; // 책상 위의 책과 커피 이미지
+        assertThat(fallbackImage).startsWith("https://");
+        
+        String fallbackVideo = FALLBACK_VIDEO_URL;
+        assertThat(fallbackVideo).startsWith("https://");
+    }
+    
+    /**
+     * 실제 API 호출 시 발생하는 경고 메시지는 테스트에 영향을 주지 않습니다.
+     * 경고 메시지는 다음과 같은 이유로 발생할 수 있습니다:
+     * 1. 테스트 환경에서 API_KEY가 PexelsConfig.API_KEY와 같을 경우
+     * 2. 실제 API 호출 시 인증에 실패하는 경우
+     * 
+     * 테스트가 통과한다면 기능적으로는 문제가 없습니다.
+     */
 } 

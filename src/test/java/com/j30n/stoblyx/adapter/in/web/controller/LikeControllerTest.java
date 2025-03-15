@@ -1,6 +1,7 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.application.service.like.LikeService;
+import com.j30n.stoblyx.application.service.content.ContentService;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
@@ -51,6 +52,9 @@ class LikeControllerTest {
 
     @MockBean
     private LikeService likeService;
+
+    @MockBean
+    private ContentService contentService;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {

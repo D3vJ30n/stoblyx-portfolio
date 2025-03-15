@@ -1,8 +1,10 @@
 package com.j30n.stoblyx.config;
 
 import com.j30n.stoblyx.adapter.out.persistence.ai.BGMClient;
+import com.j30n.stoblyx.adapter.out.persistence.ai.KoBartClient;
 import com.j30n.stoblyx.adapter.out.persistence.ai.PexelsClient;
 import com.j30n.stoblyx.adapter.out.persistence.ai.TTSClient;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -59,5 +61,14 @@ public class KoBartTestConfig {
                 return "http://example.com/test-bgm.mp3";
             }
         };
+    }
+    
+    @Bean
+    @Primary
+    public KoBartClient koBartClient() {
+        KoBartClient mockClient = Mockito.mock(KoBartClient.class);
+        Mockito.when(mockClient.summarize(Mockito.anyString()))
+               .thenReturn("이것은 테스트를 위한 모의 요약입니다.");
+        return mockClient;
     }
 }

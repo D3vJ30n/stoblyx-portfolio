@@ -286,7 +286,6 @@ public class SecurityTestConfig {
      * 테스트용 AuthAdapter Mock 빈
      */
     @Bean
-    @Primary
     public AuthAdapter authAdapter() {
         AuthAdapter mockAuthAdapter = Mockito.mock(AuthAdapter.class);
         

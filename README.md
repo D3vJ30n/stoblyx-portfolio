@@ -5,7 +5,8 @@
 </div>
 
 이 프로젝트는 사용자들이 책을 더 효율적으로 접하고 이해할 수 있도록 도와주는 AI 기반 독서 요약 플랫폼입니다.
-인공지능 기술을 활용하여 책의 핵심 내용을 요약하고, 사용자 맞춤형 독서 경험을 제공합니다.
+
+인공지능 기술을 활용하여 책의 핵심 내용을 요약하고, 사용자 맞춤형 독서 경험을 숏폼으로 제공합니다.
 
 ### **Stoblyx = Story + Obelisk**
 
@@ -171,11 +172,11 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 - **생성 및 수정 일시 추적**
 
-    - `created_at`: 레코드 생성 일시 (자동 설정)
-    - `modified_at`: 레코드 수정 일시 (자동 업데이트)
+  - `created_at`: 레코드 생성 일시 (자동 설정)
+  - `modified_at`: 레코드 수정 일시 (자동 업데이트)
 
 - **논리적 삭제 지원**
-    - `is_deleted`: 논리적 삭제 상태 플래그 (기본값: false)
+  - `is_deleted`: 논리적 삭제 상태 플래그 (기본값: false)
 
 대부분의 엔티티는 `BaseEntity` 클래스를 상속받아 이러한 공통 필드를 자동으로 포함합니다. 일부 특수 엔티티(ContentInteraction, RankingUserScore,
 RankingLeaderboard)는 필요에 따라 별도로 필드가 추가되었습니다.
@@ -269,13 +270,13 @@ src/test/resources/data.sql;
 
 ### 3. 게이미피케이션 & 랭킹 시스템
 
-| 랭크   | 조건                 | 혜택                     |
-|------|--------------------|------------------------|
-| 브론즈  | 기본 기능 사용 가능        | 일일 콘텐츠 생성 3회           |
-| 실버   | 인기 문구 TOP 10 확인 가능 | 일일 콘텐츠 생성 5회, 프리미엄 BGM |
-| 골드   | 100+ 좋아요 문구 저장 가능  | 일일 콘텐츠 생성 10회, 고급 템플릿  |
-| 플래티넘 | AI 추천 영상 제작 가능     | 무제한 콘텐츠 생성, 커스텀 워터마크   |
-| 다이아  | 콘텐츠 트렌드 피드 노출      | 모든 혜택 + 콘텐츠 우선 노출      |
+| 랭크     | 조건                       | 혜택                                |
+| -------- | -------------------------- | ----------------------------------- |
+| 브론즈   | 기본 기능 사용 가능        | 일일 콘텐츠 생성 3회                |
+| 실버     | 인기 문구 TOP 10 확인 가능 | 일일 콘텐츠 생성 5회, 프리미엄 BGM  |
+| 골드     | 100+ 좋아요 문구 저장 가능 | 일일 콘텐츠 생성 10회, 고급 템플릿  |
+| 플래티넘 | AI 추천 영상 제작 가능     | 무제한 콘텐츠 생성, 커스텀 워터마크 |
+| 다이아   | 콘텐츠 트렌드 피드 노출    | 모든 혜택 + 콘텐츠 우선 노출        |
 
 #### 랭킹 산정 공식
 
@@ -339,15 +340,15 @@ round(currentScore *(1-decayFactor));
 
 - **헥사고날 아키텍처 기반 AI 서비스 통합**
 
-    - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
-    - 도메인 로직과 AI 서비스 간의 느슨한 결합
-    - 폴백 메커니즘을 통한 서비스 안정성 확보
+  - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
+  - 도메인 로직과 AI 서비스 간의 느슨한 결합
+  - 폴백 메커니즘을 통한 서비스 안정성 확보
 
 - **AI 통합 컴포넌트**
-    - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
-    - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동
-    - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
-    - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
+  - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
+  - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동
+  - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
+  - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
 
 ---
 
@@ -412,494 +413,494 @@ round(currentScore *(1-decayFactor));
 
 - **BaseTimeEntity**
 
-    - 모든 엔티티가 상속받는 시간 관련 기본 클래스
-    - 필드
-        - created_at: TIMESTAMP - 생성 시간, @CreatedDate, @Column(updatable = false)
-        - modified_at: TIMESTAMP - 수정 시간, @LastModifiedDate
-    - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
+  - 모든 엔티티가 상속받는 시간 관련 기본 클래스
+  - 필드
+    - created_at: TIMESTAMP - 생성 시간, @CreatedDate, @Column(updatable = false)
+    - modified_at: TIMESTAMP - 수정 시간, @LastModifiedDate
+  - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
 
 - **BaseEntity**
-    - BaseTimeEntity을 확장한 공통 기본 클래스
-    - 필드
-        - is_deleted: BOOLEAN - 삭제 여부, @Column(nullable = false, default = false)
-    - 메서드: delete(), restore(), isDeleted(), updateModifiedAt()
+  - BaseTimeEntity을 확장한 공통 기본 클래스
+  - 필드
+    - is_deleted: BOOLEAN - 삭제 여부, @Column(nullable = false, default = false)
+  - 메서드: delete(), restore(), isDeleted(), updateModifiedAt()
 
 ### 도메인 엔티티
 
 - **User (사용자)**
 
-    - 테이블: `users`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - username: VARCHAR(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
-        - password: VARCHAR(255) - 암호화된 비밀번호, @NotEmpty, @JsonIgnore
-        - nickname: VARCHAR(50) - 사용자 별명
-        - email: VARCHAR(100) - 이메일 주소, @Email, @Column(unique = true)
-        - profileImageUrl: VARCHAR(255) - 프로필 이미지 경로
-        - role: VARCHAR(20) - 사용자 권한 (USER, ADMIN 등)
-        - accountStatus: VARCHAR(20) - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
-        - lastLoginAt: TIMESTAMP - 마지막 로그인 시간
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
-    - 관계: searches, quotes, comments, likes, savedQuotes (OneToMany)
-    - 관계: auth, userInterest (OneToOne)
+  - 테이블: `users`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - username: VARCHAR(50) - 사용자 아이디, @NotEmpty, @Column(unique = true)
+    - password: VARCHAR(255) - 암호화된 비밀번호, @NotEmpty, @JsonIgnore
+    - nickname: VARCHAR(50) - 사용자 별명
+    - email: VARCHAR(100) - 이메일 주소, @Email, @Column(unique = true)
+    - profileImageUrl: VARCHAR(255) - 프로필 이미지 경로
+    - role: VARCHAR(20) - 사용자 권한 (USER, ADMIN 등)
+    - accountStatus: VARCHAR(20) - 계정 상태 (ACTIVE, SUSPENDED, INACTIVE)
+    - lastLoginAt: TIMESTAMP - 마지막 로그인 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
+  - 관계: searches, quotes, comments, likes, savedQuotes (OneToMany)
+  - 관계: auth, userInterest (OneToOne)
 
 - **Auth (인증 정보)**
 
-    - 테이블: `auth`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID
-        - refreshToken: VARCHAR(255) - 리프레시 토큰
-        - tokenType: VARCHAR(20) - 토큰 타입, 기본값 "Bearer"
-        - expiryDate: TIMESTAMP - 만료 시간
-        - lastUsedAt: TIMESTAMP - 마지막 사용 시간
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `auth`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - refreshToken: VARCHAR(255) - 리프레시 토큰
+    - tokenType: VARCHAR(20) - 토큰 타입, 기본값 "Bearer"
+    - expiryDate: TIMESTAMP - 만료 시간
+    - lastUsedAt: TIMESTAMP - 마지막 사용 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **UserInterest (사용자 관심사)**
 
-    - 테이블: `user_interests`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID
-        - interests: TEXT - 관심사 목록
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `user_interests`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - interests: TEXT - 관심사 목록
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Book (도서)**
 
-    - 테이블: `books`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - title: VARCHAR(255) - 도서 제목, @NotEmpty
-        - author: VARCHAR(100) - 저자, @NotEmpty
-        - isbn: VARCHAR(13) - ISBN
-        - description: VARCHAR(2000) - 도서 설명
-        - publisher: VARCHAR(100) - 출판사
-        - publishDate: DATE - 출판일
-        - thumbnailUrl: VARCHAR(255) - 썸네일 URL
-        - publicationYear: INTEGER - 출판 연도
-        - totalPages: INTEGER - 총 페이지 수
-        - avgReadingTime: INTEGER - 평균 독서 시간(분)
-        - averageRating: DOUBLE - 평균 평점, default = 0.0
-        - ratingCount: INTEGER - 평점 개수, default = 0
-        - popularity: INTEGER - 인기도, default = 0
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `books`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: VARCHAR(255) - 도서 제목, @NotEmpty
+    - author: VARCHAR(100) - 저자, @NotEmpty
+    - isbn: VARCHAR(13) - ISBN
+    - description: VARCHAR(2000) - 도서 설명
+    - publisher: VARCHAR(100) - 출판사
+    - publishDate: DATE - 출판일
+    - thumbnailUrl: VARCHAR(255) - 썸네일 URL
+    - publicationYear: INTEGER - 출판 연도
+    - totalPages: INTEGER - 총 페이지 수
+    - avgReadingTime: INTEGER - 평균 독서 시간(분)
+    - averageRating: DOUBLE - 평균 평점, default = 0.0
+    - ratingCount: INTEGER - 평점 개수, default = 0
+    - popularity: INTEGER - 인기도, default = 0
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Quote (문구)**
 
-    - 테이블: `quotes`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - content: TEXT - 문구 내용, @NotEmpty
-        - page: INT - 페이지 번호
-        - memo: TEXT - 사용자 메모
-        - like_count: INTEGER - 좋아요 수, default = 0
-        - save_count: INTEGER - 저장 수, default = 0
-        - user_id: BIGINT - 문구 등록자
-        - book_id: BIGINT - 문구가 속한 책
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `quotes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: TEXT - 문구 내용, @NotEmpty
+    - page: INT - 페이지 번호
+    - memo: TEXT - 사용자 메모
+    - like_count: INTEGER - 좋아요 수, default = 0
+    - save_count: INTEGER - 저장 수, default = 0
+    - user_id: BIGINT - 문구 등록자
+    - book_id: BIGINT - 문구가 속한 책
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **QuoteSummary (문구 요약)**
 
-    - 테이블: `quote_summaries`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - content: VARCHAR(1000) - 요약 내용, @NotEmpty
-        - algorithm: VARCHAR(50) - 사용된 알고리즘 (ex: "GPT-4")
-        - generatedAt: TIMESTAMP - 생성 시간
-        - quality: DOUBLE - 요약 품질 점수, default = 0.0
-        - quote_id: BIGINT - 원본 문구 ID
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `quote_summaries`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: VARCHAR(1000) - 요약 내용, @NotEmpty
+    - algorithm: VARCHAR(50) - 사용된 알고리즘 (ex: "GPT-4")
+    - generatedAt: TIMESTAMP - 생성 시간
+    - quality: DOUBLE - 요약 품질 점수, default = 0.0
+    - quote_id: BIGINT - 원본 문구 ID
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Summary (책 요약)**
 
-    - 테이블: `summaries`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - book_id: BIGINT - 요약된 책 ID
-        - content: TEXT - 요약 내용, @NotEmpty
-        - chapter: VARCHAR(100) - 챕터 정보
-        - page: VARCHAR(50) - 페이지 정보
-        - deleted: BOOLEAN - 삭제 여부, default = false
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `summaries`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - book_id: BIGINT - 요약된 책 ID
+    - content: TEXT - 요약 내용, @NotEmpty
+    - chapter: VARCHAR(100) - 챕터 정보
+    - page: VARCHAR(50) - 페이지 정보
+    - deleted: BOOLEAN - 삭제 여부, default = false
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Comment (댓글)**
 
-    - 테이블: `comments`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - content: TEXT - 댓글 내용, @NotEmpty
-        - user_id: BIGINT - 댓글 작성자
-        - quote_id: BIGINT - 연관된 문구
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `comments`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: TEXT - 댓글 내용, @NotEmpty
+    - user_id: BIGINT - 댓글 작성자
+    - quote_id: BIGINT - 연관된 문구
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **ContentComment (콘텐츠 댓글)**
 
-    - 테이블: `content_comments`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - content: TEXT - 댓글 내용, @NotEmpty
-        - user_id: BIGINT - 댓글 작성자
-        - content_id: BIGINT - 연관된 콘텐츠
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `content_comments`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content: TEXT - 댓글 내용, @NotEmpty
+    - user_id: BIGINT - 댓글 작성자
+    - content_id: BIGINT - 연관된 콘텐츠
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Like (좋아요)**
 
-    - 테이블: `likes`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 좋아요한 사용자
-        - quote_id: BIGINT - 좋아요된 문구
-        - created_at: TIMESTAMP
+  - 테이블: `likes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 좋아요한 사용자
+    - quote_id: BIGINT - 좋아요된 문구
+    - created_at: TIMESTAMP
 
 - **ContentLike (콘텐츠 좋아요)**
 
-    - 테이블: `content_likes`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 좋아요한 사용자
-        - content_id: BIGINT - 좋아요된 콘텐츠
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `content_likes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 좋아요한 사용자
+    - content_id: BIGINT - 좋아요된 콘텐츠
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **SavedQuote (저장된 문구)**
 
-    - 테이블: `saved_quotes`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 저장한 사용자
-        - quote_id: BIGINT - 저장된 문구
-        - created_at: TIMESTAMP
+  - 테이블: `saved_quotes`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 저장한 사용자
+    - quote_id: BIGINT - 저장된 문구
+    - created_at: TIMESTAMP
 
 - **ContentBookmark (콘텐츠 북마크)**
 
-    - 테이블: `content_bookmarks`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 북마크한 사용자
-        - content_id: BIGINT - 북마크된 콘텐츠
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `content_bookmarks`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 북마크한 사용자
+    - content_id: BIGINT - 북마크된 콘텐츠
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Post (게시물)**
 
-    - 테이블: `posts`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - title: VARCHAR(255) - 제목, @NotEmpty
-        - content: TEXT - 내용, @NotEmpty
-        - user_id: BIGINT - 게시물 작성자
-        - post_type: VARCHAR(50) - 게시물 유형
-        - view_count: INT - 조회수, default = 0
-        - like_count: INT - 좋아요 수, default = 0
-        - comment_count: INT - 댓글 수, default = 0
-        - status: VARCHAR(20) - 게시물 상태
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `posts`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: VARCHAR(255) - 제목, @NotEmpty
+    - content: TEXT - 내용, @NotEmpty
+    - user_id: BIGINT - 게시물 작성자
+    - post_type: VARCHAR(50) - 게시물 유형
+    - view_count: INT - 조회수, default = 0
+    - like_count: INT - 좋아요 수, default = 0
+    - comment_count: INT - 댓글 수, default = 0
+    - status: VARCHAR(20) - 게시물 상태
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **ShortFormContent (숏폼 콘텐츠)**
 
-    - 테이블: `SHORT_FORM_CONTENTS`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - title: VARCHAR(100) - 콘텐츠 제목, @NotEmpty
-        - description: VARCHAR(1000) - 콘텐츠 설명
-        - status: VARCHAR(20) - 콘텐츠 상태
-        - contentType: VARCHAR(50) - 콘텐츠 유형
-        - viewCount: INT - 조회수, default = 0
-        - likeCount: INT - 좋아요 수, default = 0
-        - shareCount: INT - 공유 수, default = 0
-        - commentCount: INT - 댓글 수, default = 0
-        - deleted: BOOLEAN - 삭제 여부, default = false
-        - duration: INT - 콘텐츠 길이(초)
-        - subtitles: TEXT - 자막 내용
-        - videoUrl: TEXT - 비디오 URL
-        - thumbnailUrl: TEXT - 썸네일 URL
-        - audioUrl: TEXT - 오디오 URL
-        - book_id: BIGINT - 연관된 책
-        - quote_id: BIGINT - 연관된 문구
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `SHORT_FORM_CONTENTS`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - title: VARCHAR(100) - 콘텐츠 제목, @NotEmpty
+    - description: VARCHAR(1000) - 콘텐츠 설명
+    - status: VARCHAR(20) - 콘텐츠 상태
+    - contentType: VARCHAR(50) - 콘텐츠 유형
+    - viewCount: INT - 조회수, default = 0
+    - likeCount: INT - 좋아요 수, default = 0
+    - shareCount: INT - 공유 수, default = 0
+    - commentCount: INT - 댓글 수, default = 0
+    - deleted: BOOLEAN - 삭제 여부, default = false
+    - duration: INT - 콘텐츠 길이(초)
+    - subtitles: TEXT - 자막 내용
+    - videoUrl: TEXT - 비디오 URL
+    - thumbnailUrl: TEXT - 썸네일 URL
+    - audioUrl: TEXT - 오디오 URL
+    - book_id: BIGINT - 연관된 책
+    - quote_id: BIGINT - 연관된 문구
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **MediaResource (미디어 리소스)**
 
-    - 테이블: `media_resources`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - content_id: BIGINT - 연관된 콘텐츠 ID
-        - type: VARCHAR(50) - 미디어 타입
-        - url: TEXT - 리소스 URL, @NotEmpty
-        - thumbnailUrl: VARCHAR(255) - 썸네일 URL
-        - description: VARCHAR(1000) - 리소스 설명
-        - duration: INT - 미디어 길이(초)
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `media_resources`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - content_id: BIGINT - 연관된 콘텐츠 ID
+    - type: VARCHAR(50) - 미디어 타입
+    - url: TEXT - 리소스 URL, @NotEmpty
+    - thumbnailUrl: VARCHAR(255) - 썸네일 URL
+    - description: VARCHAR(1000) - 리소스 설명
+    - duration: INT - 미디어 길이(초)
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **Search (검색 기록)**
 
-    - 테이블: `search`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 검색한 사용자 ID
-        - search_term: VARCHAR(255) - 검색어, @NotEmpty
-        - search_type: VARCHAR(50) - 검색 유형
-        - search_count: INT - 검색 횟수, default = 1
-        - last_searched_at: TIMESTAMP - 마지막 검색 시간
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `search`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 검색한 사용자 ID
+    - search_term: VARCHAR(255) - 검색어, @NotEmpty
+    - search_type: VARCHAR(50) - 검색 유형
+    - search_count: INT - 검색 횟수, default = 1
+    - last_searched_at: TIMESTAMP - 마지막 검색 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **ContentInteraction (콘텐츠 상호작용)**
 
-    - 테이블: `CONTENT_INTERACTION`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 상호작용한 사용자
-        - content_id: BIGINT - 대상 콘텐츠
-        - liked: BOOLEAN - 좋아요 여부, default = false
-        - bookmarked: BOOLEAN - 북마크 여부, default = false
-        - viewedAt: TIMESTAMP - 조회 시간
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `CONTENT_INTERACTION`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 상호작용한 사용자
+    - content_id: BIGINT - 대상 콘텐츠
+    - liked: BOOLEAN - 좋아요 여부, default = false
+    - bookmarked: BOOLEAN - 북마크 여부, default = false
+    - viewedAt: TIMESTAMP - 조회 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **UserSimilarity (사용자 유사도)**
 
-    - 테이블: `user_similarities`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - source_user_id: BIGINT - 소스 사용자 ID
-        - target_user_id: BIGINT - 타겟 사용자 ID
-        - similarity_score: DOUBLE - 유사도 점수
-        - is_active: BOOLEAN - 활성화 여부, default = true
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `user_similarities`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - source_user_id: BIGINT - 소스 사용자 ID
+    - target_user_id: BIGINT - 타겟 사용자 ID
+    - similarity_score: DOUBLE - 유사도 점수
+    - is_active: BOOLEAN - 활성화 여부, default = true
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **SystemSetting (시스템 설정)**
 
-    - 테이블: `system_settings`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - setting_key: VARCHAR(100) - 설정 키, @Column(unique = true)
-        - setting_value: VARCHAR(1000) - 설정 값
-        - description: VARCHAR(500) - 설정 설명
-        - category: VARCHAR(50) - 설정 카테고리
-        - is_encrypted: BOOLEAN - 암호화 여부, default = false
-        - is_system_managed: BOOLEAN - 시스템 관리 여부, default = false
-        - last_modified_by: BIGINT - 마지막 수정자 ID
-        - default_value: VARCHAR(1000) - 기본값
-        - validation_pattern: VARCHAR(255) - 유효성 검사 패턴
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `system_settings`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - setting_key: VARCHAR(100) - 설정 키, @Column(unique = true)
+    - setting_value: VARCHAR(1000) - 설정 값
+    - description: VARCHAR(500) - 설정 설명
+    - category: VARCHAR(50) - 설정 카테고리
+    - is_encrypted: BOOLEAN - 암호화 여부, default = false
+    - is_system_managed: BOOLEAN - 시스템 관리 여부, default = false
+    - last_modified_by: BIGINT - 마지막 수정자 ID
+    - default_value: VARCHAR(1000) - 기본값
+    - validation_pattern: VARCHAR(255) - 유효성 검사 패턴
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **SearchTermProfile (검색어 프로필)**
 
-    - 테이블: `search_term_profiles`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - search_term: VARCHAR(255) - 검색어
-        - search_count: INT - 검색 횟수, default = 0
-        - user_demographic_data: TEXT - 사용자 인구통계 데이터
-        - related_terms: TEXT - 관련 검색어
-        - trend_data: TEXT - 트렌드 데이터
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `search_term_profiles`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - search_term: VARCHAR(255) - 검색어
+    - search_count: INT - 검색 횟수, default = 0
+    - user_demographic_data: TEXT - 사용자 인구통계 데이터
+    - related_terms: TEXT - 관련 검색어
+    - trend_data: TEXT - 트렌드 데이터
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **RankingUserScore (사용자 랭킹 점수)**
 
-    - 테이블: `ranking_user_score`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID, @Column(nullable = false, unique = true)
-        - current_score: INT - 현재 점수, @Column(nullable = false), default = 1000
-        - previous_score: INT - 이전 점수
-        - rank_type: VARCHAR(20) - 랭크 타입, @Enumerated(EnumType.STRING), @Column(nullable = false)
-        - last_activity_date: TIMESTAMP - 마지막 활동 시간
-        - created_at: TIMESTAMP - 생성 시간, @Column(nullable = false)
-        - modified_at: TIMESTAMP - 수정 시간
-        - suspicious_activity: BOOLEAN - 의심스러운 활동 여부, @Column(nullable = false), default = false
-        - report_count: INT - 신고 횟수, @Column(nullable = false), default = 0
-        - account_suspended: BOOLEAN - 계정 정지 여부, @Column(nullable = false), default = false
-    - 메서드
-        - updateScoreWithEWMA(int newActivityScore, double alpha): 가중 이동 평균 알고리즘을 적용하여 점수 업데이트
-        - incrementReportCount(int suspensionThreshold): 신고 횟수 증가 및 계정 정지 여부 확인
-        - decayScoreForInactivity(double decayFactor): 비활동 기간에 따른 점수 감소
+  - 테이블: `ranking_user_score`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID, @Column(nullable = false, unique = true)
+    - current_score: INT - 현재 점수, @Column(nullable = false), default = 1000
+    - previous_score: INT - 이전 점수
+    - rank_type: VARCHAR(20) - 랭크 타입, @Enumerated(EnumType.STRING), @Column(nullable = false)
+    - last_activity_date: TIMESTAMP - 마지막 활동 시간
+    - created_at: TIMESTAMP - 생성 시간, @Column(nullable = false)
+    - modified_at: TIMESTAMP - 수정 시간
+    - suspicious_activity: BOOLEAN - 의심스러운 활동 여부, @Column(nullable = false), default = false
+    - report_count: INT - 신고 횟수, @Column(nullable = false), default = 0
+    - account_suspended: BOOLEAN - 계정 정지 여부, @Column(nullable = false), default = false
+  - 메서드
+    - updateScoreWithEWMA(int newActivityScore, double alpha): 가중 이동 평균 알고리즘을 적용하여 점수 업데이트
+    - incrementReportCount(int suspensionThreshold): 신고 횟수 증가 및 계정 정지 여부 확인
+    - decayScoreForInactivity(double decayFactor): 비활동 기간에 따른 점수 감소
 
 - **RankingUserActivity (사용자 랭킹 활동)**
 
-    - 테이블: `ranking_user_activity`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID
-        - activity_type: VARCHAR(50) - 활동 유형
-        - points: INT - 점수
-        - activity_date: TIMESTAMP - 활동 날짜
-        - reference_id: BIGINT - 참조 ID
-        - reference_type: VARCHAR(50) - 참조 타입
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `ranking_user_activity`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - activity_type: VARCHAR(50) - 활동 유형
+    - points: INT - 점수
+    - activity_date: TIMESTAMP - 활동 날짜
+    - reference_id: BIGINT - 참조 ID
+    - reference_type: VARCHAR(50) - 참조 타입
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **RankingLeaderboard (랭킹 리더보드)**
 
-    - 테이블: `ranking_leaderboard`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID
-        - username: VARCHAR(50) - 사용자명
-        - score: INT - 점수
-        - rank_type: VARCHAR(20) - 랭크 타입
-        - leaderboard_type: VARCHAR(20) - 리더보드 타입
-        - rank_position: INT - 순위
-        - period_start_date: TIMESTAMP - 기간 시작일
-        - period_end_date: TIMESTAMP - 기간 종료일
-        - created_at: TIMESTAMP - 생성 날짜
-        - modified_at: TIMESTAMP - 수정 날짜
+  - 테이블: `ranking_leaderboard`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - username: VARCHAR(50) - 사용자명
+    - score: INT - 점수
+    - rank_type: VARCHAR(20) - 랭크 타입
+    - leaderboard_type: VARCHAR(20) - 리더보드 타입
+    - rank_position: INT - 순위
+    - period_start_date: TIMESTAMP - 기간 시작일
+    - period_end_date: TIMESTAMP - 기간 종료일
+    - created_at: TIMESTAMP - 생성 날짜
+    - modified_at: TIMESTAMP - 수정 날짜
 
 - **RankingBadge (랭킹 뱃지)**
 
-    - 테이블: `ranking_badge`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - name: VARCHAR(100) - 뱃지 이름
-        - description: VARCHAR(500) - 뱃지 설명
-        - image_url: VARCHAR(255) - 뱃지 이미지 URL
-        - badge_type: VARCHAR(50) - 뱃지 타입
-        - requirement_type: VARCHAR(50) - 획득 요구사항 타입
-        - threshold_value: INT - 획득 임계값
-        - points_awarded: INT - 보상 포인트, default = 0
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `ranking_badge`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - name: VARCHAR(100) - 뱃지 이름
+    - description: VARCHAR(500) - 뱃지 설명
+    - image_url: VARCHAR(255) - 뱃지 이미지 URL
+    - badge_type: VARCHAR(50) - 뱃지 타입
+    - requirement_type: VARCHAR(50) - 획득 요구사항 타입
+    - threshold_value: INT - 획득 임계값
+    - points_awarded: INT - 보상 포인트, default = 0
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **RankingAchievement (랭킹 업적)**
 
-    - 테이블: `ranking_achievement`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID
-        - badge_id: BIGINT - 뱃지 ID
-        - achieved_at: TIMESTAMP - 업적 달성 시간
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `ranking_achievement`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - badge_id: BIGINT - 뱃지 ID
+    - achieved_at: TIMESTAMP - 업적 달성 시간
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **GamificationReward (게이미피케이션 보상)**
 
-    - 테이블: `gamification_rewards`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - user_id: BIGINT - 사용자 ID
-        - reward_type: VARCHAR(50) - 보상 유형
-        - points: INT - 포인트, default = 0
-        - description: VARCHAR(255) - 보상 설명
-        - reference_id: BIGINT - 참조 ID
-        - reference_type: VARCHAR(50) - 참조 타입
-        - is_claimed: BOOLEAN - 지급 여부, default = false
-        - expiry_date: TIMESTAMP - 만료 일시
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `gamification_rewards`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - user_id: BIGINT - 사용자 ID
+    - reward_type: VARCHAR(50) - 보상 유형
+    - points: INT - 포인트, default = 0
+    - description: VARCHAR(255) - 보상 설명
+    - reference_id: BIGINT - 참조 ID
+    - reference_type: VARCHAR(50) - 참조 타입
+    - is_claimed: BOOLEAN - 지급 여부, default = false
+    - expiry_date: TIMESTAMP - 만료 일시
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 - **PopularSearchTerm (인기 검색어)**
 
-    - 테이블: `popular_search_terms`
-    - 필드
-        - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-        - search_term: VARCHAR(255) - 검색어
-        - search_count: INT - 검색 횟수, default = 0
-        - last_searched_at: TIMESTAMP - 마지막 검색 시간
-        - period_type: VARCHAR(20) - 기간 타입
-        - period_start: TIMESTAMP - 기간 시작일
-        - period_end: TIMESTAMP - 기간 종료일
-        - created_at: TIMESTAMP
-        - modified_at: TIMESTAMP
-        - is_deleted: BOOLEAN - 삭제 여부
+  - 테이블: `popular_search_terms`
+  - 필드
+    - id: BIGINT - 기본키, @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    - search_term: VARCHAR(255) - 검색어
+    - search_count: INT - 검색 횟수, default = 0
+    - last_searched_at: TIMESTAMP - 마지막 검색 시간
+    - period_type: VARCHAR(20) - 기간 타입
+    - period_start: TIMESTAMP - 기간 시작일
+    - period_end: TIMESTAMP - 기간 종료일
+    - created_at: TIMESTAMP
+    - modified_at: TIMESTAMP
+    - is_deleted: BOOLEAN - 삭제 여부
 
 ### 열거형 (Enums)
 
 - **ContentStatus (콘텐츠 상태)**
 
-    - PROCESSING: 처리중
-    - COMPLETED: 생성 완료
-    - FAILED: 생성 실패
-    - PUBLISHED: 공개됨
+  - PROCESSING: 처리중
+  - COMPLETED: 생성 완료
+  - FAILED: 생성 실패
+  - PUBLISHED: 공개됨
 
 - **ContentType (콘텐츠 유형)**
 
-    - VIDEO: 비디오
-    - AUDIO: 오디오
-    - IMAGE: 이미지
-    - TEXT: 텍스트
-    - MIXED: 혼합 형식
+  - VIDEO: 비디오
+  - AUDIO: 오디오
+  - IMAGE: 이미지
+  - TEXT: 텍스트
+  - MIXED: 혼합 형식
 
 - **ActivityType (활동 유형)**
 
-    - LIKE: 좋아요
-    - SAVE: 저장
-    - COMMENT: 댓글
-    - REPORT: 신고
-    - QUOTE_CREATE: 인용구 작성
-    - CONTENT_LIKE: 콘텐츠 좋아요
-    - COMMENT_CREATE: 댓글 작성
+  - LIKE: 좋아요
+  - SAVE: 저장
+  - COMMENT: 댓글
+  - REPORT: 신고
+  - QUOTE_CREATE: 인용구 작성
+  - CONTENT_LIKE: 콘텐츠 좋아요
+  - COMMENT_CREATE: 댓글 작성
 
 - **RankType (랭크 유형)**
 
-    - BRONZE: 브론즈 (0 ~ 999점)
-    - SILVER: 실버 (1000 ~ 1999점)
-    - GOLD: 골드 (2000 ~ 2999점)
-    - PLATINUM: 플래티넘 (3000 ~ 3999점)
-    - DIAMOND: 다이아몬드 (4000점 이상)
-    - 메서드: fromScore(int score) - 점수에 따른 랭크 타입 반환
+  - BRONZE: 브론즈 (0 ~ 999점)
+  - SILVER: 실버 (1000 ~ 1999점)
+  - GOLD: 골드 (2000 ~ 2999점)
+  - PLATINUM: 플래티넘 (3000 ~ 3999점)
+  - DIAMOND: 다이아몬드 (4000점 이상)
+  - 메서드: fromScore(int score) - 점수에 따른 랭크 타입 반환
 
 - **RewardType (보상 유형)**
 
-    - DAILY_LOGIN: 일일 로그인
-    - ACHIEVEMENT: 업적 달성
-    - BONUS_POINTS: 보너스 포인트
-    - WEEKLY_EXPERIENCE: 주간 경험치
-    - EVENT_INVITATION: 이벤트 초대권
-    - ADMIN_RECOMMENDATION: 관리자 추천
+  - DAILY_LOGIN: 일일 로그인
+  - ACHIEVEMENT: 업적 달성
+  - BONUS_POINTS: 보너스 포인트
+  - WEEKLY_EXPERIENCE: 주간 경험치
+  - EVENT_INVITATION: 이벤트 초대권
+  - ADMIN_RECOMMENDATION: 관리자 추천
 
 - **SettingCategory (설정 카테고리)**
-    - UPLOAD: 업로드 설정
-    - API: API 설정
-    - GENERAL: 일반 설정
-    - SYSTEM: 시스템 설정
-    - SECURITY: 보안 설정
-    - USER: 사용자 설정
-    - CONTENT: 콘텐츠 설정
-    - RANKING: 랭킹 설정
-    - CACHE: 캐시 설정
-    - GAMIFICATION: 게이미피케이션 설정
-    - NOTIFICATION: 알림 설정
-    - STATISTICS: 통계 설정
-    - ETC: 기타 설정
+  - UPLOAD: 업로드 설정
+  - API: API 설정
+  - GENERAL: 일반 설정
+  - SYSTEM: 시스템 설정
+  - SECURITY: 보안 설정
+  - USER: 사용자 설정
+  - CONTENT: 콘텐츠 설정
+  - RANKING: 랭킹 설정
+  - CACHE: 캐시 설정
+  - GAMIFICATION: 게이미피케이션 설정
+  - NOTIFICATION: 알림 설정
+  - STATISTICS: 통계 설정
+  - ETC: 기타 설정
 
 ### 엔티티 관계도
 
@@ -1609,7 +1610,6 @@ src/
     └── java/com/j30n/stoblyx/
         ├── adapter/                 # 어댑터 테스트
         ├── application/             # 애플리케이션 테스트
-        └── domain/                  # 도메인 테스트
 ```
 
 ### **헥사고날 아키텍처를 선택한 이유**
@@ -1679,15 +1679,11 @@ src/
 
 ### 캐시 및 데이터 처리
 
-| 전략           | 구현 방식                          | 적용 대상     |
-|--------------|--------------------------------|-----------|
-| Lazy Loading | `FetchType.LAZY` 설정            | 사용자-문구 관계 |
-| Cache-Aside  | Redis `@Cacheable` + TTL(1시간)  | 인기 문구 조회  |
-| Batch Insert | `hibernate.jdbc.batch_size=50` | 대량 댓글 입력  |
-
-### 모니터링 도구 사용
-
-- **Health Checks:** `/actuator/health`, Liveness/Readiness Probe 설정
+| 전략         | 구현 방식                       | 적용 대상        |
+| ------------ | ------------------------------- | ---------------- |
+| Lazy Loading | `FetchType.LAZY` 설정           | 사용자-문구 관계 |
+| Cache-Aside  | Redis `@Cacheable` + TTL(1시간) | 인기 문구 조회   |
+| Batch Insert | `hibernate.jdbc.batch_size=50`  | 대량 댓글 입력   |
 
 ---
 
@@ -1720,50 +1716,145 @@ src/
 
 ---
 
-## 16. 배포 및 운영 전략
+## 16. 테스트 전략
+
+프로젝트의 테스트 전략은 효율성과 실용성을 중시하여 기존 테스트 피라미드 개념을 컨트롤러 테스트와 k6 테스트의 조합으로 재해석하였습니다.
+
+### 단위 테스트 (Unit Test)
+
+- **컨트롤러 테스트가 대체**
+  - 컨트롤러 메소드별 격리된 테스트
+  - 서비스 레이어 모킹으로 비즈니스 로직 분리
+  - 요청/응답 구조 검증으로 API 계약 테스트
+
+### 통합 테스트 (Integration Test)
+
+- **컨트롤러 테스트 + k6 테스트로 대체**
+  - 컨트롤러 테스트: Spring Security, 필터 등 통합
+  - k6 테스트: 실제 DB 연동, 외부 API 연동 검증
+
+### E2E 테스트 (End-to-End Test)
+
+- **k6 테스트가 완벽히 대체**
+  - 실제 애플리케이션 환경에서 전체 흐름 테스트
+  - 사용자 시나리오 기반 테스트
+  - 성능/부하 테스트 병행 가능
+
+### 장점
+
+1. **효율성**: 적은 코드로 넓은 테스트 범위 커버
+2. **실용성**: 실제 프로젝트에서도 많이 사용하는 방식
+3. **가시성**: 테스트 결과를 시각적으로 확인 가능
+
+이런 접근법은 시간 효율성과 테스트 효과 측면에서 균형을 잡으려 위와 같은 방식으로 테스트를 진행하였습니다.
+
+---
+
+## Pexels API 폴백 메커니즘
+
+### 개요
+
+Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비디오를 제공합니다. 그러나 API 호출 실패, 네트워크 오류, 타임아웃 등의 상황이 발생할 수 있습니다. 이런 경우에도 사용자 경험이 중단되지 않도록 폴백 메커니즘을 구현했습니다.
+
+### 폴백 구현 방식
+
+1. **기본 폴백 리소스**: 모든 API 호출 실패 시 제공되는 기본 이미지와 비디오입니다.
+
+   ```java
+   private static final String FALLBACK_IMAGE = "https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg";
+   private static final String FALLBACK_VIDEO = "https://www.pexels.com/video/woman-reading-book-in-the-library-5167740/";
+   ```
+
+2. **비동기 처리 및 타임아웃 관리**:
+
+   - `CompletableFuture`를 사용한 비동기 API 호출
+   - 타임아웃 설정으로 응답 지연 방지
+   - 예외 발생 시 자동으로 폴백 리소스 제공
+
+3. **멀티미디어 통합 생성 시 부분 실패 처리**
+
+   - 이미지/비디오/오디오/BGM 생성 요청을 동시에 처리
+   - 일부 요청만 실패할 경우 부분적으로 폴백 리소스 적용
+   - 사용자는 가능한 많은 콘텐츠를 제한 없이 이용 가능
+
+---
+
+### 테스트 방식
+
+폴백 메커니즘은 다양한 테스트 케이스를 통해 검증됩니다.
+
+1. **단위 테스트**
+
+   - `FallbackMechanismTest`: 의도적으로 API 호출 실패를 발생시켜 폴백 동작을 검증
+   - 다양한 실패 시나리오(타임아웃, 네트워크 오류, API 오류 등) 테스트
+
+2. **통합 테스트**
+   - `RealAPIClientTest`: 실제 Pexels API 호출이 정상 작동하는지 확인
+   - 실제 환경과 유사한 조건에서 시스템 복원력 검증
+
+### 로깅 전략
+
+- 테스트 중 발생하는 의도적인 예외는 DEBUG 레벨로 로깅
+- 실제 운영 환경에서 발생하는 예외는 ERROR 레벨로 로깅
+- "[테스트용]" 접두사로 테스트 관련 로그 구분
+
+이러한 폴백 메커니즘을 통해 외부 API 의존성이 있는 상황에서도 안정적인 서비스 제공이 가능합니다.
+
+---
+
+## 17. 배포 및 운영 전략
 
 ### Koyeb 배포 단계
 
-1. GitHub 리포지토리 연결
-2. Health Check: `/actuator/health` 및 Probe 설정
-3. **롤백 전략:** 최신 안정 버전으로 즉시 롤백 지원
+1. Koyeb 계정에 GitHub 리포지토리 연결
+2. 빌드 설정 (Java 17, Gradle 등 지정)
+3. 환경변수 설정 (DB 접속 정보, API 키 등)
+4. 자동 배포 트리거 설정 (main 브랜치에 push 시 자동 배포 등)
+5. Koyeb 플랫폼 기능(이전 버전으로 롤백 가능)
 
 ---
 
-## 17. 개발자 노트
+## 18. 개발자 노트
 
 - **도전 과제**
-    - AI API 통합 시 타임아웃 최소화
-    - 텍스트 기반 감정 분석 정확도 향상
-    - 비동기 콘텐츠 생성 시 상태 추적 메커니즘 구현
+
+  - 외부 AI API 연동 시 타임아웃 및 오류 처리 전략 수립
+  - 컨트롤러 테스트에서 의존성 주입 문제 해결 (@MockBean 활용)
+  - k6 테스트를 활용한 사용자 흐름 검증 및 성능 측정
+  - Pexels API 연동을 통한 이미지 및 비디오 콘텐츠 확보
+
 - **배운 점**
-    - 헥사고날 아키텍처의 유지보수성 및 확장성 확보
-    - API 속도 제한 대응을 위한 효과적인 전략
-    - 캐싱 시스템을 통한 성능 최적화 방법
+  - 헥사고날 아키텍처 적용을 통한 코드 유지보수성 향상
+  - 컨트롤러 테스트와 k6 테스트 조합으로 효율적인 테스트 전략 구축
+  - API 응답 실패 시 폴백 메커니즘의 중요성
+  - RestDocs를 활용한 API 문서 자동화의 편리함
 - **추후 계획**
-    - 고급 감정 분석을 위한 머신러닝 모델 도입
-    - 실시간 콘텐츠 생성 상태 알림 시스템 구현
+  - 알라딘 Open API 연동을 통한 도서 이미지 및 정보 구현
+  - Koyeb 환경에서의 안정적인 배포 및 모니터링 구축
+  - 책 멀티미디어 콘텐츠 생성 기능의 성능 최적화
+  - 랭킹 시스템 알고리즘 고도화
+  - 사용자 경험 향상을 위한 UI/UX 개선
 
 ---
 
-## 18. 기여 가이드라인
+## 19. 기여 가이드라인
 
 - 코드 기여 방법
-    - 이슈 생성 또는 기존 이슈 선택
-    - 포크 및 브랜치 생성
-    - 코드 작성 및 테스트
-    - 풀 리퀘스트 제출
+  - 이슈 생성 또는 기존 이슈 선택
+  - 포크 및 브랜치 생성
+  - 코드 작성 및 테스트
+  - 풀 리퀘스트 제출
 - 코드 스타일
-    - Google Java Style Guide 준수
-    - 메서드 및 클래스에 JavaDoc 주석 작성
-    - 테스트 코드 포함
+  - Google Java Style Guide 준수
+  - 메서드 및 클래스에 JavaDoc 주석 작성
+  - 테스트 코드 포함
 
-## 19. 연락처
+## 20. 연락처
 
 - 프로젝트 관련 문의는 아래 연락처로 부탁드립니다.
 - 이메일: domyoung.jeon@gmail.com
 
-## 20. 감사의 글
+## 21. 감사의 글
 
 이 프로젝트는 다음과 같은 오픈소스 프로젝트와 리소스의 도움을 받았습니다.
 
@@ -1771,7 +1862,7 @@ src/
 - KoBART, pyttsx3 등의 한국어 AI 모델
 - Pexels API
 
-## 21. 라이선스
+## 22. 라이선스
 
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 

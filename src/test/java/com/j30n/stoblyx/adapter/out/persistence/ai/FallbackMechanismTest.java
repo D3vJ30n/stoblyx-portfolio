@@ -47,7 +47,7 @@ class FallbackMechanismTest {
         String query = "test book";
 
         // pexelsClient를 이용한 searchImage 호출 시 RuntimeException을 던지도록 설정
-        when(pexelsClient.searchImage(query)).thenThrow(new RuntimeException("타임아웃 발생"));
+        when(pexelsClient.searchImage(query)).thenThrow(new RuntimeException("[테스트용] 타임아웃 발생"));
 
         // When
         String result = aiAdapter.searchImage(query);
@@ -65,9 +65,9 @@ class FallbackMechanismTest {
         String description = "Test Description";
 
         when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/image.jpg");
-        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("비디오 검색 실패"));
+        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("[테스트용] 비디오 검색 실패"));
         when(ttsClient.generateSpeech(anyString())).thenReturn("https://example.com/audio.mp3");
-        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("BGM 선택 실패"));
+        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("[테스트용] BGM 선택 실패"));
 
         // When
         CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(title, description);
@@ -87,7 +87,7 @@ class FallbackMechanismTest {
         // Given
         String query = MOTIVATION_TITLE + " " + MOTIVATION_DESCRIPTION;
 
-        when(pexelsClient.searchImage(query)).thenThrow(new RuntimeException("이미지 검색 실패"));
+        when(pexelsClient.searchImage(query)).thenThrow(new RuntimeException("[테스트용] 이미지 검색 실패"));
 
         // When
         String result = aiAdapter.searchImage(query);
@@ -103,7 +103,7 @@ class FallbackMechanismTest {
         // Given
         String query = PHILOSOPHY_TITLE;
 
-        when(pexelsClient.searchVideo(query)).thenThrow(new RuntimeException("비디오 검색 실패"));
+        when(pexelsClient.searchVideo(query)).thenThrow(new RuntimeException("[테스트용] 비디오 검색 실패"));
 
         // When
         String result = aiAdapter.searchVideo(query);
@@ -117,10 +117,10 @@ class FallbackMechanismTest {
     @DisplayName("동기부여 책 멀티미디어 생성 중 모든 API 실패 시 폴백 리소스 반환")
     void motivationBookMultimedia_AllFailures_ReturnsFallbacks() throws ExecutionException, InterruptedException, TimeoutException {
         // Given
-        when(pexelsClient.searchImage(anyString())).thenThrow(new RuntimeException("이미지 검색 실패"));
-        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("비디오 검색 실패"));
-        when(ttsClient.generateSpeech(anyString())).thenThrow(new RuntimeException("음성 생성 실패"));
-        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("BGM 선택 실패"));
+        when(pexelsClient.searchImage(anyString())).thenThrow(new RuntimeException("[테스트용] 이미지 검색 실패"));
+        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("[테스트용] 비디오 검색 실패"));
+        when(ttsClient.generateSpeech(anyString())).thenThrow(new RuntimeException("[테스트용] 음성 생성 실패"));
+        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("[테스트용] BGM 선택 실패"));
 
         // When
         CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(MOTIVATION_TITLE, MOTIVATION_DESCRIPTION);
@@ -139,9 +139,9 @@ class FallbackMechanismTest {
     void philosophyBookMultimedia_PartialFailures_ReturnsPartialFallbacks() throws ExecutionException, InterruptedException, TimeoutException {
         // Given
         when(pexelsClient.searchImage(anyString())).thenReturn("https://example.com/philosophy-image.jpg");
-        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("비디오 검색 실패"));
+        when(pexelsClient.searchVideo(anyString())).thenThrow(new RuntimeException("[테스트용] 비디오 검색 실패"));
         when(ttsClient.generateSpeech(anyString())).thenReturn("https://example.com/philosophy-audio.mp3");
-        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("BGM 선택 실패"));
+        when(bgmClient.selectBGMByText(anyString())).thenThrow(new RuntimeException("[테스트용] BGM 선택 실패"));
 
         // When
         CompletableFuture<BookMediaResponse> future = aiAdapter.generateBookMultimedia(PHILOSOPHY_TITLE, PHILOSOPHY_DESCRIPTION);

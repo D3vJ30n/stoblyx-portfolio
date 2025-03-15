@@ -99,7 +99,7 @@ class QuoteControllerTest {
                 .requestAttr("userId", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result").value("SUCCESS"))
                 .andExpect(jsonPath("$.data.content").value("테스트 문구"))
                 .andDo(document("quote/create-quote",

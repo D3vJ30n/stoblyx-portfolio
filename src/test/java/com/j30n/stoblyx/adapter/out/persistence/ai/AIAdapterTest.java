@@ -66,7 +66,7 @@ class AIAdapterTest {
     @DisplayName("이미지 검색 실패 시 폴백 이미지 반환 테스트")
     void searchImage_WhenFailed_ShouldReturnFallbackImage() {
         // given
-        when(pexelsClient.searchImage(TEST_QUERY)).thenThrow(new RuntimeException("API 오류"));
+        when(pexelsClient.searchImage(TEST_QUERY)).thenThrow(new RuntimeException("[테스트용] API 오류"));
 
         // when
         String result = aiAdapter.searchImage(TEST_QUERY);
@@ -94,7 +94,7 @@ class AIAdapterTest {
     @DisplayName("비디오 검색 실패 시 폴백 비디오 반환 테스트")
     void searchVideo_WhenFailed_ShouldReturnFallbackVideo() {
         // given
-        when(pexelsClient.searchVideo(TEST_QUERY)).thenThrow(new RuntimeException("API 오류"));
+        when(pexelsClient.searchVideo(TEST_QUERY)).thenThrow(new RuntimeException("[테스트용] API 오류"));
 
         // when
         String result = aiAdapter.searchVideo(TEST_QUERY);
@@ -122,7 +122,7 @@ class AIAdapterTest {
     @DisplayName("음성 생성 실패 시 폴백 오디오 반환 테스트")
     void generateSpeech_WhenFailed_ShouldReturnFallbackAudio() {
         // given
-        when(ttsClient.generateSpeech(TEST_TEXT)).thenThrow(new RuntimeException("TTS 오류"));
+        when(ttsClient.generateSpeech(TEST_TEXT)).thenThrow(new RuntimeException("[테스트용] TTS 오류"));
 
         // when
         String result = aiAdapter.generateSpeech(TEST_TEXT);
@@ -150,7 +150,7 @@ class AIAdapterTest {
     @DisplayName("BGM 선택 실패 시 폴백 BGM 반환 테스트")
     void selectBGM_WhenFailed_ShouldReturnFallbackBGM() {
         // given
-        when(bgmClient.selectBGM()).thenThrow(new RuntimeException("BGM 오류"));
+        when(bgmClient.selectBGM()).thenThrow(new RuntimeException("[테스트용] BGM 오류"));
 
         // when
         String result = aiAdapter.selectBGM();
