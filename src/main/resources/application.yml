@@ -11,9 +11,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:stoblyx_sandbox_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
-    username: ${DB_USERNAME:stoblyx_user}
-    password: ${DB_PASSWORD:6188}
+    url: jdbc:mysql://localhost:3307/stoblyx_sandbox_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: stoblyx_user
+    password: 6188
     hikari:
       maximum-pool-size: 5
       minimum-idle: 1
@@ -26,8 +26,8 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    show-sql: ${SHOW_SQL:true}
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -150,13 +150,10 @@ monitoring:
 
 logging:
   level:
-    org.springframework.security: TRACE
-    com.j30n.stoblyx: DEBUG
-    org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql: TRACE
-    org.springframework.security.web.FilterChainProxy: DEBUG
-    org.springframework.security.web.access: TRACE
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web: INFO
+    com.j30n.stoblyx: DEBUG
 
 kobart:
   api:
@@ -169,3 +166,7 @@ aladin:
     api-url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx"
     search-api-url: "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
     item-api-url: "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx"
+
+devtools:
+  restart:
+    enabled: true
