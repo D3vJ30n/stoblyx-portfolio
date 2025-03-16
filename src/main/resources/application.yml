@@ -1,0 +1,171 @@
+spring:
+  profiles:
+    active: development
+  application:
+    name: stoblyx
+
+  # RabbitMQ 자동 설정 비활성화
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:stoblyx_sandbox_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:stoblyx_user}
+    password: ${DB_PASSWORD:6188}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 30000
+      connection-timeout: 20000
+      validation-timeout: 5000
+      max-lifetime: 1200000
+      auto-commit: true
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${SHOW_SQL:true}
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+        connection:
+          characterEncoding: utf8
+          charSet: UTF-8
+          useUnicode: true
+
+  data:
+    redis:
+      enabled: true
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+  rabbitmq:
+    enabled: ${RABBITMQ_ENABLED:false}
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
+# XSS 필터 설정
+xss:
+  filter:
+    exclusions:
+      - "/admin/.*" # 관리자 API는 XSS 필터 제외
+      - "/auth/.*" # 인증 API는 XSS 필터 제외
+      - "/docs/.*" # REST Docs 문서는 XSS 필터 제외
+      - "/static/docs/.*" # 정적 문서 파일은 XSS 필터 제외
+
+jwt:
+  # JWT 시크릿 키 (환경 변수에서 가져옴, 기본값은 개발 환경용)
+  secret: ${JWT_SECRET:dev_jwt_secret_key_do_not_use_in_production} # 개발 환경용 기본값 추가
+  # 액세스 토큰 만료 시간 (초 단위, 기본값 30분)
+  access-token-validity-in-seconds: ${JWT_ACCESS_TOKEN_EXPIRATION:1800}
+  # 리프레시 토큰 만료 시간 (초 단위, 기본값 7일)
+  refresh-token-validity-in-seconds: ${JWT_REFRESH_TOKEN_EXPIRATION:604800}
+
+# 모니터링 설정
+monitoring:
+  memory:
+    threshold: ${MEMORY_THRESHOLD:80} # 메모리 사용량 경고 임계값 (%)
+  alert:
+    enabled: ${ALERT_ENABLED:true} # 알림 활성화 여부
+    slack:
+      webhook: ${SLACK_WEBHOOK_URL:} # Slack 웹훅 URL
+      channel: ${SLACK_CHANNEL:#alerts} # Slack 채널
+
+# 액추에이터 설정
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,env,loggers
+      base-path: ""
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      sla:
+        http.server.requests: 50ms, 100ms, 200ms, 500ms
+
+# 프로파일별 설정
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+
+monitoring:
+  alert:
+    enabled: true
+---
+spring:
+  config:
+    activate:
+      on-profile: development
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: 8091
+  servlet:
+    context-path:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 개발 환경에서는 모든 액추에이터 엔드포인트 노출
+
+monitoring:
+  alert:
+    enabled: true
+    slack:
+      webhook: ${SLACK_WEBHOOK_URL:} # 개발 환경에서도 Slack 웹훅 URL 설정 가능
+
+logging:
+  level:
+    org.springframework.security: TRACE
+    com.j30n.stoblyx: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    org.springframework.security.web.access: TRACE
+
+kobart:
+  api:
+    url: http://localhost:5000 # Flask 서버 URL
+
+# 알라딘 API 설정
+aladin:
+  api:
+    ttbKey: "ttbwjsehzz0645001"
+    api-url: "http://www.aladin.co.kr/ttb/api/ItemList.aspx"
+    search-api-url: "http://www.aladin.co.kr/ttb/api/ItemSearch.aspx"
+    item-api-url: "http://www.aladin.co.kr/ttb/api/ItemLookUp.aspx"
