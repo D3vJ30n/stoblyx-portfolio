@@ -1,7 +1,22 @@
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
-COPY . .
-RUN chmod +x ./gradlew && ./gradlew build -x test
+
+# 빌드에 필요한 파일만 먼저 복사
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle settings.gradle ./
+RUN chmod +x ./gradlew
+RUN ./gradlew --version
+
+# 소스 코드 복사
+COPY src src
+
+# 의존성만 먼저 다운로드
+RUN ./gradlew dependencies --no-daemon
+
+# 빌드 수행 (테스트 제외)
+RUN ./gradlew clean bootJar --no-daemon -x test --info
+
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=mysql
 ENV JAVA_OPTS="-Xmx400m -Xms200m -Dserver.tomcat.mbeanregistry.enabled=true -Dspring.liveBeansView.mbeanDomain=stoblyx -Dspring.boot.admin.client.instance.prefer-ip=true"
