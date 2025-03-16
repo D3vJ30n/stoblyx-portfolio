@@ -5,8 +5,11 @@ WORKDIR /app
 COPY . .
 RUN chmod +x ./gradlew
 
-# 간단히 JAR 파일만 빌드 (모든 검증 건너뛰기)
-RUN ./gradlew assemble -x test -x check --stacktrace --no-daemon
+# 필요한 디렉토리 생성
+RUN mkdir -p build/generated-snippets
+
+# asciidoctor 태스크를 건너뛰고 bootJar만 실행
+RUN ./gradlew bootJar -x asciidoctor -x test -x check --stacktrace --no-daemon
 
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=mysql
