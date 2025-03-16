@@ -41,9 +41,20 @@ ENV SERVER_TOMCAT_THREADS_MIN=20
 ENV SERVER_TOMCAT_MAX_CONNECTIONS=200
 
 # JWT 설정 추가
-ENV JWT_SECRET_KEY=stoblyx_secret_key_for_jwt_token_authentication_do_not_share
+ENV JWT_SECRET=stoblyx_secret_key_for_jwt_token_authentication_do_not_share
 ENV JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS=3600
 ENV JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS=2592000
 ENV JWT_TOKEN_ISSUER=stoblyx.j30n.com
 
-CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-Dspring.jpa.defer-datasource-initialization=true", "-Djwt.secret-key=${JWT_SECRET_KEY}", "-Djwt.access-token-validity-in-seconds=${JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS}", "-Djwt.refresh-token-validity-in-seconds=${JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS}", "-Djwt.token-issuer=${JWT_TOKEN_ISSUER}", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
+# 스크립트 파일 생성 및 실행 권한 부여
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'java -XX:+AlwaysPreTouch -Dspring.jpa.open-in-view=false -Dspring.jpa.defer-datasource-initialization=true \\' >> /app/start.sh && \
+    echo '  -Djwt.secret=${JWT_SECRET} \\' >> /app/start.sh && \
+    echo '  -Djwt.access-token-validity-in-seconds=${JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS} \\' >> /app/start.sh && \
+    echo '  -Djwt.refresh-token-validity-in-seconds=${JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS} \\' >> /app/start.sh && \
+    echo '  -Djwt.token-issuer=${JWT_TOKEN_ISSUER} \\' >> /app/start.sh && \
+    echo '  -jar build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+# exec 형식으로 스크립트 호출
+CMD ["/app/start.sh"] 
