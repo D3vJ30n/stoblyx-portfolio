@@ -393,6 +393,13 @@ public class DataInitializer {
     }
 
     private void createSingleInteraction(User user, ShortFormContent content) {
+        // 이미 해당 사용자와 콘텐츠에 대한 상호작용이 존재하는지 확인
+        boolean exists = interactionRepository.existsByUserIdAndContentId(user.getId(), content.getId());
+        if (exists) {
+            log.info("이미 존재하는 상호작용입니다. User ID: {}, Content ID: {}", user.getId(), content.getId());
+            return;
+        }
+
         ContentInteraction interaction = ContentInteraction.builder()
             .user(user)
             .content(content)
