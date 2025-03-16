@@ -40,4 +40,10 @@ ENV SERVER_TOMCAT_THREADS_MAX=50
 ENV SERVER_TOMCAT_THREADS_MIN=20
 ENV SERVER_TOMCAT_MAX_CONNECTIONS=200
 
-CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-Dspring.jpa.defer-datasource-initialization=true", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
+# JWT 설정 추가
+ENV JWT_SECRET_KEY=stoblyx_secret_key_for_jwt_token_authentication_do_not_share
+ENV JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS=3600
+ENV JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS=2592000
+ENV JWT_TOKEN_ISSUER=stoblyx.j30n.com
+
+CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-Dspring.jpa.defer-datasource-initialization=true", "-Djwt.secret-key=${JWT_SECRET_KEY}", "-Djwt.access-token-validity-in-seconds=${JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS}", "-Djwt.refresh-token-validity-in-seconds=${JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS}", "-Djwt.token-issuer=${JWT_TOKEN_ISSUER}", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
