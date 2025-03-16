@@ -20,9 +20,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3307/stoblyx_sandbox_db?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
-    username: stoblyx_user
-    password: 6188
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3307}/${DB_NAME:stoblyx_sandbox_db}?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: ${DB_USERNAME:stoblyx_user}
+    password: ${DB_PASSWORD:6188}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
