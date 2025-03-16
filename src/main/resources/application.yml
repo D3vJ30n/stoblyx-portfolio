@@ -18,5 +18,6 @@ server:
 
 # KoBART API 설정
 kobart:
+  enabled: ${KOBART_ENABLED:true}
   api:
     url: ${KOBART_API_URL:http://localhost:5000}
