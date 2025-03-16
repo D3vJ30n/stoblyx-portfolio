@@ -75,16 +75,28 @@ CREATE TABLE books (
     title VARCHAR(255) NOT NULL,
     author VARCHAR(100) NOT NULL,
     isbn VARCHAR(13),
+    isbn13 VARCHAR(13),
     description VARCHAR(2000),
     publisher VARCHAR(100),
     publishDate DATE,
     thumbnailUrl VARCHAR(255),
+    cover VARCHAR(255),
     publicationYear INTEGER,
     totalPages INTEGER,
     avgReadingTime INTEGER,
     averageRating DOUBLE,
     ratingCount INTEGER,
     popularity INTEGER DEFAULT 0,
+    priceStandard INTEGER,
+    priceSales INTEGER,
+    categoryId VARCHAR(50),
+    categoryName VARCHAR(255),
+    link VARCHAR(500),
+    adult VARCHAR(10),
+    customerReviewRank FLOAT,
+    stockStatus VARCHAR(50),
+    mallType VARCHAR(50),
+    itemId VARCHAR(50),
     created_at TIMESTAMP,
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE
@@ -432,4 +444,52 @@ CREATE TABLE summaries (
     modified_at TIMESTAMP,
     is_deleted BOOLEAN DEFAULT FALSE,
     CONSTRAINT fk_summaries_book FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+-- Pexels API 폴백 메커니즘을 위한 테이블
+CREATE TABLE media_fallbacks (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    media_type VARCHAR(50) NOT NULL,
+    content_category VARCHAR(100) NOT NULL,
+    fallback_url TEXT NOT NULL,
+    description VARCHAR(500),
+    priority INTEGER DEFAULT 1,
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP,
+    modified_at TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    CONSTRAINT uk_media_fallbacks UNIQUE (media_type, content_category, is_default)
+);
+
+-- API 호출 로그 및 성능 모니터링을 위한 테이블
+CREATE TABLE api_call_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    api_name VARCHAR(100) NOT NULL,
+    endpoint VARCHAR(255) NOT NULL,
+    request_params TEXT,
+    response_status INTEGER,
+    response_time BIGINT,
+    error_message TEXT,
+    success BOOLEAN DEFAULT TRUE,
+    fallback_used BOOLEAN DEFAULT FALSE,
+    fallback_resource_id BIGINT,
+    created_at TIMESTAMP,
+    user_id BIGINT,
+    content_id BIGINT,
+    CONSTRAINT fk_api_logs_user FOREIGN KEY (user_id) REFERENCES users(id),
+    CONSTRAINT fk_api_logs_fallback FOREIGN KEY (fallback_resource_id) REFERENCES media_fallbacks(id)
+);
+
+-- 책 관련 미디어 리소스와 책을 직접 연결하는 테이블
+CREATE TABLE book_media (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    book_id BIGINT NOT NULL,
+    media_type VARCHAR(50) NOT NULL,
+    url TEXT NOT NULL,
+    is_fallback BOOLEAN DEFAULT FALSE,
+    source VARCHAR(50) DEFAULT 'PEXELS',
+    created_at TIMESTAMP,
+    modified_at TIMESTAMP,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    CONSTRAINT fk_book_media_book FOREIGN KEY (book_id) REFERENCES books(id)
 );

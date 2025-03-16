@@ -33,59 +33,61 @@ VALUES
     (5, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test-refresh-token-5', 'BEARER', DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL 7 DAY), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0);
 
 -- 테스트 도서 데이터 (books): 콘텐츠의 기본이 되는 도서 정보
-INSERT IGNORE INTO books (title, author, isbn, description, publisher, publishDate, thumbnailUrl, publicationYear, totalPages, avgReadingTime, averageRating, ratingCount, popularity, created_at, modified_at, is_deleted)
+INSERT IGNORE INTO books (title, author, isbn, isbn13, description, publisher, publishDate, thumbnailUrl, cover, publicationYear, totalPages, avgReadingTime, averageRating, ratingCount, popularity, priceStandard, priceSales, categoryId, categoryName, link, adult, customerReviewRank, stockStatus, mallType, itemId, created_at, modified_at, is_deleted)
 VALUES 
-    ('철학의 즐거움', '알랭 드 보통', '9788900000000', '현대인의 일상 속에서 철학이 어떻게 적용될 수 있는지 쉽고 재미있게 설명하는 책입니다. 플라톤부터 니체까지, 위대한 철학자들의 사상을 현대적 관점에서 재해석합니다.', '세계출판사', '2023-03-15', 'https://images.pexels.com/photos/3747139/pexels-photo-3747139.jpeg', 2023, 328, 840, 4.7, 1243, 78, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
-    ('사피엔스: 유인원에서 인공지능까지, 인간 역사의 대담한 질문', '유발 하라리', '9788934972464', '인류의 역사와 미래에 대한 통찰력 있는 분석을 제공하는 세계적 베스트셀러. 인간이 어떻게 지구의 지배자가 되었는지, 그리고 어떻게 인지혁명, 농업혁명, 과학혁명을 통해 발전해왔는지를 설명합니다. 저자는 인류의 유전자와 환경보다는 허구를 믿는 능력이 인류 발전의 원동력이었다고 주장합니다.', '김영사', '2015-11-24', 'https://image.aladin.co.kr/product/5464/98/cover500/8934972467_1.jpg', 2015, 432, 840, 4.7, 1243, 78, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
-    ('코스모스', '칼 세이건', '9788983711892', 
+    ('철학의 즐거움', '알랭 드 보통', '9788900000000', '9788900000001', '현대인의 일상 속에서 철학이 어떻게 적용될 수 있는지 쉽고 재미있게 설명하는 책입니다. 플라톤부터 니체까지, 위대한 철학자들의 사상을 현대적 관점에서 재해석합니다.', '세계출판사', '2023-03-15', 'https://image.aladin.co.kr/product/30123/45/cover500/8900000001_1.jpg', 'https://image.aladin.co.kr/product/30123/45/cover/8900000001_1.jpg', 2023, 328, 840, 4.7, 1243, 78, 18000, 16200, '170', '철학/사상', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=123456', 'N', 4.7, '재고있음', 'BOOKS', 'BOOK123456', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('사피엔스: 유인원에서 인공지능까지, 인간 역사의 대담한 질문', '유발 하라리', '9788934972464', '9788934972471', '인류의 역사와 미래에 대한 통찰력 있는 분석을 제공하는 세계적 베스트셀러. 인간이 어떻게 지구의 지배자가 되었는지, 그리고 어떻게 인지혁명, 농업혁명, 과학혁명을 통해 발전해왔는지를 설명합니다. 저자는 인류의 유전자와 환경보다는 허구를 믿는 능력이 인류 발전의 원동력이었다고 주장합니다.', '김영사', '2015-11-24', 'https://image.aladin.co.kr/product/5464/98/cover500/8934972467_1.jpg', 'https://image.aladin.co.kr/product/5464/98/cover/8934972467_1.jpg', 2015, 432, 840, 4.7, 1243, 78, 24000, 21600, '152', '역사/문명', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=85486835', 'N', 4.8, '재고있음', 'BOOKS', 'BOOK85486835', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    
+    ('코스모스', '칼 세이건', '9788983711892', '9788983711898', 
     '우주의 탄생부터 인류 문명의 발전까지 과학적 시각으로 바라본 세계적인 과학 교양서. 칼 세이건은 복잡한 우주 과학을 일반인도 이해할 수 있는 언어로 풀어내며, 인류가 우주에서 차지하는 위치와 의미를 성찰하게 합니다.', 
-    '사이언스북스', '2006-12-20', 'https://images.pexels.com/photos/2150/sky-space-dark-galaxy.jpg', 
-    2006, 680, 1200, 4.8, 1578, 92, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '사이언스북스', '2006-12-20', 'https://image.aladin.co.kr/product/23/90/cover500/8983711892_1.jpg', 'https://image.aladin.co.kr/product/23/90/cover/8983711892_1.jpg', 
+    2006, 680, 1200, 4.8, 1578, 92, 22000, 19800, '116', '과학/우주', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=233345', 'N', 4.9, '재고있음', 'BOOKS', 'BOOK233345', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('1984', '조지 오웰', '9788937460777', 
+    ('1984', '조지 오웰', '9788937460777', '9788937460784', 
     '빅브라더가 지배하는 디스토피아 세계를 그린 20세기 최고의 정치 소설. 전체주의 사회의 언어 통제, 사상 감시, 역사 왜곡을 통해 인간성이 파괴되는 과정을 생생하게 묘사하며, 현대 사회에도 여전히 유효한 경고를 담고 있습니다.', 
-    '민음사', '2012-08-01', 'https://images.pexels.com/photos/267669/pexels-photo-267669.jpeg', 
-    2012, 355, 780, 4.6, 1892, 88, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '민음사', '2012-08-01', 'https://image.aladin.co.kr/product/26231/42/cover500/8937460777_1.jpg', 'https://image.aladin.co.kr/product/26231/42/cover/8937460777_1.jpg', 
+    2012, 355, 780, 4.6, 1892, 88, 13800, 12420, '101', '소설/고전', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=654321', 'N', 4.7, '재고있음', 'BOOKS', 'BOOK654321', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('해리 포터와 마법사의 돌', 'J.K. 롤링', '9788983920997', 
+    ('해리 포터와 마법사의 돌', 'J.K. 롤링', '9788983920997', '9788983921000', 
     '11살 소년 해리 포터가 자신이 마법사임을 알게 되면서 마법 세계에서 벌어지는 모험을 그린 판타지 소설. 호그와트 마법학교를 배경으로 우정, 용기, 선과 악의 대립을 다루며 전 세계적인 열풍을 일으켰습니다.', 
-    '문학수첩', '2019-11-15', 'https://images.pexels.com/photos/1294886/pexels-photo-1294886.jpeg', 
-    2019, 302, 720, 4.9, 2541, 96, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '문학수첩', '2019-11-15', 'https://image.aladin.co.kr/product/26/35/cover500/8983920998_3.jpg', 'https://image.aladin.co.kr/product/26/35/cover/8983920998_3.jpg', 
+    2019, 302, 720, 4.9, 2541, 96, 15000, 13500, '108', '소설/판타지', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=128456', 'N', 4.9, '재고있음', 'BOOKS', 'BOOK128456', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('데미안', '헤르만 헤세', '9788931005882', 
+    ('데미안', '헤르만 헤세', '9788931005882', '9788931005899', 
     '에밀 싱클레어라는 소년이 자아를 찾아가는 성장 과정을 그린 소설. 세계 1차 대전의 혼란 속에서 출간된 이 작품은 인간의 내면과 영혼의 성찰을 통해 진정한 자아 발견의 여정을 담고 있습니다.', 
-    '민음사', '2009-04-20', 'https://images.pexels.com/photos/3747139/pexels-photo-3747139.jpeg', 
-    2009, 248, 540, 4.5, 1245, 84, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '민음사', '2009-04-20', 'https://image.aladin.co.kr/product/97/78/cover500/8931005881_1.jpg', 'https://image.aladin.co.kr/product/97/78/cover/8931005881_1.jpg', 
+    2009, 248, 540, 4.5, 1245, 84, 10800, 9720, '101', '소설/고전', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=975312', 'N', 4.6, '재고있음', 'BOOKS', 'BOOK975312', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('이기적 유전자', '리처드 도킨스', '9788932916675', 
+    ('이기적 유전자', '리처드 도킨스', '9788932916675', '9788932916682', 
     '진화론의 새로운 관점을 제시한 과학서. 도킨스는 생존과 번식의 주체가 개체가 아닌 유전자라는 혁신적인 이론을 펼치며, 인간 행동의 생물학적 기반에 대한 깊은 통찰을 제공합니다.', 
-    '을유문화사', '2018-10-20', 'https://images.pexels.com/photos/256262/pexels-photo-256262.jpeg', 
-    2018, 516, 1100, 4.7, 1426, 87, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '을유문화사', '2018-10-20', 'https://image.aladin.co.kr/product/17094/0/cover500/8932916675_1.jpg', 'https://image.aladin.co.kr/product/17094/0/cover/8932916675_1.jpg', 
+    2018, 516, 1100, 4.7, 1426, 87, 22000, 19800, '116', '과학/생물학', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=458127', 'N', 4.8, '재고있음', 'BOOKS', 'BOOK458127', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('잃어버린 시간을 찾아서', '마르셀 프루스트', '9788937461033', 
+    ('잃어버린 시간을 찾아서', '마르셀 프루스트', '9788937461033', '9788937461040', 
     '20세기 최고의 프랑스 소설로 평가받는 대작. 주인공의 기억을 통해 펼쳐지는 방대한 이야기는 시간, 예술, 사랑, 질투 등 인간 존재의 복잡한 층위를 탐구합니다.', 
-    '민음사', '2012-10-15', 'https://images.pexels.com/photos/9006136/pexels-photo-9006136.jpeg', 
-    2012, 420, 950, 4.4, 856, 72, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '민음사', '2012-10-15', 'https://image.aladin.co.kr/product/1357/35/cover500/8937461331_1.jpg', 'https://image.aladin.co.kr/product/1357/35/cover/8937461331_1.jpg', 
+    2012, 420, 950, 4.4, 856, 72, 18800, 16920, '101', '소설/고전', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=156723', 'N', 4.5, '재고있음', 'BOOKS', 'BOOK156723', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('소나기', '황순원', '9788937460104', 
+    ('소나기', '황순원', '9788937460104', '9788937460111', 
     '순수한 소년과 소녀의 사랑을 그린 한국 문학의 명작 단편소설. 아름답고 서정적인 문체와 비극적 결말을 통해 순수한 사랑의 아름다움과 덧없음을 표현했습니다.', 
-    '민음사', '2015-05-10', 'https://images.pexels.com/photos/531880/pexels-photo-531880.jpeg', 
-    2015, 128, 320, 4.8, 1865, 85, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '민음사', '2015-05-10', 'https://image.aladin.co.kr/product/44/46/cover500/8937460106_2.jpg', 'https://image.aladin.co.kr/product/44/46/cover/8937460106_2.jpg', 
+    2015, 128, 320, 4.8, 1865, 85, 8000, 7200, '101', '소설/한국문학', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=443157', 'N', 4.7, '재고있음', 'BOOKS', 'BOOK443157', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('채식주의자', '한강', '9788936433598', 
+    ('채식주의자', '한강', '9788936433598', '9788936433604', 
     '2016년 인터내셔널 부커상을 수상한 한국 소설. 육식을 거부하게 된 여성의 이야기를 통해 폭력과 욕망, 인간성에 대한 근본적인 질문을 던집니다.', 
-    '창비', '2007-10-30', 'https://images.pexels.com/photos/1414651/pexels-photo-1414651.jpeg', 
-    2007, 247, 580, 4.6, 1342, 90, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '창비', '2007-10-30', 'https://image.aladin.co.kr/product/631/29/cover500/8936433598_1.jpg', 'https://image.aladin.co.kr/product/631/29/cover/8936433598_1.jpg', 
+    2007, 247, 580, 4.6, 1342, 90, 13000, 11700, '101', '소설/한국문학', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=632951', 'N', 4.5, '재고있음', 'BOOKS', 'BOOK632951', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('스티브 잡스', '월터 아이작슨', '9788934972464', 
+    ('스티브 잡스', '월터 아이작슨', '9788934972464', '9788934972471', 
     '애플 창업자 스티브 잡스의 공식 전기. 잡스 본인의 협조로 작성된 이 책은 그의 열정, 완벽주의, 혁신에 대한 집념, 그리고 그 이면의 복잡한 인물상을 생생하게 담아냅니다.', 
-    '민음사', '2011-10-24', 'https://images.pexels.com/photos/38568/apple-imac-ipad-workplace-38568.jpeg', 
-    2011, 758, 1400, 4.7, 2134, 91, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
+    '민음사', '2011-10-24', 'https://image.aladin.co.kr/product/954/46/cover500/8901150999_1.jpg', 'https://image.aladin.co.kr/product/954/46/cover/8901150999_1.jpg', 
+    2011, 758, 1400, 4.7, 2134, 91, 25000, 22500, '325', '경제경영/인물', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=125698', 'N', 4.8, '재고있음', 'BOOKS', 'BOOK125698', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
     
-    ('타이탄의 도구들', '팀 페리스', '9791195089192', 
+    ('타이탄의 도구들', '팀 페리스', '9791195089192', '9791195089208', 
     '세계적인 기업가, 운동선수, 예술가 등 200명 이상의 성공한 인물들의 습관과 전략을 분석한 자기계발서. 그들의 사고방식, 일상 루틴, 생산성 향상법 등 실용적인 조언을 담고 있습니다.', 
-    '토네이도', '2017-04-03', 'https://images.pexels.com/photos/4238496/pexels-photo-4238496.jpeg', 
-    2017, 675, 1250, 4.5, 1624, 86, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0);
+    '토네이도', '2017-04-03', 'https://image.aladin.co.kr/product/11091/13/cover500/k662533475_1.jpg', 'https://image.aladin.co.kr/product/11091/13/cover/k662533475_1.jpg', 
+    2017, 675, 1250, 4.5, 1624, 86, 19800, 17820, '336', '자기계발/성공', 'https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=367428', 'N', 4.6, '재고있음', 'BOOKS', 'BOOK367428', CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0);
 
 -- 테스트 도서 장르 데이터 (book_genres): books 테이블 참조
 INSERT IGNORE INTO book_genres (book_id, genre)
@@ -162,9 +164,9 @@ VALUES
 -- 테스트 댓글 데이터
 INSERT IGNORE INTO comments (content, user_id, quote_id, created_at, modified_at, is_deleted)
 VALUES 
-    ('이 문구는 제 인생의 모토가 되었습니다. 정말 의미있는 문장이네요.', 1, 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
-    ('헤라클레이토스의 지혜가 담긴 명언입니다. 변화를 받아들이는 법을 배우게 됩니다.', 2, 1, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP(), 0),
-    ('이 문구는 제 인생을 바꾸는 계기가 되었습니다. 정말 감사합니다.', 3, 3, DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 6 DAY), CURRENT_TIMESTAMP(), 0),
+    ('이 문구는 제 인생의 모토가 되었습니다. 정말 의미있는 문장이네요.', 1, 1, DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 5 DAY), CURRENT_TIMESTAMP(), 0),
+    ('헤라클레이토스의 지혜가 담긴 명언입니다. 변화를 받아들이는 법을 배우게 됩니다.', 2, 1, DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 4 DAY), CURRENT_TIMESTAMP(), 0),
+    ('이 문구는 제 인생을 바꾸는 계기가 되었습니다. 정말 감사합니다.', 3, 3, DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 2 DAY), CURRENT_TIMESTAMP(), 0),
     ('이 책의 핵심을 잘 요약한 인용구네요. 책 전체를 읽지 않아도 이 문장 하나만으로도 많은 것을 배웠습니다.', 4, 2, DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 5 DAY), CURRENT_TIMESTAMP(), 0),
     ('매일 이 문구를 읽으며 하루를 시작하고 있습니다. 큰 동기부여가 됩니다.', 5, 1, DATE_SUB(CURRENT_TIMESTAMP(), INTERVAL 4 DAY), CURRENT_TIMESTAMP(), 0);
 
