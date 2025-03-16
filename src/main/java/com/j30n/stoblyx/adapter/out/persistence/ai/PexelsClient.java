@@ -88,58 +88,76 @@ public class PexelsClient {
         }
         
         try {
-            // API 요청 속도 제한 (초당 요청 수 제한 대응)
-            throttleRequest();
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", apiKey);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(PEXELS_API_URL_IMAGES)
-                    .queryParam("query", query)
-                    .queryParam("per_page", 10)
-                    .queryParam("orientation", "landscape"); // 가로 방향 이미지 (숏폼에 적합)
-            
-            HttpEntity<?> entity = new HttpEntity<>(headers);
-            
-            ResponseEntity<String> response = restTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.GET,
-                    entity,
-                    String.class
-            );
-            
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                JsonNode jsonResponse = objectMapper.readTree(response.getBody());
-                List<String> imageUrls = extractImageUrls(jsonResponse);
-                
-                if (!imageUrls.isEmpty()) {
-                    // 랜덤하게 이미지 선택
-                    return imageUrls.get(random.nextInt(imageUrls.size()));
-                }
-            }
-            
-            log.warn("이미지 검색 결과가 없거나 응답 형식이 올바르지 않습니다. 폴백 이미지를 반환합니다.");
-            return FALLBACK_IMAGE;
-            
+            return callPexelsImageApi(query);
         } catch (RestClientException e) {
-            // 테스트에서 의도적으로 발생시키는 예외인 경우 디버그 레벨로 로깅
-            if (e.getMessage() != null && (e.getMessage().contains("API 호출 실패") || e.getMessage().contains("[테스트용]"))) {
-                log.debug("Pexels API 호출 실패 (테스트용): {}", e.getMessage());
-            } else {
-                log.error("Pexels API 호출 중 오류가 발생했습니다: {}", e.getMessage());
-            }
-            // 대신 폴백 이미지 반환
+            logApiException(e, "이미지 검색");
             return FALLBACK_IMAGE;
         } catch (Exception e) {
-            // 테스트에서 의도적으로 발생시키는 예외인 경우 디버그 레벨로 로깅
-            if (e.getMessage() != null && (e.getMessage().contains("API 호출 실패") || e.getMessage().contains("[테스트용]"))) {
-                log.debug("이미지 검색 실패 (테스트용): {}", e.getMessage());
-            } else {
-                log.error("이미지 검색 중 오류 발생: {}", e.getMessage(), e);
-            }
-            // 대신 폴백 이미지 반환
+            logGenericException(e, "이미지 검색");
             return FALLBACK_IMAGE;
+        }
+    }
+    
+    /**
+     * Pexels 이미지 API 호출 및 결과 처리
+     */
+    private String callPexelsImageApi(String query) throws Exception {
+        // API 요청 속도 제한 (초당 요청 수 제한 대응)
+        throttleRequest();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(PEXELS_API_URL_IMAGES)
+                .queryParam("query", query)
+                .queryParam("per_page", 10)
+                .queryParam("orientation", "landscape"); // 가로 방향 이미지 (숏폼에 적합)
+        
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        
+        ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
+        
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+            List<String> imageUrls = extractImageUrls(jsonResponse);
+            
+            if (!imageUrls.isEmpty()) {
+                // 랜덤하게 이미지 선택
+                return imageUrls.get(random.nextInt(imageUrls.size()));
+            }
+        }
+        
+        log.warn("이미지 검색 결과가 없거나 응답 형식이 올바르지 않습니다. 폴백 이미지를 반환합니다.");
+        return FALLBACK_IMAGE;
+    }
+    
+    /**
+     * API 예외 로깅
+     */
+    private void logApiException(RestClientException e, String operation) {
+        // 테스트에서 의도적으로 발생시키는 예외인 경우 디버그 레벨로 로깅
+        if (e.getMessage() != null && (e.getMessage().contains("API 호출 실패") || e.getMessage().contains("[테스트용]"))) {
+            log.debug("Pexels API 호출 실패 (테스트용): {}", e.getMessage());
+        } else {
+            log.error("Pexels API 호출 중 오류가 발생했습니다: {}", e.getMessage());
+        }
+    }
+    
+    /**
+     * 일반 예외 로깅
+     */
+    private void logGenericException(Exception e, String operation) {
+        // 테스트에서 의도적으로 발생시키는 예외인 경우 디버그 레벨로 로깅
+        if (e.getMessage() != null && (e.getMessage().contains("API 호출 실패") || e.getMessage().contains("[테스트용]"))) {
+            log.debug("{} 실패 (테스트용): {}", operation, e.getMessage());
+        } else {
+            log.error("{} 중 오류 발생: {}", operation, e.getMessage(), e);
         }
     }
     
@@ -162,59 +180,53 @@ public class PexelsClient {
         }
         
         try {
-            // API 요청 속도 제한
-            throttleRequest();
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("Authorization", apiKey);
-            headers.setContentType(MediaType.APPLICATION_JSON);
-            
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(PEXELS_API_URL_VIDEOS)
-                    .queryParam("query", query)
-                    .queryParam("per_page", 10)
-                    .queryParam("orientation", "portrait"); // 세로 방향 비디오 (숏폼에 적합)
-            
-            HttpEntity<?> entity = new HttpEntity<>(headers);
-            
-            ResponseEntity<String> response = restTemplate.exchange(
-                    builder.toUriString(),
-                    HttpMethod.GET,
-                    entity,
-                    String.class
-            );
-            
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                JsonNode jsonResponse = objectMapper.readTree(response.getBody());
-                List<String> videoUrls = extractVideoUrls(jsonResponse);
-                
-                if (!videoUrls.isEmpty()) {
-                    // 랜덤하게 비디오 선택
-                    return videoUrls.get(random.nextInt(videoUrls.size()));
-                }
-            }
-            
-            log.warn("비디오 검색 결과가 없거나 응답 형식이 올바르지 않습니다. 폴백 비디오를 반환합니다.");
-            return FALLBACK_VIDEO;
-            
+            return callPexelsVideoApi(query);
         } catch (RestClientException e) {
-            // 테스트에서 의도적으로 발생시키는 예외인 경우 디버그 레벨로 로깅
-            if (e.getMessage() != null && (e.getMessage().contains("API 호출 실패") || e.getMessage().contains("[테스트용]"))) {
-                log.debug("Pexels API 호출 실패 (테스트용): {}", e.getMessage());
-            } else {
-                log.error("Pexels API 호출 중 오류가 발생했습니다: {}", e.getMessage());
-            }
-            // 예외를 던지지 않고 폴백 비디오 반환
+            logApiException(e, "비디오 검색");
             return FALLBACK_VIDEO;
         } catch (Exception e) {
-            // 테스트에서 의도적으로 발생시키는 예외인 경우 디버그 레벨로 로깅
-            if (e.getMessage() != null && (e.getMessage().contains("API 호출 실패") || e.getMessage().contains("[테스트용]"))) {
-                log.debug("비디오 검색 실패 (테스트용): {}", e.getMessage());
-            } else {
-                log.error("비디오 검색 중 오류 발생: {}", e.getMessage(), e);
-            }
-            // 예외를 던지지 않고 폴백 비디오 반환
+            logGenericException(e, "비디오 검색");
             return FALLBACK_VIDEO;
         }
+    }
+    
+    /**
+     * Pexels 비디오 API 호출 및 결과 처리
+     */
+    private String callPexelsVideoApi(String query) throws Exception {
+        // API 요청 속도 제한
+        throttleRequest();
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", apiKey);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(PEXELS_API_URL_VIDEOS)
+                .queryParam("query", query)
+                .queryParam("per_page", 10)
+                .queryParam("orientation", "portrait"); // 세로 방향 비디오 (숏폼에 적합)
+        
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        
+        ResponseEntity<String> response = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET,
+                entity,
+                String.class
+        );
+        
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            JsonNode jsonResponse = objectMapper.readTree(response.getBody());
+            List<String> videoUrls = extractVideoUrls(jsonResponse);
+            
+            if (!videoUrls.isEmpty()) {
+                // 랜덤하게 비디오 선택
+                return videoUrls.get(random.nextInt(videoUrls.size()));
+            }
+        }
+        
+        log.warn("비디오 검색 결과가 없거나 응답 형식이 올바르지 않습니다. 폴백 비디오를 반환합니다.");
+        return FALLBACK_VIDEO;
     }
     
     /**

@@ -5,9 +5,9 @@ import com.j30n.stoblyx.adapter.in.web.dto.user.UserInterestRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserInterestResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserProfileResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserUpdateRequest;
+import com.j30n.stoblyx.application.port.in.ranking.RankingUserScoreUseCase;
 import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
 import com.j30n.stoblyx.application.port.in.user.UserUseCase;
-import com.j30n.stoblyx.application.port.in.ranking.RankingUserScoreUseCase;
 import com.j30n.stoblyx.common.exception.GlobalExceptionHandler;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
@@ -29,6 +29,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,25 +38,25 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.restdocs.RestDocumentationExtension;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
+import static com.j30n.stoblyx.support.docs.RestDocsUtils.relaxedResponseFields;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.j30n.stoblyx.support.docs.RestDocsUtils.relaxedResponseFields;
 
 @WebMvcTest(controllers = {UserController.class, GlobalExceptionHandler.class})
 @DisplayName("사용자 컨트롤러 테스트")
@@ -76,7 +77,7 @@ class UserControllerTest {
 
     @MockBean
     private UserInterestUseCase userInterestUseCase;
-    
+
     @MockBean
     private RankingUserScoreUseCase rankingUserScoreUseCase;
 
@@ -101,7 +102,7 @@ class UserControllerTest {
             testUserPrincipal.getAuthorities()
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
-        
+
         // RankingUserScore 모킹 설정
         RankingUserScore mockUserScore = RankingUserScore.builder()
             .id(1L)
@@ -117,10 +118,10 @@ class UserControllerTest {
             .accountSuspended(false)
             .isDeleted(false)
             .build();
-            
+
         List<RankingUserScore> mockTopUsers = new ArrayList<>();
         mockTopUsers.add(mockUserScore);
-        
+
         when(rankingUserScoreUseCase.getUserScore(any())).thenReturn(mockUserScore);
         when(rankingUserScoreUseCase.getTopUsers(anyInt())).thenReturn(mockTopUsers);
     }
@@ -168,7 +169,7 @@ class UserControllerTest {
 
         verify(userUseCase).getCurrentUser(any());
     }
-    
+
     @Test
     @DisplayName("사용자 랭킹 정보 조회 API가 정상적으로 동작해야 한다")
     void getUserRanking() throws Exception {
@@ -180,7 +181,7 @@ class UserControllerTest {
             .rankType(RankType.SILVER)
             .isDeleted(false)
             .build();
-            
+
         when(rankingUserScoreUseCase.getUserScore(any())).thenReturn(userScore);
         when(rankingUserScoreUseCase.getTopUsers(anyInt())).thenReturn(List.of(userScore));
 
@@ -270,24 +271,24 @@ class UserControllerTest {
                     System.out.println("==================");
                 })
                 .andDo(document("user/update-user",
-                        requestFields(
-                            fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임"),
-                            fieldWithPath("email").type(JsonFieldType.STRING).description("변경할 이메일"),
-                            fieldWithPath("password").type(JsonFieldType.STRING).description("변경할 비밀번호").optional(),
-                            fieldWithPath("profileImageUrl").type(JsonFieldType.NULL).description("프로필 이미지 URL").optional()
-                        ),
-                        relaxedResponseFields(
-                            fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS)"),
-                            fieldWithPath("message").type(JsonFieldType.STRING).description("성공 메시지"),
-                            fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
-                            fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID"),
-                            fieldWithPath("data.username").type(JsonFieldType.STRING).description("사용자 아이디"),
-                            fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("변경된 사용자 닉네임"),
-                            fieldWithPath("data.email").type(JsonFieldType.STRING).description("변경된 사용자 이메일"),
-                            fieldWithPath("data.role").type(JsonFieldType.STRING).description("사용자 역할"),
-                            fieldWithPath("data.profileImageUrl").type(JsonFieldType.NULL).description("프로필 이미지 URL")
-                        )
-                    ));
+                    requestFields(
+                        fieldWithPath("nickname").type(JsonFieldType.STRING).description("변경할 닉네임"),
+                        fieldWithPath("email").type(JsonFieldType.STRING).description("변경할 이메일"),
+                        fieldWithPath("password").type(JsonFieldType.STRING).description("변경할 비밀번호").optional(),
+                        fieldWithPath("profileImageUrl").type(JsonFieldType.NULL).description("프로필 이미지 URL").optional()
+                    ),
+                    relaxedResponseFields(
+                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS)"),
+                        fieldWithPath("message").type(JsonFieldType.STRING).description("성공 메시지"),
+                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                        fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                        fieldWithPath("data.username").type(JsonFieldType.STRING).description("사용자 아이디"),
+                        fieldWithPath("data.nickname").type(JsonFieldType.STRING).description("변경된 사용자 닉네임"),
+                        fieldWithPath("data.email").type(JsonFieldType.STRING).description("변경된 사용자 이메일"),
+                        fieldWithPath("data.role").type(JsonFieldType.STRING).description("사용자 역할"),
+                        fieldWithPath("data.profileImageUrl").type(JsonFieldType.NULL).description("프로필 이미지 URL")
+                    )
+                ));
         } catch (Exception e) {
             System.out.println("==== 테스트 실패 예외 ====");
             e.printStackTrace();

@@ -2,7 +2,10 @@ package com.j30n.stoblyx.domain.model;
 
 import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * 사용자가 저장한 인용구 정보를 저장하는 엔티티

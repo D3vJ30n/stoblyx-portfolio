@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -44,9 +46,9 @@ public class InteractionController {
                     .body(ApiResponse.error(ERROR_AUTH_REQUIRED));
             }
 
-            log.info("콘텐츠 상호작용 기록: userId={}, contentId={}, interactionType={}", 
+            log.info("콘텐츠 상호작용 기록: userId={}, contentId={}, interactionType={}",
                 user.getId(), request.contentId(), request.interactionType());
-            
+
             contentService.recordInteraction(user.getId(), request.contentId(), request.interactionType());
             return ResponseEntity.ok(
                 ApiResponse.success("콘텐츠 상호작용이 성공적으로 기록되었습니다.")
@@ -78,10 +80,10 @@ public class InteractionController {
             }
 
             log.info("사용자 상호작용 기록: userId={}, interactionData={}", user.getId(), request);
-            
+
             // 이 부분에 실제 사용자 상호작용 처리 로직을 구현합니다.
             // 현재는 단순히 성공 응답만 반환합니다.
-            
+
             return ResponseEntity.ok(
                 ApiResponse.success("사용자 상호작용이 성공적으로 기록되었습니다.")
             );

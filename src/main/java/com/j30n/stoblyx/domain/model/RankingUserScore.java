@@ -2,10 +2,10 @@ package com.j30n.stoblyx.domain.model;
 
 import com.j30n.stoblyx.domain.enums.RankType;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -64,7 +64,7 @@ public class RankingUserScore {
         createdAt = LocalDateTime.now();
         modifiedAt = LocalDateTime.now();
         lastActivityDate = LocalDateTime.now();
-        
+
         // 기본값 설정
         if (currentScore == null) {
             currentScore = 1000; // 초기 점수
@@ -89,22 +89,22 @@ public class RankingUserScore {
     @PreUpdate
     protected void onUpdate() {
         modifiedAt = LocalDateTime.now();
-        
+
         // 점수에 따른 랭크 업데이트
         rankType = RankType.fromScore(currentScore);
     }
 
     /**
      * 가중 이동 평균(EWMA) 알고리즘을 적용하여 점수 업데이트
-     * 
+     *
      * @param newActivityScore 새로운 활동 점수
-     * @param alpha 가중치 (0.0 ~ 1.0)
+     * @param alpha            가중치 (0.0 ~ 1.0)
      */
     public void updateScoreWithEWMA(int newActivityScore, double alpha) {
         if (alpha < 0.0 || alpha > 1.0) {
             throw new IllegalArgumentException("Alpha must be between 0.0 and 1.0");
         }
-        
+
         previousScore = currentScore;
         currentScore = (int) Math.round(alpha * newActivityScore + (1 - alpha) * currentScore);
         rankType = RankType.fromScore(this.currentScore);
@@ -113,26 +113,26 @@ public class RankingUserScore {
 
     /**
      * 신고 횟수 증가 및 계정 정지 여부 확인
-     * 
+     *
      * @param suspensionThreshold 계정 정지 임계값
      * @return 계정 정지 여부
      */
     public boolean incrementReportCount(int suspensionThreshold) {
         reportCount++;
-        
+
         // 신고 횟수가 임계값을 초과하면 계정 정지
         if (reportCount >= suspensionThreshold) {
             accountSuspended = true;
             // 점수 크게 감소
             currentScore = Math.max(0, currentScore - 100);
         }
-        
+
         return accountSuspended;
     }
 
     /**
      * 비활동 기간에 따른 점수 감소
-     * 
+     *
      * @param decayFactor 감소 계수
      */
     public void decayScoreForInactivity(double decayFactor) {

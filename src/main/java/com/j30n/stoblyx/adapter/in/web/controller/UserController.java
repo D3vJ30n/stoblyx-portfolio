@@ -1,13 +1,13 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
-import com.j30n.stoblyx.adapter.in.web.dto.user.UserProfileResponse;
-import com.j30n.stoblyx.adapter.in.web.dto.user.UserUpdateRequest;
+import com.j30n.stoblyx.adapter.in.web.dto.ranking.UserRankingResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserInterestRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.user.UserInterestResponse;
-import com.j30n.stoblyx.adapter.in.web.dto.ranking.UserRankingResponse;
-import com.j30n.stoblyx.application.port.in.user.UserUseCase;
-import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
+import com.j30n.stoblyx.adapter.in.web.dto.user.UserProfileResponse;
+import com.j30n.stoblyx.adapter.in.web.dto.user.UserUpdateRequest;
 import com.j30n.stoblyx.application.port.in.ranking.RankingUserScoreUseCase;
+import com.j30n.stoblyx.application.port.in.user.UserInterestUseCase;
+import com.j30n.stoblyx.application.port.in.user.UserUseCase;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import com.j30n.stoblyx.domain.model.RankingUserScore;
 import com.j30n.stoblyx.infrastructure.annotation.CurrentUser;
@@ -59,7 +59,7 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             log.info("사용자 프로필 조회: userId={}", userPrincipal.getId());
             UserProfileResponse profile = userUseCase.getCurrentUser(userPrincipal.getId());
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 프로필을 성공적으로 조회했습니다.", profile));
@@ -75,7 +75,7 @@ public class UserController {
      * 사용자 프로필을 수정합니다.
      *
      * @param userPrincipal 현재 사용자 인증 정보
-     * @param request 수정할 프로필 정보
+     * @param request       수정할 프로필 정보
      * @return 수정된 사용자 프로필 정보
      */
     @PutMapping("/me")
@@ -91,7 +91,7 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             log.info("사용자 프로필 수정: userId={}", userPrincipal.getId());
             UserProfileResponse updatedProfile = userUseCase.updateUser(userPrincipal.getId(), request);
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 프로필을 성공적으로 수정했습니다.", updatedProfile));
@@ -121,7 +121,7 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             log.info("사용자 계정 삭제: userId={}", userPrincipal.getId());
             userUseCase.deleteUser(userPrincipal.getId());
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 계정이 성공적으로 삭제되었습니다.", null));
@@ -151,7 +151,7 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             log.info("사용자 관심사 조회: userId={}", userPrincipal.getId());
             UserInterestResponse interestResponse = userInterestUseCase.getUserInterest(userPrincipal.getId());
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 관심사를 성공적으로 조회했습니다.", interestResponse));
@@ -167,7 +167,7 @@ public class UserController {
      * 사용자의 관심사를 업데이트합니다.
      *
      * @param userPrincipal 현재 사용자 인증 정보
-     * @param request 수정할 관심사 정보
+     * @param request       수정할 관심사 정보
      * @return 업데이트된 관심사 정보
      */
     @PutMapping("/me/interests")
@@ -183,7 +183,7 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             log.info("사용자 관심사 업데이트: userId={}", userPrincipal.getId());
             UserInterestResponse updatedInterest = userInterestUseCase.updateUserInterest(userPrincipal.getId(), request);
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 관심사를 성공적으로 업데이트했습니다.", updatedInterest));
@@ -199,7 +199,7 @@ public class UserController {
      * 사용자 프로필 이미지를 업로드합니다.
      *
      * @param userPrincipal 현재 사용자 인증 정보
-     * @param image 업로드할 이미지 파일
+     * @param image         업로드할 이미지 파일
      * @return 업데이트된 사용자 프로필 정보
      */
     @PostMapping("/me/profile-image")
@@ -215,14 +215,14 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             if (image.isEmpty()) {
                 log.warn("빈 이미지 파일 업로드 시도: userId={}", userPrincipal.getId());
                 return ResponseEntity.badRequest().body(
                     new ApiResponse<>(RESULT_ERROR, "이미지 파일이 제공되지 않았습니다.", null)
                 );
             }
-            
+
             log.info("사용자 프로필 이미지 업로드: userId={}, fileSize={}", userPrincipal.getId(), image.getSize());
             UserProfileResponse updatedProfile = userUseCase.updateProfileImage(userPrincipal.getId(), image);
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "프로필 이미지가 성공적으로 업로드되었습니다.", updatedProfile));
@@ -233,7 +233,7 @@ public class UserController {
             );
         }
     }
-    
+
     /**
      * 사용자 랭킹 정보 조회
      *
@@ -253,11 +253,11 @@ public class UserController {
                     new ApiResponse<>(RESULT_ERROR, ERROR_USER_NOT_AUTHENTICATED, null)
                 );
             }
-            
+
             log.info("사용자 랭킹 정보 조회: userId={}", userPrincipal.getId());
             // 사용자 점수 정보 조회
             RankingUserScore userScore = rankingUserScoreUseCase.getUserScore(userPrincipal.getId());
-            
+
             // 전체 랭킹에서 사용자 순위 계산
             List<RankingUserScore> allUsers = rankingUserScoreUseCase.getTopUsers(Integer.MAX_VALUE);
             int rank = 0;
@@ -267,7 +267,7 @@ public class UserController {
                     break;
                 }
             }
-            
+
             UserRankingResponse response = UserRankingResponse.fromEntity(userScore, rank);
             return ResponseEntity.ok(new ApiResponse<>(RESULT_SUCCESS, "사용자 랭킹 정보를 성공적으로 조회했습니다.", response));
         } catch (Exception e) {
@@ -306,13 +306,13 @@ public class UserController {
      */
     @GetMapping("/profile")
     public ResponseEntity<ApiResponse<?>> getUserProfile(
-            @RequestParam(required = false) Long userId,
-            @RequestHeader(value = "Authorization", required = false) String token
+        @RequestParam(required = false) Long userId,
+        @RequestHeader(value = "Authorization", required = false) String token
     ) {
         try {
             // 테스트를 위한 샘플 유저 프로필 데이터
             Map<String, Object> userProfile = new HashMap<>();
-            
+
             // 기본 유저 정보
             userProfile.put("id", userId != null ? userId : 1L);
             userProfile.put("username", "testuser");
@@ -320,13 +320,13 @@ public class UserController {
             userProfile.put("email", "test@example.com");
             userProfile.put("profileImageUrl", "https://example.com/profile.jpg");
             userProfile.put("bio", "안녕하세요. 테스트 사용자입니다.");
-            
+
             // 활동 통계
             userProfile.put("contentCount", 15);
             userProfile.put("followingCount", 42);
             userProfile.put("followerCount", 38);
             userProfile.put("likeCount", 156);
-            
+
             // 랭킹 정보
             Map<String, Object> rankInfo = new HashMap<>();
             rankInfo.put("currentRank", "GOLD");
@@ -334,7 +334,7 @@ public class UserController {
             rankInfo.put("nextRank", "PLATINUM");
             rankInfo.put("pointsToNextRank", 220);
             userProfile.put("rankInfo", rankInfo);
-            
+
             return ResponseEntity.ok(
                 ApiResponse.success("유저 프로필 정보입니다.", userProfile)
             );

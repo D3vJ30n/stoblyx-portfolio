@@ -4,19 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpHeaders;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Collections;
 import java.util.Random;
@@ -30,15 +24,15 @@ import static org.mockito.Mockito.when;
 class PexelsClientTest {
 
     // 환경 변수에서 API 키를 가져오거나 테스트용 API 키 사용
-    private static final String API_KEY = System.getenv("PEXELS_API_KEY") != null && !System.getenv("PEXELS_API_KEY").isEmpty() 
-            ? System.getenv("PEXELS_API_KEY") 
-            : "Yyicakz4WGEu9XntPLqVIR4JUKEAokSMG7FfoAc35m6kHhnJnu5kHkPa";
-    // 테스트 상수 (영어로 변경)
-    private final String MOTIVATION_TITLE = "동기부여";
+    private static final String API_KEY = System.getenv("PEXELS_API_KEY") != null && !System.getenv("PEXELS_API_KEY").isEmpty()
+        ? System.getenv("PEXELS_API_KEY")
+        : "Yyicakz4WGEu9XntPLqVIR4JUKEAokSMG7FfoAc35m6kHhnJnu5kHkPa";
     private static final String MOTIVATION_DESCRIPTION = "A motivational book that teaches how to grow a little every day. Small habits create big changes.";
-    private final String PHILOSOPHY_TITLE = "철학책";
     private static final String PHILOSOPHY_DESCRIPTION = "A philosophical book exploring the essence of human existence and the meaning of life from an existentialist perspective.";
-    private final String FALLBACK_VIDEO_URL = "https://www.pexels.com/video/woman-reading-book-in-the-library-5167740/";
+    // 테스트 상수 (영어로 변경)
+    private static final String MOTIVATION_TITLE = "Motivational Book";
+    private static final String PHILOSOPHY_TITLE = "Philosophy Book";
+    private static final String FALLBACK_VIDEO_URL = "https://www.pexels.com/video/woman-reading-book-in-the-library-5167740/";
     @Mock
     private RestTemplate restTemplate;
     private PexelsClient pexelsClient;
@@ -225,15 +219,15 @@ class PexelsClientTest {
     void realApiImageSearchIntegrationTest() {
         // 실제 API 호출을 위한 클라이언트 생성 (모킹 없음)
         RestTemplate realRestTemplate = new RestTemplate();
-        
+
         // Authorization 헤더를 추가하는 인터셉터
         ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
             request.getHeaders().set(HttpHeaders.AUTHORIZATION, API_KEY);
             return execution.execute(request, body);
         };
-        
+
         realRestTemplate.setInterceptors(Collections.singletonList(interceptor));
-        
+
         PexelsClient realClient = new PexelsClient(
             API_KEY,
             realRestTemplate,
@@ -258,15 +252,15 @@ class PexelsClientTest {
     void realApiVideoSearchIntegrationTest() {
         // 실제 API 호출을 위한 클라이언트 생성 (모킹 없음)
         RestTemplate realRestTemplate = new RestTemplate();
-        
+
         // Authorization 헤더를 추가하는 인터셉터
         ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
             request.getHeaders().set(HttpHeaders.AUTHORIZATION, API_KEY);
             return execution.execute(request, body);
         };
-        
+
         realRestTemplate.setInterceptors(Collections.singletonList(interceptor));
-        
+
         PexelsClient realClient = new PexelsClient(
             API_KEY,
             realRestTemplate,
@@ -291,28 +285,32 @@ class PexelsClientTest {
     void validateUrlsTest() {
         // 이미지 URL 형식 검증
         String imageUrl = "https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg"; // 책상 위의 책과 커피 이미지
-        assertThat(imageUrl).startsWith("https://");
-        assertThat(imageUrl).contains("pexels.com");
-        
+        assertThat(imageUrl)
+            .startsWith("https://")
+            .contains("pexels.com");
+
         // 비디오 URL 형식 검증
         String videoUrl = "https://www.pexels.com/video/woman-reading-book-in-the-library-5167740/"; // 도서관에서 책 읽는 여성 비디오
-        assertThat(videoUrl).startsWith("https://");
-        assertThat(videoUrl).contains("pexels.com");
-        
+        assertThat(videoUrl)
+            .startsWith("https://")
+            .contains("pexels.com");
+
         // 폴백 URL 형식 검증
         String fallbackImage = "https://images.pexels.com/photos/2014422/pexels-photo-2014422.jpeg"; // 책상 위의 책과 커피 이미지
-        assertThat(fallbackImage).startsWith("https://");
-        
+        assertThat(fallbackImage)
+            .startsWith("https://");
+
         String fallbackVideo = FALLBACK_VIDEO_URL;
-        assertThat(fallbackVideo).startsWith("https://");
+        assertThat(fallbackVideo)
+            .startsWith("https://");
     }
-    
+
     /**
      * 실제 API 호출 시 발생하는 경고 메시지는 테스트에 영향을 주지 않습니다.
-     * 경고 메시지는 다음과 같은 이유로 발생할 수 있습니다:
+     * 경고 메시지는 다음과 같은 이유로 발생할 수 있습니다
      * 1. 테스트 환경에서 API_KEY가 PexelsConfig.API_KEY와 같을 경우
      * 2. 실제 API 호출 시 인증에 실패하는 경우
-     * 
-     * 테스트가 통과한다면 기능적으로는 문제가 없습니다.
+     *
+     * 테스트가 통과한다면 기능적으로는 문제없음
      */
 } 

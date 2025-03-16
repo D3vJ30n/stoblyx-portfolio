@@ -2,6 +2,7 @@ package com.j30n.stoblyx.adapter.in.web.dto.user;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
+
 import java.util.List;
 
 public record UserInterestRequest(

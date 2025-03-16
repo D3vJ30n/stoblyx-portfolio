@@ -1,12 +1,14 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.adapter.in.web.dto.book.BookResponse;
+import com.j30n.stoblyx.application.service.book.AladinBookService;
 import com.j30n.stoblyx.application.service.book.BookService;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
 import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.domain.repository.BookRepository;
+import com.j30n.stoblyx.infrastructure.external.AladinApiClient;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +32,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.LocalDateTime;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,9 +63,15 @@ class BookControllerTest {
 
     @MockBean
     private BookService bookService;
-    
+
     @MockBean
     private BookRepository bookRepository;
+
+    @MockBean
+    private AladinApiClient aladinApiClient;
+
+    @MockBean
+    private AladinBookService aladinBookService;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
@@ -139,7 +147,19 @@ class BookControllerTest {
                         fieldWithPath("popularity").type(JsonFieldType.NUMBER).optional().description("인기도"),
                         fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일"),
                         fieldWithPath("modifiedAt").type(JsonFieldType.STRING).optional().description("수정일"),
-                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).optional().description("삭제 여부")
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).optional().description("삭제 여부"),
+                        fieldWithPath("itemId").type(JsonFieldType.NULL).optional().description("알라딘 상품 ID"),
+                        fieldWithPath("isbn13").type(JsonFieldType.NULL).optional().description("ISBN-13"),
+                        fieldWithPath("priceStandard").type(JsonFieldType.NULL).optional().description("정가"),
+                        fieldWithPath("priceSales").type(JsonFieldType.NULL).optional().description("판매가"),
+                        fieldWithPath("categoryId").type(JsonFieldType.NULL).optional().description("카테고리 ID"),
+                        fieldWithPath("categoryName").type(JsonFieldType.NULL).optional().description("카테고리명"),
+                        fieldWithPath("link").type(JsonFieldType.NULL).optional().description("상품 링크"),
+                        fieldWithPath("adult").type(JsonFieldType.NULL).optional().description("성인 도서 여부"),
+                        fieldWithPath("customerReviewRank").type(JsonFieldType.NULL).optional().description("고객 리뷰 평점"),
+                        fieldWithPath("stockStatus").type(JsonFieldType.NULL).optional().description("재고 상태"),
+                        fieldWithPath("mallType").type(JsonFieldType.NULL).optional().description("판매처 유형"),
+                        fieldWithPath("cover").type(JsonFieldType.NULL).optional().description("표지 이미지 URL")
                     )
             ));
 
@@ -237,7 +257,19 @@ class BookControllerTest {
                         fieldWithPath("popularity").type(JsonFieldType.NUMBER).optional().description("인기도"),
                         fieldWithPath("createdAt").type(JsonFieldType.STRING).optional().description("등록일"),
                         fieldWithPath("modifiedAt").type(JsonFieldType.STRING).optional().description("수정일"),
-                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).optional().description("삭제 여부")
+                        fieldWithPath("deleted").type(JsonFieldType.BOOLEAN).optional().description("삭제 여부"),
+                        fieldWithPath("itemId").type(JsonFieldType.NULL).optional().description("알라딘 상품 ID"),
+                        fieldWithPath("isbn13").type(JsonFieldType.NULL).optional().description("ISBN-13"),
+                        fieldWithPath("priceStandard").type(JsonFieldType.NULL).optional().description("정가"),
+                        fieldWithPath("priceSales").type(JsonFieldType.NULL).optional().description("판매가"),
+                        fieldWithPath("categoryId").type(JsonFieldType.NULL).optional().description("카테고리 ID"),
+                        fieldWithPath("categoryName").type(JsonFieldType.NULL).optional().description("카테고리명"),
+                        fieldWithPath("link").type(JsonFieldType.NULL).optional().description("상품 링크"),
+                        fieldWithPath("adult").type(JsonFieldType.NULL).optional().description("성인 도서 여부"),
+                        fieldWithPath("customerReviewRank").type(JsonFieldType.NULL).optional().description("고객 리뷰 평점"),
+                        fieldWithPath("stockStatus").type(JsonFieldType.NULL).optional().description("재고 상태"),
+                        fieldWithPath("mallType").type(JsonFieldType.NULL).optional().description("판매처 유형"),
+                        fieldWithPath("cover").type(JsonFieldType.NULL).optional().description("표지 이미지 URL")
                     )
                     .and(
                         fieldWithPath("data.pageable").type(JsonFieldType.OBJECT).description("페이지 정보"),

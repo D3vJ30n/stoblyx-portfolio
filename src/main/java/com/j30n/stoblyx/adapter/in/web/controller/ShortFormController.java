@@ -8,7 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 숏폼 콘텐츠 관련 API를 처리하는 컨트롤러
@@ -61,7 +64,7 @@ public class ShortFormController {
     /**
      * 특정 책과 유사한 장르의 책을 추천합니다.
      *
-     * @param bookId 책 ID
+     * @param bookId   책 ID
      * @param pageable 페이징 정보
      * @return 유사한 장르의 책 목록
      */

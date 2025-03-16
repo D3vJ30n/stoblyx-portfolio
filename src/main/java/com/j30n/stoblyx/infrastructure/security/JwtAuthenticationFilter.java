@@ -11,11 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -43,15 +43,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         String path = request.getRequestURI();
         String contextPath = request.getContextPath();
-        
+
         log.debug("Request URI: {}, Context Path: {}", path, contextPath);
-        
+
         // contextPath를 제거한 실제 경로 추출
         String actualPath = path;
         if (!contextPath.isEmpty() && path.startsWith(contextPath)) {
             actualPath = path.substring(contextPath.length());
         }
-        
+
         // PUBLIC_PATHS 중 하나라도 일치하면 필터링하지 않음
         boolean shouldNotFilter = PUBLIC_PATHS.stream().anyMatch(actualPath::startsWith);
         log.debug("요청 경로 {} 필터링 여부: {}", actualPath, !shouldNotFilter);
@@ -60,9 +60,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
+        @NonNull HttpServletRequest request,
+        @NonNull HttpServletResponse response,
+        @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
         String jwt = resolveToken(request);
         String requestURI = request.getRequestURI();
@@ -72,10 +72,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // 테스트 모드 확인 및 처리
             boolean isTestMode = "true".equals(request.getHeader("X-TEST-AUTH"));
             boolean isTestToken = StringUtils.hasText(jwt) && jwt.equals("mock-token-for-testing");
-            
+
             if (isTestMode || isTestToken) {
                 log.debug("테스트 모드 감지: uri={}, isTestMode={}, isTestToken={}", requestURI, isTestMode, isTestToken);
-                
+
                 // 테스트용 사용자 ID 확인
                 String testUserIdHeader = request.getHeader("X-TEST-USER-ID");
                 Long userId = 1L; // 기본값
@@ -86,11 +86,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         log.warn("잘못된 테스트 사용자 ID 형식: {}", testUserIdHeader);
                     }
                 }
-                
+
                 // 테스트용 역할 확인
                 String testRole = request.getHeader("X-TEST-ROLE");
                 String role = (testRole != null && !testRole.isEmpty()) ? testRole : "USER";
-                
+
                 // 테스트용 사용자 조회 시도 (없으면 모의 사용자 생성)
                 User testUser = null;
                 try {
@@ -99,32 +99,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 } catch (Exception e) {
                     log.debug("테스트용 사용자 조회 실패, 모의 사용자를 생성합니다: {}", e.getMessage());
                 }
-                
+
                 // 테스트용 인증 객체 생성
                 UserDetails userDetails = new org.springframework.security.core.userdetails.User(
                     "test-user-" + userId, "", AuthorityUtils.createAuthorityList("ROLE_" + role));
-                
+
                 // SecurityContext에 인증 정보 설정
-                UsernamePasswordAuthenticationToken authentication = 
+                UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
-                
+
                 // 사용자 ID를 요청 속성에 추가
                 request.setAttribute("userId", userId);
-                
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 log.debug("테스트용 인증 정보 설정 완료: userId={}, role={}, uri={}", userId, role, requestURI);
-            } 
-            else if (StringUtils.hasText(jwt)) {
+            } else if (StringUtils.hasText(jwt)) {
                 // 실제 토큰 처리
                 try {
                     // 토큰이 블랙리스트에 있는지 확인
                     boolean isBlacklisted = checkIfTokenBlacklisted(jwt);
-                    
+
                     if (!isBlacklisted) {
                         try {
                             Authentication authentication = tokenProvider.getAuthentication(jwt);
                             SecurityContextHolder.getContext().setAuthentication(authentication);
-                            log.debug("Security Context에 인증 정보를 저장했습니다: user={}, uri={}", 
+                            log.debug("Security Context에 인증 정보를 저장했습니다: user={}, uri={}",
                                 authentication.getName(), requestURI);
                         } catch (Exception e) {
                             log.error("인증 정보 추출 실패: {}, uri={}", e.getMessage(), requestURI, e);
@@ -134,12 +133,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     }
                 } catch (RedisConnectionFailureException e) {
                     log.error("Redis 연결 실패, 블랙리스트 확인 생략: {}", e.getMessage());
-                    
+
                     // Redis 연결 실패 시에도 토큰 검증 시도
                     try {
                         Authentication authentication = tokenProvider.getAuthentication(jwt);
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                        log.debug("(Redis 없이) Security Context에 인증 정보를 저장했습니다: user={}, uri={}", 
+                        log.debug("(Redis 없이) Security Context에 인증 정보를 저장했습니다: user={}, uri={}",
                             authentication.getName(), requestURI);
                     } catch (Exception authEx) {
                         log.error("인증 정보 추출 실패: {}, uri={}", authEx.getMessage(), requestURI);
@@ -167,7 +166,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token == null) {
             return false;
         }
-        
+
         try {
             // Redis 확인
             String key = "blacklist:" + token;

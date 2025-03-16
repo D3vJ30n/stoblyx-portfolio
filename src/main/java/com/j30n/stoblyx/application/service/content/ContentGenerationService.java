@@ -1,9 +1,9 @@
 package com.j30n.stoblyx.application.service.content;
 
-import com.j30n.stoblyx.application.port.in.content.ContentGenerationUseCase;
 import com.j30n.stoblyx.adapter.out.persistence.ai.BGMClient;
 import com.j30n.stoblyx.adapter.out.persistence.ai.PexelsClient;
 import com.j30n.stoblyx.adapter.out.persistence.ai.TTSClient;
+import com.j30n.stoblyx.application.port.in.content.ContentGenerationUseCase;
 import com.j30n.stoblyx.domain.enums.ContentStatus;
 import com.j30n.stoblyx.domain.model.MediaResource;
 import com.j30n.stoblyx.domain.model.Quote;
@@ -35,10 +35,10 @@ public class ContentGenerationService implements ContentGenerationUseCase {
             String imagePrompt = generateImagePrompt(quote);
             String thumbnailUrl;
             String videoUrl = null;
-            
+
             // 랜덤하게 이미지 또는 비디오 선택
             boolean useVideo = Math.random() < 0.5; // 50% 확률로 비디오 사용
-            
+
             if (useVideo) {
                 // 비디오 사용
                 videoUrl = pexelsClient.searchVideo(imagePrompt);
@@ -87,7 +87,7 @@ public class ContentGenerationService implements ContentGenerationUseCase {
                 .content(content)
                 .build();
             content.addMediaResource(imageResource);
-            
+
             // 비디오 리소스 추가 (비디오를 사용하는 경우)
             if (useVideo && videoUrl != null) {
                 MediaResource videoResource = MediaResource.builder()
@@ -106,7 +106,7 @@ public class ContentGenerationService implements ContentGenerationUseCase {
                 .content(content)
                 .build();
             content.addMediaResource(bgmResource);
-            
+
             // 자막 리소스 추가
             MediaResource subtitleResource = MediaResource.builder()
                 .type(MediaResource.MediaType.SUBTITLE)

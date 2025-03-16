@@ -1,12 +1,12 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
-import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkStatusResponse;
-import com.j30n.stoblyx.application.service.content.ContentService;
+import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
 import com.j30n.stoblyx.application.service.bookmark.BookmarkService;
-import com.j30n.stoblyx.config.SecurityTestConfig;
+import com.j30n.stoblyx.application.service.content.ContentService;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
+import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.domain.enums.ContentStatus;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
@@ -35,16 +35,16 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ContentController.class)
 @ExtendWith(RestDocumentationExtension.class)
@@ -54,29 +54,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ContentControllerTest {
 
     private MockMvc mockMvc;
-    
+
     @Autowired
     private WebApplicationContext context;
-    
+
     private RequestPostProcessor testUser;
 
     @MockBean
     private ContentService contentService;
-    
+
     @MockBean
     private BookmarkService bookmarkService;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .operationPreprocessors()
-                        .withRequestDefaults(Preprocessors.prettyPrint())
-                        .withResponseDefaults(Preprocessors.prettyPrint()))
-                .apply(springSecurity())
-                .build();
-        
+            .webAppContextSetup(context)
+            .apply(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(Preprocessors.prettyPrint())
+                .withResponseDefaults(Preprocessors.prettyPrint()))
+            .apply(springSecurity())
+            .build();
+
         this.testUser = RestDocsUtils.getTestUser();
     }
 
@@ -86,36 +86,36 @@ class ContentControllerTest {
         // given
         Long quoteId = 1L;
         ContentResponse response = ContentResponse.builder()
-                .id(1L)
-                .subtitles("테스트 콘텐츠 내용")
-                .status(ContentStatus.PUBLISHED)
-                .videoUrl("http://example.com/video.mp4")
-                .thumbnailUrl("http://example.com/thumbnail.jpg")
-                .bgmUrl("http://example.com/audio.mp3")
-                .viewCount(0)
-                .likeCount(0)
-                .shareCount(0)
-                .isLiked(false)
-                .isBookmarked(false)
-                .createdAt(LocalDateTime.now())
-                .modifiedAt(LocalDateTime.now())
-                .build();
-                
+            .id(1L)
+            .subtitles("테스트 콘텐츠 내용")
+            .status(ContentStatus.PUBLISHED)
+            .videoUrl("http://example.com/video.mp4")
+            .thumbnailUrl("http://example.com/thumbnail.jpg")
+            .bgmUrl("http://example.com/audio.mp3")
+            .viewCount(0)
+            .likeCount(0)
+            .shareCount(0)
+            .isLiked(false)
+            .isBookmarked(false)
+            .createdAt(LocalDateTime.now())
+            .modifiedAt(LocalDateTime.now())
+            .build();
+
         when(contentService.generateContent(anyLong())).thenReturn(response);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/contents/quotes/{quoteId}", quoteId)
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andDo(document("content/generate-content",
-                    pathParameters(
-                        parameterWithName("quoteId").description("인용구 ID")
-                    ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.", 
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.id").value(1))
+            .andDo(document("content/generate-content",
+                pathParameters(
+                    parameterWithName("quoteId").description("인용구 ID")
+                ),
+                responseFields(
+                    RestDocsUtils.getCommonResponseFieldsWithData())
+                    .andWithPrefix("data.",
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("콘텐츠 ID"),
                         fieldWithPath("subtitles").type(JsonFieldType.STRING).description("콘텐츠 내용"),
                         fieldWithPath("status").type(JsonFieldType.STRING).description("콘텐츠 상태"),
@@ -132,7 +132,7 @@ class ContentControllerTest {
                         fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
                         fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
                     )
-                ));
+            ));
     }
 
     @Test
@@ -141,33 +141,33 @@ class ContentControllerTest {
         // given
         Long contentId = 1L;
         ContentResponse response = ContentResponse.builder()
-                .id(contentId)
-                .subtitles("테스트 콘텐츠 내용")
-                .status(ContentStatus.PUBLISHED)
-                .videoUrl("http://example.com/video.mp4")
-                .thumbnailUrl("http://example.com/thumbnail.jpg")
-                .bgmUrl("http://example.com/audio.mp3")
-                .viewCount(0)
-                .likeCount(0)
-                .createdAt(LocalDateTime.now())
-                .modifiedAt(LocalDateTime.now())
-                .build();
-                
+            .id(contentId)
+            .subtitles("테스트 콘텐츠 내용")
+            .status(ContentStatus.PUBLISHED)
+            .videoUrl("http://example.com/video.mp4")
+            .thumbnailUrl("http://example.com/thumbnail.jpg")
+            .bgmUrl("http://example.com/audio.mp3")
+            .viewCount(0)
+            .likeCount(0)
+            .createdAt(LocalDateTime.now())
+            .modifiedAt(LocalDateTime.now())
+            .build();
+
         when(contentService.getContent(contentId)).thenReturn(response);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/{contentId}", contentId)
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.id").value(contentId))
-                .andDo(document("content/get-content",
-                    pathParameters(
-                        parameterWithName("contentId").description("콘텐츠 ID")
-                    ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.", 
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.id").value(contentId))
+            .andDo(document("content/get-content",
+                pathParameters(
+                    parameterWithName("contentId").description("콘텐츠 ID")
+                ),
+                responseFields(
+                    RestDocsUtils.getCommonResponseFieldsWithData())
+                    .andWithPrefix("data.",
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("콘텐츠 ID"),
                         fieldWithPath("subtitles").type(JsonFieldType.STRING).description("콘텐츠 내용"),
                         fieldWithPath("status").type(JsonFieldType.STRING).description("콘텐츠 상태"),
@@ -184,7 +184,7 @@ class ContentControllerTest {
                         fieldWithPath("createdAt").type(JsonFieldType.STRING).description("생성 시간"),
                         fieldWithPath("modifiedAt").type(JsonFieldType.STRING).description("수정 시간")
                     )
-                ));
+            ));
     }
 
     @Test
@@ -223,28 +223,28 @@ class ContentControllerTest {
                 .modifiedAt(LocalDateTime.now())
                 .build()
         );
-        
+
         Pageable pageable = PageRequest.of(0, 10);
         PageImpl<ContentResponse> page = new PageImpl<>(contents, pageable, contents.size());
         when(contentService.getTrendingContents(any())).thenReturn(page);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/trending")
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content[0].id").value(1))
-                .andExpect(jsonPath("$.data.content[0].subtitles").value("트렌딩 콘텐츠 내용 1"))
-                .andDo(document("content/get-trending-contents",
-                    queryParameters(
-                        RestDocsUtils.getPageRequestParameters()
-                    ),
-                    RestDocsUtils.relaxedResponseFields(
-                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
-                    )
-                ));
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content[0].id").value(1))
+            .andExpect(jsonPath("$.data.content[0].subtitles").value("트렌딩 콘텐츠 내용 1"))
+            .andDo(document("content/get-trending-contents",
+                queryParameters(
+                    RestDocsUtils.getPageRequestParameters()
+                ),
+                RestDocsUtils.relaxedResponseFields(
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
+                )
+            ));
     }
 
     @Test
@@ -283,28 +283,28 @@ class ContentControllerTest {
                 .modifiedAt(LocalDateTime.now())
                 .build()
         );
-        
+
         Pageable pageable = PageRequest.of(0, 10);
         PageImpl<ContentResponse> page = new PageImpl<>(contents, pageable, contents.size());
         when(contentService.getRecommendedContents(eq(1L), any())).thenReturn(page);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/recommended")
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content[0].id").value(1))
-                .andExpect(jsonPath("$.data.content[0].subtitles").value("추천 콘텐츠 내용 1"))
-                .andDo(document("content/get-recommended-contents",
-                    queryParameters(
-                        RestDocsUtils.getPageRequestParameters()
-                    ),
-                    RestDocsUtils.relaxedResponseFields(
-                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
-                    )
-                ));
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content[0].id").value(1))
+            .andExpect(jsonPath("$.data.content[0].subtitles").value("추천 콘텐츠 내용 1"))
+            .andDo(document("content/get-recommended-contents",
+                queryParameters(
+                    RestDocsUtils.getPageRequestParameters()
+                ),
+                RestDocsUtils.relaxedResponseFields(
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
+                )
+            ));
     }
 
     @Test
@@ -344,31 +344,31 @@ class ContentControllerTest {
                 .modifiedAt(LocalDateTime.now())
                 .build()
         );
-        
+
         Pageable pageable = PageRequest.of(0, 10);
         PageImpl<ContentResponse> page = new PageImpl<>(contents, pageable, contents.size());
         when(contentService.getContentsByBook(eq(bookId), any())).thenReturn(page);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/books/{bookId}", bookId)
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content[0].id").value(1))
-                .andExpect(jsonPath("$.data.content[0].subtitles").value("책 콘텐츠 내용 1"))
-                .andDo(document("content/get-contents-by-book",
-                    pathParameters(
-                        parameterWithName("bookId").description("책 ID")
-                    ),
-                    queryParameters(
-                        RestDocsUtils.getPageRequestParameters()
-                    ),
-                    RestDocsUtils.relaxedResponseFields(
-                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
-                    )
-                ));
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content[0].id").value(1))
+            .andExpect(jsonPath("$.data.content[0].subtitles").value("책 콘텐츠 내용 1"))
+            .andDo(document("content/get-contents-by-book",
+                pathParameters(
+                    parameterWithName("bookId").description("책 ID")
+                ),
+                queryParameters(
+                    RestDocsUtils.getPageRequestParameters()
+                ),
+                RestDocsUtils.relaxedResponseFields(
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
+                )
+            ));
     }
 
     @Test
@@ -408,32 +408,32 @@ class ContentControllerTest {
                 .modifiedAt(LocalDateTime.now())
                 .build()
         );
-        
+
         Pageable pageable = PageRequest.of(0, 10);
         PageImpl<ContentResponse> page = new PageImpl<>(contents, pageable, contents.size());
         when(contentService.searchContents(eq(keyword), any())).thenReturn(page);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/search")
-                    .param("keyword", keyword)
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content[0].id").value(1))
-                .andExpect(jsonPath("$.data.content[0].subtitles").value("검색 콘텐츠 내용 1"))
-                .andDo(document("content/search-contents",
-                    queryParameters(
-                        parameterWithName("keyword").description("검색어"),
-                        parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
-                        parameterWithName("size").description("페이지 크기").optional(),
-                        parameterWithName("sort").description("정렬 방식 (예: createdAt,desc)").optional()
-                    ),
-                    RestDocsUtils.relaxedResponseFields(
-                        fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
-                        fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
-                        fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
-                    )
-                ));
+                .param("keyword", keyword)
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content[0].id").value(1))
+            .andExpect(jsonPath("$.data.content[0].subtitles").value("검색 콘텐츠 내용 1"))
+            .andDo(document("content/search-contents",
+                queryParameters(
+                    parameterWithName("keyword").description("검색어"),
+                    parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
+                    parameterWithName("size").description("페이지 크기").optional(),
+                    parameterWithName("sort").description("정렬 방식 (예: createdAt,desc)").optional()
+                ),
+                RestDocsUtils.relaxedResponseFields(
+                    fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
+                    fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
+                    fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
+                )
+            ));
     }
 
     @Test
@@ -442,24 +442,24 @@ class ContentControllerTest {
         // given
         Long contentId = 1L;
         BookmarkStatusResponse response = new BookmarkStatusResponse(true);
-        
+
         when(bookmarkService.checkBookmarkStatus(anyLong(), eq(contentId))).thenReturn(response);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/contents/{contentId}/bookmark/status", contentId)
-                    .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.isBookmarked").value(true))
-                .andDo(document("content/check-bookmark-status",
-                    pathParameters(
-                        parameterWithName("contentId").description("콘텐츠 ID")
-                    ),
-                    responseFields(
-                        RestDocsUtils.getCommonResponseFieldsWithData())
-                    .andWithPrefix("data.", 
+                .with(testUser))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.isBookmarked").value(true))
+            .andDo(document("content/check-bookmark-status",
+                pathParameters(
+                    parameterWithName("contentId").description("콘텐츠 ID")
+                ),
+                responseFields(
+                    RestDocsUtils.getCommonResponseFieldsWithData())
+                    .andWithPrefix("data.",
                         fieldWithPath("isBookmarked").type(JsonFieldType.BOOLEAN).description("북마크 여부")
                     )
-                ));
+            ));
     }
 } 

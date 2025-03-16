@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.springframework.util.StreamUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +32,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper {
      */
     public XssRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
-        
+
         // 요청 본문 읽기
         InputStream inputStream = request.getInputStream();
         this.rawData = StreamUtils.copyToByteArray(inputStream);
@@ -60,12 +62,12 @@ public class XssRequestWrapper extends HttpServletRequestWrapper {
         if (values == null) {
             return new String[0];
         }
-        
+
         String[] encodedValues = new String[values.length];
         for (int i = 0; i < values.length; i++) {
             encodedValues[i] = XssUtils.escape(values[i]);
         }
-        
+
         return encodedValues;
     }
 
@@ -93,12 +95,12 @@ public class XssRequestWrapper extends HttpServletRequestWrapper {
         if (headerValues == null) {
             return Collections.emptyEnumeration();
         }
-        
+
         List<String> encodedValues = new ArrayList<>();
         while (headerValues.hasMoreElements()) {
             encodedValues.add(XssUtils.escape(headerValues.nextElement()));
         }
-        
+
         return Collections.enumeration(encodedValues);
     }
 
@@ -111,7 +113,7 @@ public class XssRequestWrapper extends HttpServletRequestWrapper {
     @Override
     public ServletInputStream getInputStream() throws IOException {
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.rawData);
-        
+
         return new ServletInputStream() {
             @Override
             public boolean isFinished() {

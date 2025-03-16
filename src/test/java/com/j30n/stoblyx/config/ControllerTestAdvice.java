@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -38,7 +38,7 @@ public class ControllerTestAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
             .body(new ApiResponse<>("ERROR", e.getMessage(), null));
     }
-    
+
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleNoResourceFoundException(NoResourceFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
@@ -50,16 +50,16 @@ public class ControllerTestAdvice {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
             .body(new ApiResponse<>("ERROR", "접근 권한이 없습니다.", null));
     }
-    
+
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<?>> handleBadCredentialsException(BadCredentialsException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(new ApiResponse<>("ERROR", "아이디 또는 비밀번호가 잘못되었습니다.", null));
     }
-    
+
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     public ResponseEntity<ApiResponse<?>> handleAuthenticationCredentialsNotFoundException(
-            AuthenticationCredentialsNotFoundException e) {
+        AuthenticationCredentialsNotFoundException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             .body(new ApiResponse<>("ERROR", "인증이 필요한 요청입니다.", null));
     }

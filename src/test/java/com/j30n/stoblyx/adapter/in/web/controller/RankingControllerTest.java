@@ -41,9 +41,11 @@ import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RankingController.class)
 @ExtendWith(RestDocumentationExtension.class)
@@ -54,13 +56,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RankingControllerTest {
 
     private MockMvc mockMvc;
-    
+
     @Autowired
     private WebApplicationContext context;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     private RequestPostProcessor testUser;
 
     @MockBean
@@ -69,14 +71,14 @@ class RankingControllerTest {
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .operationPreprocessors()
-                        .withRequestDefaults(Preprocessors.prettyPrint())
-                        .withResponseDefaults(Preprocessors.prettyPrint()))
-                .apply(springSecurity())
-                .build();
-        
+            .webAppContextSetup(context)
+            .apply(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(Preprocessors.prettyPrint())
+                .withResponseDefaults(Preprocessors.prettyPrint()))
+            .apply(springSecurity())
+            .build();
+
         this.testUser = RestDocsUtils.getTestUser();
     }
 
@@ -86,25 +88,25 @@ class RankingControllerTest {
         // given
         RankingUserScore user1 = createRankingUser(1L, 500, RankType.PLATINUM);
         RankingUserScore user2 = createRankingUser(2L, 400, RankType.GOLD);
-        
+
         List<RankingUserScore> topUsers = List.of(user1, user2);
         when(rankingUserScoreUseCase.getTopUsers(anyInt())).thenReturn(topUsers);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/ranking/top")
                 .param("limit", "10")
                 .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data[0].userId").exists())
-                .andExpect(jsonPath("$.data[0].score").exists())
-                .andDo(document("ranking/top-users",
-                    queryParameters(
-                        parameterWithName("limit").description("조회할 상위 사용자 수")
-                    ),
-                    responseFields(RestDocsUtils.getTopRankingResponseFields())
-                ));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data").isArray())
+            .andExpect(jsonPath("$.data[0].userId").exists())
+            .andExpect(jsonPath("$.data[0].score").exists())
+            .andDo(document("ranking/top-users",
+                queryParameters(
+                    parameterWithName("limit").description("조회할 상위 사용자 수")
+                ),
+                responseFields(RestDocsUtils.getTopRankingResponseFields())
+            ));
     }
 
     @Test
@@ -113,31 +115,31 @@ class RankingControllerTest {
         // given
         RankingUserScore user1 = createRankingUser(1L, 500, RankType.GOLD);
         RankingUserScore user2 = createRankingUser(2L, 400, RankType.GOLD);
-        
+
         List<RankingUserScore> goldUsers = List.of(user1, user2);
         when(rankingUserScoreUseCase.getUsersByRankType(any(RankType.class))).thenReturn(goldUsers);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/ranking/users")
                 .param("rankType", "GOLD")
                 .param("page", "0")
                 .param("size", "10")
                 .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content").isArray())
-                .andExpect(jsonPath("$.data.content[0].userId").exists())
-                .andExpect(jsonPath("$.data.content[0].score").exists())
-                .andDo(document("ranking/users-by-rank-type",
-                    queryParameters(
-                        parameterWithName("rankType").description("랭크 타입 (BRONZE, SILVER, GOLD, PLATINUM, DIAMOND)"),
-                        parameterWithName("page").description("페이지 번호 (0부터 시작)"),
-                        parameterWithName("size").description("페이지 크기")
-                    ),
-                    responseFields(RestDocsUtils.getRankingPageResponseFields())
-                ));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content").isArray())
+            .andExpect(jsonPath("$.data.content[0].userId").exists())
+            .andExpect(jsonPath("$.data.content[0].score").exists())
+            .andDo(document("ranking/users-by-rank-type",
+                queryParameters(
+                    parameterWithName("rankType").description("랭크 타입 (BRONZE, SILVER, GOLD, PLATINUM, DIAMOND)"),
+                    parameterWithName("page").description("페이지 번호 (0부터 시작)"),
+                    parameterWithName("size").description("페이지 크기")
+                ),
+                responseFields(RestDocsUtils.getRankingPageResponseFields())
+            ));
     }
-    
+
     @Test
     @DisplayName("랭킹 통계 조회 API가 정상적으로 동작해야 한다")
     void getRankingStatistics() throws Exception {
@@ -148,47 +150,47 @@ class RankingControllerTest {
         rankDistribution.put("GOLD", 20L);
         rankDistribution.put("PLATINUM", 10L);
         rankDistribution.put("DIAMOND", 5L);
-        
+
         when(rankingUserScoreUseCase.getUsersByRankType(any(RankType.class))).thenReturn(List.of());
         when(rankingUserScoreUseCase.getTopUsers(anyInt())).thenReturn(List.of());
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/ranking/statistics")
                 .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data").exists())
-                .andDo(document("ranking/statistics",
-                    responseFields(RestDocsUtils.getRankingStatisticsResponseFields())
-                ));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data").exists())
+            .andDo(document("ranking/statistics",
+                responseFields(RestDocsUtils.getRankingStatisticsResponseFields())
+            ));
     }
-    
+
     @Test
     @DisplayName("활동 점수 업데이트 API가 정상적으로 동작해야 한다")
     void updateActivityScore() throws Exception {
         // given
         RankingActivityRequest request = new RankingActivityRequest("CONTENT_CREATE", 10);
         RankingUserScore updatedScore = createRankingUser(1L, 510, RankType.PLATINUM);
-        
+
         when(rankingUserScoreUseCase.updateUserScore(anyLong(), anyInt())).thenReturn(updatedScore);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/ranking/activity")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data").exists())
-                .andDo(document("ranking/activity",
-                    requestFields(
-                        fieldWithPath("activityType").type(JsonFieldType.STRING).description("활동 유형 (CONTENT_CREATE, COMMENT_CREATE, LIKE, SHARE 등)"),
-                        fieldWithPath("score").type(JsonFieldType.NUMBER).description("활동 점수")
-                    ),
-                    responseFields(RestDocsUtils.getRankingActivityResponseFields())
-                ));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data").exists())
+            .andDo(document("ranking/activity",
+                requestFields(
+                    fieldWithPath("activityType").type(JsonFieldType.STRING).description("활동 유형 (CONTENT_CREATE, COMMENT_CREATE, LIKE, SHARE 등)"),
+                    fieldWithPath("score").type(JsonFieldType.NUMBER).description("활동 점수")
+                ),
+                responseFields(RestDocsUtils.getRankingActivityResponseFields())
+            ));
     }
-    
+
     /**
      * 테스트용 RankingUserScore 생성 헬퍼 메서드
      */

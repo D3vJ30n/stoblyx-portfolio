@@ -7,13 +7,13 @@ import com.j30n.stoblyx.application.port.in.search.SearchUseCase;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 검색 관련 API를 처리하는 컨트롤러
@@ -24,9 +24,8 @@ import org.slf4j.LoggerFactory;
 public class SearchController {
     private static final String RESULT_SUCCESS = "SUCCESS";
     private static final String RESULT_ERROR = "ERROR";
-    
-    private final SearchUseCase searchUseCase;
     private static final Logger log = LoggerFactory.getLogger(SearchController.class);
+    private final SearchUseCase searchUseCase;
 
     /**
      * 통합 검색 API
@@ -48,7 +47,7 @@ public class SearchController {
                     new ApiResponse<>(RESULT_ERROR, "검색어를 입력해주세요.", null)
                 );
             }
-            
+
             return ResponseEntity.ok(
                 new ApiResponse<>(RESULT_SUCCESS, "검색 결과입니다.",
                     searchUseCase.search(request, pageable))
@@ -60,7 +59,7 @@ public class SearchController {
             );
         }
     }
-    
+
     /**
      * 인기 검색어 조회 API
      *
@@ -86,7 +85,7 @@ public class SearchController {
             );
         }
     }
-    
+
     /**
      * 사용자의 검색 기록을 조회하는 API
      *
@@ -102,7 +101,7 @@ public class SearchController {
         try {
             Page<SearchHistoryResponse> searchHistories = searchUseCase.getUserSearchHistory(userId, pageable)
                 .map(SearchHistoryResponse::fromEntity);
-                
+
             return ResponseEntity.ok(
                 new ApiResponse<>(RESULT_SUCCESS, "검색 기록 조회 결과입니다.", searchHistories)
             );
@@ -112,7 +111,7 @@ public class SearchController {
             );
         }
     }
-    
+
     /**
      * 검색 기록을 삭제하는 API
      *
@@ -134,7 +133,7 @@ public class SearchController {
             );
         }
     }
-    
+
     /**
      * 사용자의 모든 검색 기록을 삭제하는 API
      *

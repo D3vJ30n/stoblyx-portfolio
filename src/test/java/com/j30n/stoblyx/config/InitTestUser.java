@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class InitTestUser {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Bean
     public CommandLineRunner initTestData() {
@@ -36,7 +34,7 @@ public class InitTestUser {
             User testUser = User.builder()
                     .username("testuser")
                     .email("testuser@example.com")
-                    .password(passwordEncoder.encode("Password123!"))
+                    .password("Password123!")
                     .nickname("테스트 사용자")
                     .role(UserRole.USER)
                     .build();
@@ -52,7 +50,7 @@ public class InitTestUser {
             User testAdmin = User.builder()
                     .username("testadmin")
                     .email("testadmin@example.com")
-                    .password(passwordEncoder.encode("Password123!"))
+                    .password("Password123!")
                     .nickname("테스트 관리자")
                     .role(UserRole.ADMIN)
                     .build();
@@ -68,7 +66,7 @@ public class InitTestUser {
             User k6TestUser = User.builder()
                     .username("k6testuser")
                     .email("k6test@example.com")
-                    .password(passwordEncoder.encode("Test1234!"))
+                    .password("Password123!")
                     .nickname("K6 테스트 사용자")
                     .role(UserRole.USER)
                     .build();

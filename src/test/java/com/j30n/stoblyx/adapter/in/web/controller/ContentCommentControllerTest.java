@@ -5,9 +5,9 @@ import com.j30n.stoblyx.adapter.in.web.dto.content.ContentCommentCreateRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentCommentResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentCommentUpdateRequest;
 import com.j30n.stoblyx.application.port.in.content.ContentCommentUseCase;
-import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.ContextTestConfig;
 import com.j30n.stoblyx.config.MonitoringTestConfig;
+import com.j30n.stoblyx.config.SecurityTestConfig;
 import com.j30n.stoblyx.config.XssTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
@@ -58,13 +58,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ContentCommentControllerTest {
 
     private MockMvc mockMvc;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     @Autowired
     private WebApplicationContext context;
-    
+
     private RequestPostProcessor testUser;
 
     @MockBean
@@ -75,19 +75,19 @@ class ContentCommentControllerTest {
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .operationPreprocessors()
-                        .withRequestDefaults(Preprocessors.prettyPrint())
-                        .withResponseDefaults(Preprocessors.prettyPrint()))
-                .apply(springSecurity())
-                .build();
-        
+            .webAppContextSetup(context)
+            .apply(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(Preprocessors.prettyPrint())
+                .withResponseDefaults(Preprocessors.prettyPrint()))
+            .apply(springSecurity())
+            .build();
+
         this.testUser = request -> {
             request.setAttribute("userId", 1L);
             return RestDocsUtils.getTestUser().postProcessRequest(request);
         };
-        
+
         // ContentCommentResponse.UserInfo 객체 생성
         ContentCommentResponse.UserInfo userInfo = new ContentCommentResponse.UserInfo(
             1L, "testuser", "테스트유저", "http://example.com/profile.jpg");
@@ -129,7 +129,7 @@ class ContentCommentControllerTest {
                 ),
                 responseFields(
                     RestDocsUtils.getCommonResponseFieldsWithData()
-                ).andWithPrefix("data.", 
+                ).andWithPrefix("data.",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                     fieldWithPath("commentText").type(JsonFieldType.STRING).description("댓글 내용"),
                     fieldWithPath("user").type(JsonFieldType.OBJECT).description("사용자 정보"),
@@ -177,7 +177,7 @@ class ContentCommentControllerTest {
                 ),
                 responseFields(
                     RestDocsUtils.getCommonResponseFieldsWithData()
-                ).andWithPrefix("data.", 
+                ).andWithPrefix("data.",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                     fieldWithPath("commentText").type(JsonFieldType.STRING).description("댓글 내용"),
                     fieldWithPath("user").type(JsonFieldType.OBJECT).description("사용자 정보"),
@@ -257,7 +257,7 @@ class ContentCommentControllerTest {
                     fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.content").type(JsonFieldType.ARRAY).description("댓글 목록")
-                ).andWithPrefix("data.content[].", 
+                ).andWithPrefix("data.content[].",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                     fieldWithPath("commentText").type(JsonFieldType.STRING).description("댓글 내용"),
                     fieldWithPath("user").type(JsonFieldType.OBJECT).description("사용자 정보"),
@@ -302,7 +302,7 @@ class ContentCommentControllerTest {
                     fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
                     fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
                     fieldWithPath("data").type(JsonFieldType.ARRAY).description("응답 데이터")
-                ).andWithPrefix("data[].", 
+                ).andWithPrefix("data[].",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                     fieldWithPath("commentText").type(JsonFieldType.STRING).description("댓글 내용"),
                     fieldWithPath("user").type(JsonFieldType.OBJECT).description("사용자 정보"),
@@ -354,7 +354,7 @@ class ContentCommentControllerTest {
                     fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
                     fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
                     fieldWithPath("data.content").type(JsonFieldType.ARRAY).description("댓글 목록")
-                ).andWithPrefix("data.content[].", 
+                ).andWithPrefix("data.content[].",
                     fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                     fieldWithPath("commentText").type(JsonFieldType.STRING).description("댓글 내용"),
                     fieldWithPath("user").type(JsonFieldType.OBJECT).description("사용자 정보"),

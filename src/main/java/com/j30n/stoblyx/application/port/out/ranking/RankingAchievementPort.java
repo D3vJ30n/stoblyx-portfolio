@@ -1,7 +1,6 @@
 package com.j30n.stoblyx.application.port.out.ranking;
 
 import com.j30n.stoblyx.domain.model.RankingAchievement;
-import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,7 +46,7 @@ public interface RankingAchievementPort {
     /**
      * 사용자 ID와 배지 ID로 업적 존재 여부 확인
      *
-     * @param userId 사용자 ID
+     * @param userId  사용자 ID
      * @param badgeId 배지 ID
      * @return 존재 여부
      */

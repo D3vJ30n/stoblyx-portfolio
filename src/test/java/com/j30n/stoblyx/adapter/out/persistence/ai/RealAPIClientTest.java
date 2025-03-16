@@ -52,8 +52,9 @@ class RealAPIClientTest {
         assertNotNull(imageUrl);
         System.out.println("실제 이미지 URL: " + imageUrl);
         // URL 형식 검증
-        assertThat(imageUrl).contains("https://");
-        assertThat(imageUrl).contains("pexels.com");
+        assertThat(imageUrl)
+            .contains("https://")
+            .contains("pexels.com");
     }
 
     @Test
@@ -86,7 +87,8 @@ class RealAPIClientTest {
         assertNotNull(videoUrl);
         System.out.println("실제 비디오 URL: " + videoUrl);
         // URL 형식 검증
-        assertThat(videoUrl).contains("https://");
-        assertThat(videoUrl).contains("pexels.com");
+        assertThat(videoUrl)
+            .contains("https://")
+            .contains("pexels.com");
     }
 } 

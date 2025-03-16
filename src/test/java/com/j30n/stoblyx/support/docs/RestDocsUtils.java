@@ -1,5 +1,6 @@
 package com.j30n.stoblyx.support.docs;
 
+import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
@@ -7,15 +8,12 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
-import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 
 /**
@@ -27,17 +25,17 @@ public class RestDocsUtils {
      * API 공통 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getCommonResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
         };
     }
-    
+
     /**
      * API 공통 응답에 데이터 필드가 있는 경우 사용합니다.
      */
     public static FieldDescriptor[] getCommonResponseFieldsWithData() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터")
@@ -48,7 +46,7 @@ public class RestDocsUtils {
      * API 페이징 응답에 사용되는 공통 필드를 정의합니다.
      */
     public static FieldDescriptor[] getPageResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
@@ -73,16 +71,16 @@ public class RestDocsUtils {
             fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지 결과 존재 여부")
         };
     }
-    
+
     /**
      * 북마크 목록 페이지 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getBookmarkPageResponseFields() {
         List<FieldDescriptor> fieldDescriptors = new ArrayList<>();
-        
+
         // 기본 응답 필드 추가
         Collections.addAll(fieldDescriptors, getCommonResponseFieldsWithData());
-        
+
         // 페이지네이션 관련 필드 추가
         fieldDescriptors.add(fieldWithPath("data.content").type(JsonFieldType.ARRAY).description("북마크 목록"));
         fieldDescriptors.add(fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"));
@@ -106,7 +104,7 @@ public class RestDocsUtils {
         fieldDescriptors.add(fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"));
         fieldDescriptors.add(fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 항목 수"));
         fieldDescriptors.add(fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지 결과 존재 여부"));
-        
+
         // 북마크 콘텐츠 항목 필드 추가
         fieldDescriptors.add(fieldWithPath("data.content[].id").type(JsonFieldType.NUMBER).description("북마크 ID"));
         fieldDescriptors.add(fieldWithPath("data.content[].contentId").type(JsonFieldType.NUMBER).description("콘텐츠 ID"));
@@ -114,7 +112,7 @@ public class RestDocsUtils {
         fieldDescriptors.add(fieldWithPath("data.content[].description").type(JsonFieldType.STRING).description("콘텐츠 설명"));
         fieldDescriptors.add(fieldWithPath("data.content[].thumbnailUrl").type(JsonFieldType.STRING).description("썸네일 URL"));
         fieldDescriptors.add(fieldWithPath("data.content[].createdAt").type(JsonFieldType.STRING).description("북마크 생성 시간"));
-        
+
         return fieldDescriptors.toArray(new FieldDescriptor[0]);
     }
 
@@ -122,13 +120,13 @@ public class RestDocsUtils {
      * 페이지 요청 파라미터를 정의합니다.
      */
     public static ParameterDescriptor[] getPageRequestParameters() {
-        return new ParameterDescriptor[] {
+        return new ParameterDescriptor[]{
             parameterWithName("page").description("페이지 번호 (0부터 시작)").optional(),
             parameterWithName("size").description("페이지 크기").optional(),
             parameterWithName("sort").description("정렬 방식 (예: createdAt,desc)").optional()
         };
     }
-    
+
     /**
      * 공통 응답 필드를 위한 스니펫 생성
      * result, message 필드 포함
@@ -143,12 +141,12 @@ public class RestDocsUtils {
      */
     public static ResponseFieldsSnippet getResponseFieldsSnippetWithData() {
         return responseFields(
-                fieldWithPath("result").type(JsonFieldType.STRING).description("처리 결과 (SUCCESS/ERROR)"),
-                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                subsectionWithPath("data").description("응답 데이터")
+            fieldWithPath("result").type(JsonFieldType.STRING).description("처리 결과 (SUCCESS/ERROR)"),
+            fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+            subsectionWithPath("data").description("응답 데이터")
         );
     }
-    
+
     /**
      * 유연한 응답 필드 스니펫 생성
      * 문서화되지 않은 필드가 있어도 오류가 발생하지 않음
@@ -156,7 +154,7 @@ public class RestDocsUtils {
     public static ResponseFieldsSnippet relaxedResponseFields(FieldDescriptor... descriptors) {
         return org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields(descriptors);
     }
-    
+
     /**
      * 테스트에 사용할 인증된 사용자를 생성합니다.
      */
@@ -168,10 +166,10 @@ public class RestDocsUtils {
             .role("USER")
             .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")))
             .build();
-        
+
         return SecurityMockMvcRequestPostProcessors.user(userPrincipal);
     }
-    
+
     /**
      * 테스트에 사용할 인증된 관리자를 생성합니다.
      */
@@ -183,15 +181,15 @@ public class RestDocsUtils {
             .role("ADMIN")
             .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")))
             .build();
-        
+
         return SecurityMockMvcRequestPostProcessors.user(adminPrincipal);
     }
-    
+
     /**
      * data가 null인 응답에 대한 필드 정의
      */
     public static FieldDescriptor[] getCommonResponseFieldsWithNullData() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.NULL).description("응답 데이터 (없음)")
@@ -202,7 +200,7 @@ public class RestDocsUtils {
      * 기본 헬스 체크 API 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getBasicHealthCheckResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
@@ -210,12 +208,12 @@ public class RestDocsUtils {
             fieldWithPath("data.timestamp").type(JsonFieldType.NUMBER).description("타임스탬프")
         };
     }
-    
+
     /**
      * 상세 헬스 체크 API 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getDetailedHealthCheckResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("응답 데이터"),
@@ -226,7 +224,7 @@ public class RestDocsUtils {
             subsectionWithPath("data.details.diskSpace").type(JsonFieldType.OBJECT).description("디스크 공간 상태 정보").optional()
         };
     }
-    
+
     /**
      * 상세 헬스 체크 API의 유연한 응답 필드를 위한 스니펫을 생성합니다.
      * 다양한 컴포넌트와 상세 정보가 동적으로 포함될 수 있어 유연한 문서화가 필요합니다.
@@ -246,7 +244,7 @@ public class RestDocsUtils {
      * 상위 사용자 랭킹 목록 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getTopRankingResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.ARRAY).description("상위 사용자 랭킹 목록"),
@@ -260,16 +258,16 @@ public class RestDocsUtils {
             fieldWithPath("data[].accountSuspended").type(JsonFieldType.BOOLEAN).description("계정 정지 여부")
         };
     }
-    
+
     /**
      * 랭크 타입별 사용자 목록 페이지 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getRankingPageResponseFields() {
         List<FieldDescriptor> fieldDescriptors = new ArrayList<>();
-        
+
         // 기본 응답 필드 추가
         Collections.addAll(fieldDescriptors, getCommonResponseFieldsWithData());
-        
+
         // 페이지네이션 관련 필드 추가
         fieldDescriptors.add(fieldWithPath("data.content").type(JsonFieldType.ARRAY).description("랭크 타입별 사용자 목록"));
         fieldDescriptors.add(fieldWithPath("data.content[].userId").type(JsonFieldType.NUMBER).description("사용자 ID"));
@@ -280,7 +278,7 @@ public class RestDocsUtils {
         fieldDescriptors.add(fieldWithPath("data.content[].suspiciousActivity").type(JsonFieldType.BOOLEAN).description("의심스러운 활동 여부"));
         fieldDescriptors.add(fieldWithPath("data.content[].reportCount").type(JsonFieldType.NUMBER).description("신고 횟수"));
         fieldDescriptors.add(fieldWithPath("data.content[].accountSuspended").type(JsonFieldType.BOOLEAN).description("계정 정지 여부"));
-        
+
         // 페이징 관련 필드 추가
         fieldDescriptors.add(fieldWithPath("data.pageable.pageNumber").type(JsonFieldType.NUMBER).description("페이지 번호"));
         fieldDescriptors.add(fieldWithPath("data.pageable.pageSize").type(JsonFieldType.NUMBER).description("페이지 크기"));
@@ -303,15 +301,15 @@ public class RestDocsUtils {
         fieldDescriptors.add(fieldWithPath("data.first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"));
         fieldDescriptors.add(fieldWithPath("data.numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 항목 수"));
         fieldDescriptors.add(fieldWithPath("data.empty").type(JsonFieldType.BOOLEAN).description("페이지 결과 존재 여부"));
-        
+
         return fieldDescriptors.toArray(new FieldDescriptor[0]);
     }
-    
+
     /**
      * 랭킹 통계 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getRankingStatisticsResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("랭킹 통계 정보"),
@@ -324,12 +322,12 @@ public class RestDocsUtils {
             fieldWithPath("data.averageScore").type(JsonFieldType.NUMBER).description("전체 사용자의 평균 점수")
         };
     }
-    
+
     /**
      * 랭킹 활동 점수 업데이트 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getRankingActivityResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("업데이트된 사용자 랭킹 정보"),
@@ -343,12 +341,12 @@ public class RestDocsUtils {
             fieldWithPath("data.accountSuspended").type(JsonFieldType.BOOLEAN).description("계정 정지 여부")
         };
     }
-    
+
     /**
      * 시스템 설정 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getSystemSettingResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.OBJECT).description("시스템 설정 정보"),
@@ -369,7 +367,7 @@ public class RestDocsUtils {
      * 시스템 설정 목록 응답 필드를 정의합니다.
      */
     public static FieldDescriptor[] getSystemSettingListResponseFields() {
-        return new FieldDescriptor[] {
+        return new FieldDescriptor[]{
             fieldWithPath("result").type(JsonFieldType.STRING).description("결과 상태 (SUCCESS/ERROR)"),
             fieldWithPath("message").type(JsonFieldType.STRING).description("결과 메시지"),
             fieldWithPath("data").type(JsonFieldType.ARRAY).description("시스템 설정 목록"),

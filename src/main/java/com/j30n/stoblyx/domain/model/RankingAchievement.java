@@ -2,10 +2,10 @@ package com.j30n.stoblyx.domain.model;
 
 import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -24,22 +24,22 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class RankingAchievement extends BaseEntity {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "badge_id", nullable = false)
     private RankingBadge badge;
-    
+
     @Column(name = "achieved_at", nullable = false)
     private LocalDateTime achievedAt;
-    
+
     /**
      * 업적 달성 시간을 업데이트합니다.
      */

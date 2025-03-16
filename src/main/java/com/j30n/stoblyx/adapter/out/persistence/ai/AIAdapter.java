@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /**
  * AI 어댑터
@@ -39,37 +40,57 @@ public class AIAdapter implements AIPort {
     @Override
     public String searchImage(String query) {
         log.info("이미지 검색 요청: {}", query);
+        return executeWithFallback(
+            () -> pexelsClient.searchImage(query),
+            "이미지 검색",
+            query,
+            FALLBACK_IMAGE
+        );
+    }
 
+    /**
+     * 공통 비동기 실행 및 예외 처리 로직
+     * @param supplier 실행할 작업
+     * @param operationName 작업 이름 (로깅용)
+     * @param query 검색 쿼리 (로깅용)
+     * @param fallbackValue 실패 시 반환할 폴백 값
+     * @return 작업 결과 또는 폴백 값
+     */
+    private String executeWithFallback(
+            Supplier<String> supplier,
+            String operationName,
+            String query,
+            String fallbackValue) {
         try {
             return CompletableFuture.supplyAsync(() -> {
                 try {
-                    return pexelsClient.searchImage(query);
+                    return supplier.get();
                 } catch (Exception e) {
                     // 테스트 관련 예외는 디버그 레벨로 로깅
                     if (e.getMessage() != null && (e.getMessage().contains("[테스트용]") || e.getMessage().contains("API 오류"))) {
-                        log.debug("이미지 검색 중 오류 발생 (테스트용): {}", e.getMessage());
+                        log.debug("{} 중 오류 발생 (테스트용): {}", operationName, e.getMessage());
                     } else {
-                        log.error("이미지 검색 중 오류 발생: {}", e.getMessage());
+                        log.error("{} 중 오류 발생: {}", operationName, e.getMessage());
                     }
                     throw e;
                 }
             }).get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            log.error("이미지 검색 시간 초과: {}", query);
-            return FALLBACK_IMAGE;
+            log.error("{} 시간 초과: {}", operationName, query);
+            return fallbackValue;
         } catch (InterruptedException e) {
             // 인터럽트 상태 복원
             Thread.currentThread().interrupt();
-            log.error("이미지 검색 중단: {}", e.getMessage());
-            return FALLBACK_IMAGE;
+            log.error("{} 중단: {}", operationName, e.getMessage());
+            return fallbackValue;
         } catch (Exception e) {
             // 테스트 관련 예외는 디버그 레벨로 로깅
             if (e.getMessage() != null && (e.getMessage().contains("[테스트용]") || e.getMessage().contains("API 오류") || e.getMessage().contains("타임아웃 발생"))) {
-                log.debug("이미지 검색 실패 (테스트용): {}", e);
+                log.debug("{} 실패 (테스트용): {}", operationName, e);
             } else {
-                log.error("이미지 검색 실패: {}", e);
+                log.error("{} 실패: {}", operationName, e);
             }
-            return FALLBACK_IMAGE;
+            return fallbackValue;
         }
     }
 
@@ -80,38 +101,12 @@ public class AIAdapter implements AIPort {
     @Override
     public String searchVideo(String query) {
         log.info("비디오 검색 요청: {}", query);
-
-        try {
-            return CompletableFuture.supplyAsync(() -> {
-                try {
-                    return pexelsClient.searchVideo(query);
-                } catch (Exception e) {
-                    // 테스트 관련 예외는 디버그 레벨로 로깅
-                    if (e.getMessage() != null && (e.getMessage().contains("[테스트용]") || e.getMessage().contains("API 오류"))) {
-                        log.debug("비디오 검색 중 오류 발생 (테스트용): {}", e.getMessage());
-                    } else {
-                        log.error("비디오 검색 중 오류 발생: {}", e.getMessage());
-                    }
-                    throw e;
-                }
-            }).get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            log.error("비디오 검색 시간 초과: {}", query);
-            return FALLBACK_VIDEO;
-        } catch (InterruptedException e) {
-            // 인터럽트 상태 복원
-            Thread.currentThread().interrupt();
-            log.error("비디오 검색 중단: {}", e.getMessage());
-            return FALLBACK_VIDEO;
-        } catch (Exception e) {
-            // 테스트 관련 예외는 디버그 레벨로 로깅
-            if (e.getMessage() != null && (e.getMessage().contains("[테스트용]") || e.getMessage().contains("API 오류") || e.getMessage().contains("타임아웃 발생"))) {
-                log.debug("비디오 검색 실패 (테스트용): {}", e);
-            } else {
-                log.error("비디오 검색 실패: {}", e);
-            }
-            return FALLBACK_VIDEO;
-        }
+        return executeWithFallback(
+            () -> pexelsClient.searchVideo(query),
+            "비디오 검색",
+            query,
+            FALLBACK_VIDEO
+        );
     }
 
     /**
@@ -121,35 +116,12 @@ public class AIAdapter implements AIPort {
     @Override
     public String generateSpeech(String text) {
         log.info("음성 생성 요청: {}", text.substring(0, Math.min(50, text.length())));
-
-        try {
-            return CompletableFuture.supplyAsync(() -> {
-                try {
-                    return ttsClient.generateSpeech(text);
-                } catch (Exception e) {
-                    // 테스트 관련 예외는 디버그 레벨로 로깅
-                    if (e.getMessage() != null && (e.getMessage().contains("[테스트용]") || e.getMessage().contains("TTS 오류"))) {
-                        log.debug("음성 생성 중 오류 발생 (테스트용): {}", e.getMessage());
-                    } else {
-                        log.error("음성 생성 중 오류 발생: {}", e.getMessage());
-                    }
-                    throw e;
-                }
-            }).get(ASYNC_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            // 인터럽트 상태 복원
-            Thread.currentThread().interrupt();
-            log.error("음성 생성 중단: {}", e.getMessage());
-            return FALLBACK_AUDIO;
-        } catch (Exception e) {
-            // 테스트 관련 예외는 디버그 레벨로 로깅
-            if (e.getMessage() != null && (e.getMessage().contains("[테스트용]") || e.getMessage().contains("TTS 오류"))) {
-                log.debug("음성 생성 실패 (테스트용): {}", e);
-            } else {
-                log.error("음성 생성 실패: {}", e);
-            }
-            return FALLBACK_AUDIO;
-        }
+        return executeWithFallback(
+            () -> ttsClient.generateSpeech(text),
+            "음성 생성",
+            text,
+            FALLBACK_AUDIO
+        );
     }
 
     /**
@@ -159,7 +131,6 @@ public class AIAdapter implements AIPort {
     @Override
     public String selectBGM() {
         log.info("기본 BGM 선택 요청");
-
         try {
             return bgmClient.selectBGM();
         } catch (Exception e) {
@@ -179,7 +150,6 @@ public class AIAdapter implements AIPort {
     @Override
     public String selectBGMByText(String text) {
         log.info("텍스트 기반 BGM 선택 요청: {}", text.substring(0, Math.min(50, text.length())));
-
         try {
             return bgmClient.selectBGMByText(text);
         } catch (Exception e) {

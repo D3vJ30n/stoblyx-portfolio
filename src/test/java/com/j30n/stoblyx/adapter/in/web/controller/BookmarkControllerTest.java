@@ -37,17 +37,15 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookmarkController.class)
 @ExtendWith(RestDocumentationExtension.class)
@@ -58,13 +56,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class BookmarkControllerTest {
 
     private MockMvc mockMvc;
-    
+
     @Autowired
     private WebApplicationContext context;
-    
+
     @Autowired
     private ObjectMapper objectMapper;
-    
+
     private RequestPostProcessor testUser;
 
     @MockBean
@@ -76,14 +74,14 @@ class BookmarkControllerTest {
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {
         this.mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .apply(documentationConfiguration(restDocumentation)
-                        .operationPreprocessors()
-                        .withRequestDefaults(Preprocessors.prettyPrint())
-                        .withResponseDefaults(Preprocessors.prettyPrint()))
-                .apply(springSecurity())
-                .build();
-        
+            .webAppContextSetup(context)
+            .apply(documentationConfiguration(restDocumentation)
+                .operationPreprocessors()
+                .withRequestDefaults(Preprocessors.prettyPrint())
+                .withResponseDefaults(Preprocessors.prettyPrint()))
+            .apply(springSecurity())
+            .build();
+
         this.testUser = RestDocsUtils.getTestUser();
     }
 
@@ -94,29 +92,29 @@ class BookmarkControllerTest {
         LocalDateTime now = LocalDateTime.now();
         BookmarkResponse bookmark1 = new BookmarkResponse(1L, 101L, "첫 번째 북마크", "첫 번째 콘텐츠 설명", "thumbnail1.jpg", now);
         BookmarkResponse bookmark2 = new BookmarkResponse(2L, 102L, "두 번째 북마크", "두 번째 콘텐츠 설명", "thumbnail2.jpg", now);
-        
+
         PageImpl<BookmarkResponse> bookmarkPage = new PageImpl<>(
             List.of(bookmark1, bookmark2),
             PageRequest.of(0, 10),
             2
         );
-        
+
         when(bookmarkService.getBookmarks(anyLong(), anyString(), any(Pageable.class))).thenReturn(bookmarkPage);
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/bookmarks")
                 .param("type", "CONTENT")
                 .param("page", "0")
                 .param("size", "10")
                 .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data.content").isArray())
-                .andExpect(jsonPath("$.data.content[0].id").value(1))
-                .andExpect(jsonPath("$.data.content[0].title").value("첫 번째 북마크"))
-                .andDo(document("bookmark/get-bookmarks",
-                    responseFields(RestDocsUtils.getBookmarkPageResponseFields())
-                ));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data.content").isArray())
+            .andExpect(jsonPath("$.data.content[0].id").value(1))
+            .andExpect(jsonPath("$.data.content[0].title").value("첫 번째 북마크"))
+            .andDo(document("bookmark/get-bookmarks",
+                responseFields(RestDocsUtils.getBookmarkPageResponseFields())
+            ));
     }
 
     @Test
@@ -124,22 +122,22 @@ class BookmarkControllerTest {
     void bulkDeleteBookmarks() throws Exception {
         // given
         BulkDeleteRequest request = new BulkDeleteRequest(List.of(101L, 102L));
-        
+
         doNothing().when(bookmarkService).deleteBookmarks(anyLong(), anyList());
-        
+
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/bookmarks/bulk-delete")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .with(testUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value("SUCCESS"))
-                .andExpect(jsonPath("$.data").doesNotExist())
-                .andDo(document("bookmark/bulk-delete",
-                    requestFields(
-                        fieldWithPath("contentIds").type(JsonFieldType.ARRAY).description("삭제할 콘텐츠 ID 목록")
-                    ),
-                    responseFields(RestDocsUtils.getCommonResponseFieldsWithNullData())
-                ));
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.result").value("SUCCESS"))
+            .andExpect(jsonPath("$.data").doesNotExist())
+            .andDo(document("bookmark/bulk-delete",
+                requestFields(
+                    fieldWithPath("contentIds").type(JsonFieldType.ARRAY).description("삭제할 콘텐츠 ID 목록")
+                ),
+                responseFields(RestDocsUtils.getCommonResponseFieldsWithNullData())
+            ));
     }
 } 

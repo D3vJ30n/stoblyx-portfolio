@@ -1,7 +1,7 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
-import com.j30n.stoblyx.application.service.like.LikeService;
 import com.j30n.stoblyx.application.service.content.ContentService;
+import com.j30n.stoblyx.application.service.like.LikeService;
 import com.j30n.stoblyx.common.response.ApiResponse;
 import com.j30n.stoblyx.infrastructure.annotation.CurrentUser;
 import com.j30n.stoblyx.infrastructure.security.UserPrincipal;
@@ -34,7 +34,7 @@ public class LikeController {
      * 이미 좋아요한 문구에 대해서는 중복 좋아요가 불가능합니다.
      *
      * @param currentUser 현재 인증된 사용자
-     * @param quoteId 좋아요할 문구의 ID
+     * @param quoteId     좋아요할 문구의 ID
      * @return 좋아요 처리 결과 (true: 성공, false: 실패)
      * @throws IllegalArgumentException 문구가 존재하지 않는 경우
      */
@@ -58,7 +58,7 @@ public class LikeController {
      * 좋아요하지 않은 문구에 대해서는 취소가 불가능합니다.
      *
      * @param currentUser 현재 인증된 사용자
-     * @param quoteId 좋아요를 취소할 문구의 ID
+     * @param quoteId     좋아요를 취소할 문구의 ID
      * @return 좋아요 취소 처리 결과 (false: 성공적으로 취소됨)
      * @throws IllegalArgumentException 문구가 존재하지 않거나 좋아요하지 않은 경우
      */
@@ -81,7 +81,7 @@ public class LikeController {
      * 현재 사용자가 특정 문구에 좋아요를 했는지 확인합니다.
      *
      * @param currentUser 현재 인증된 사용자
-     * @param quoteId 확인할 문구의 ID
+     * @param quoteId     확인할 문구의 ID
      * @return 좋아요 상태 (true: 좋아요 함, false: 좋아요 안함)
      * @throws IllegalArgumentException 문구가 존재하지 않는 경우
      */
@@ -145,7 +145,7 @@ public class LikeController {
     /**
      * 특정 사용자가 좋아요한 문구 ID 목록을 페이징하여 조회합니다.
      *
-     * @param userId 조회할 사용자의 ID
+     * @param userId   조회할 사용자의 ID
      * @param pageable 페이징 정보
      * @return 페이징된 문구 ID 목록
      * @throws IllegalArgumentException 사용자가 존재하지 않는 경우
@@ -169,7 +169,7 @@ public class LikeController {
      * 특정 콘텐츠에 좋아요를 토글합니다.
      *
      * @param currentUser 현재 인증된 사용자
-     * @param contentId 좋아요할 콘텐츠의 ID
+     * @param contentId   좋아요할 콘텐츠의 ID
      * @return 좋아요 처리 결과 (true: 성공, false: 실패)
      * @throws IllegalArgumentException 콘텐츠가 존재하지 않는 경우
      */

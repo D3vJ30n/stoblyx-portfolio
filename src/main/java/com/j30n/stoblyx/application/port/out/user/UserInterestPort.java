@@ -1,6 +1,7 @@
 package com.j30n.stoblyx.application.port.out.user;
 
 import com.j30n.stoblyx.domain.model.UserInterest;
+
 import java.util.Optional;
 
 public interface UserInterestPort {

@@ -1,7 +1,9 @@
 package com.j30n.stoblyx;
 
+import com.j30n.stoblyx.infrastructure.external.AladinApiProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -15,6 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
+@EnableConfigurationProperties(AladinApiProperties.class)
 public class StoblyxApplication {
 
     public static void main(String[] args) {

@@ -3,11 +3,7 @@ package com.j30n.stoblyx.domain.model;
 import com.j30n.stoblyx.domain.enums.SettingCategory;
 import com.j30n.stoblyx.domain.model.common.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 /**
  * 시스템 설정 정보를 저장하는 엔티티 클래스

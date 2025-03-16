@@ -6,12 +6,12 @@ import com.j30n.stoblyx.domain.model.*;
 import com.j30n.stoblyx.domain.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.ObjectProvider;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -63,7 +63,7 @@ public class DataInitializer {
             }
 
             log.info("샘플 데이터 초기화를 시작합니다...");
-            
+
             try {
                 DataInitializer self = selfProvider.getObject();
                 self.initUsers();
@@ -73,7 +73,7 @@ public class DataInitializer {
                 self.initInteractions();
                 self.initPopularSearchTerms();
                 self.initSearchHistory();
-                
+
                 log.info("샘플 데이터 초기화가 완료되었습니다.");
             } catch (Exception e) {
                 log.error("샘플 데이터 초기화 중 오류가 발생했습니다.", e);
@@ -106,7 +106,7 @@ public class DataInitializer {
                 .role(UserRole.ADMIN)
                 .build()
         );
-        
+
         userRepository.saveAll(users);
         log.info("사용자 {} 명이 생성되었습니다.", users.size());
     }
@@ -118,10 +118,10 @@ public class DataInitializer {
             log.info("책 데이터가 이미 존재합니다.");
             return;
         }
-        
+
         // 테스트용 책 데이터 생성
         List<Book> books = new ArrayList<>();
-        
+
         // ID가 1인 테스트용 책 (명시적으로 테스트용으로 표시)
         BookInfo testBookInfo = BookInfo.builder()
             .title("테스트용 책")
@@ -133,37 +133,37 @@ public class DataInitializer {
             .thumbnailUrl("https://example.com/test-book.jpg")
             .genres(Arrays.asList("테스트", "자기계발"))
             .build();
-        
+
         Book testBook = Book.builder()
             .bookInfo(testBookInfo)
             .build();
         books.add(testBook);
-        
+
         // 추가 책 데이터 생성
         String[] titles = {
-            "철학의 위안", "사피엔스", "소크라테스의 변명", "당신 인생의 이야기", 
-            "아몬드", "곰팡이의 정원", "체리새우: 비밀글입니다", "빛의 과거", 
+            "철학의 위안", "사피엔스", "소크라테스의 변명", "당신 인생의 이야기",
+            "아몬드", "곰팡이의 정원", "체리새우: 비밀글입니다", "빛의 과거",
             "말의 품격", "지적 대화를 위한 넓고 얇은 지식"
         };
-        
+
         String[] authors = {
-            "알랭 드 보통", "유발 하라리", "플라톤", "테드 창", 
-            "손원평", "이불", "황영미", "은희경", 
+            "알랭 드 보통", "유발 하라리", "플라톤", "테드 창",
+            "손원평", "이불", "황영미", "은희경",
             "이기주", "채사장"
         };
-        
+
         String[] publishers = {
-            "철학연구원", "사피엔스출판사", "고전출판", "과학문학사", 
-            "창작사", "만화출판", "청소년문학사", "한국문학출판", 
+            "철학연구원", "사피엔스출판사", "고전출판", "과학문학사",
+            "창작사", "만화출판", "청소년문학사", "한국문학출판",
             "국어연구원", "지식출판사"
         };
-        
+
         String[][] genresList = {
-            {"철학", "에세이"}, {"역사", "인문"}, {"고전", "철학"}, {"SF", "소설"}, 
-            {"소설", "한국문학"}, {"만화", "그래픽노블"}, {"청소년", "소설"}, {"소설", "한국문학"}, 
+            {"철학", "에세이"}, {"역사", "인문"}, {"고전", "철학"}, {"SF", "소설"},
+            {"소설", "한국문학"}, {"만화", "그래픽노블"}, {"청소년", "소설"}, {"소설", "한국문학"},
             {"에세이", "언어"}, {"인문", "교양"}
         };
-        
+
         String[] descriptions = {
             "철학적 사고를 통해 현대인의 불안과 고통을 위로하는 책",
             "인류의 역사를 거시적 관점에서 바라본 문명사",
@@ -176,7 +176,7 @@ public class DataInitializer {
             "말과 언어의 중요성에 대해 생각해보게 하는 에세이",
             "다양한 분야의 기초 지식을 소개하는 교양서"
         };
-        
+
         for (int i = 0; i < titles.length; i++) {
             BookInfo bookInfo = BookInfo.builder()
                 .title(titles[i])
@@ -188,13 +188,13 @@ public class DataInitializer {
                 .thumbnailUrl("https://example.com/book" + (i + 1) + ".jpg")
                 .genres(Arrays.asList(genresList[i]))
                 .build();
-            
+
             Book book = Book.builder()
                 .bookInfo(bookInfo)
                 .build();
             books.add(book);
         }
-        
+
         bookRepository.saveAll(books);
         log.info("책 {} 권이 생성되었습니다.", books.size());
     }
@@ -203,12 +203,12 @@ public class DataInitializer {
     public void initQuotes() {
         List<User> users = userRepository.findAll();
         List<Book> books = bookRepository.findAll();
-        
+
         if (users.isEmpty() || books.isEmpty()) {
             log.warn("사용자 또는 도서 데이터가 없어 인용구를 생성할 수 없습니다.");
             return;
         }
-        
+
         List<Quote> quotes = Arrays.asList(
             Quote.builder()
                 .user(users.get(0))
@@ -217,7 +217,7 @@ public class DataInitializer {
                 .memo("철학의 위안에서 가장 인상 깊었던 구절")
                 .page(42)
                 .build(),
-            
+
             Quote.builder()
                 .user(users.get(1))
                 .book(books.get(0))
@@ -225,7 +225,7 @@ public class DataInitializer {
                 .memo("불행에 대한 생각의 전환")
                 .page(78)
                 .build(),
-            
+
             Quote.builder()
                 .user(users.get(0))
                 .book(books.get(1))
@@ -233,7 +233,7 @@ public class DataInitializer {
                 .memo("사피엔스의 핵심 주장")
                 .page(150)
                 .build(),
-            
+
             Quote.builder()
                 .user(users.get(1))
                 .book(books.get(2))
@@ -241,7 +241,7 @@ public class DataInitializer {
                 .memo("소크라테스의 유명한 명언")
                 .page(25)
                 .build(),
-            
+
             Quote.builder()
                 .user(users.get(0))
                 .book(books.get(3))
@@ -249,7 +249,7 @@ public class DataInitializer {
                 .memo("자아 성장에 대한 비유")
                 .page(110)
                 .build(),
-            
+
             Quote.builder()
                 .user(users.get(1))
                 .book(books.get(4))
@@ -258,9 +258,9 @@ public class DataInitializer {
                 .page(5)
                 .build()
         );
-        
+
         quoteRepository.saveAll(quotes);
-        
+
         // 좋아요 추가
         for (Quote quote : quotes) {
             for (User user : users) {
@@ -271,12 +271,12 @@ public class DataInitializer {
                         .quote(quote)
                         .build();
                     likeRepository.save(like);
-                    
+
                     // 좋아요 수 업데이트
                     quote.updateLikeCount(1);
                 }
             }
-            
+
             // 댓글 추가
             for (int i = 0; i < random.nextInt(3) + 1; i++) {
                 User randomUser = users.get(random.nextInt(users.size()));
@@ -288,7 +288,7 @@ public class DataInitializer {
                 commentRepository.save(comment);
             }
         }
-        
+
         quoteRepository.saveAll(quotes); // 좋아요 수 업데이트 저장
         log.info("인용구 {} 개와 관련 좋아요, 댓글이 생성되었습니다.", quotes.size());
     }
@@ -297,12 +297,12 @@ public class DataInitializer {
     public void initShortFormContents() {
         List<Book> books = bookRepository.findAll();
         List<Quote> quotes = quoteRepository.findAll();
-        
+
         if (quotes.isEmpty()) {
             log.warn("인용구 데이터가 없어 콘텐츠를 생성할 수 없습니다.");
             return;
         }
-        
+
         List<ShortFormContent> contents = Arrays.asList(
             ShortFormContent.builder()
                 .book(books.get(0))
@@ -311,7 +311,7 @@ public class DataInitializer {
                 .description("알랭 드 보통의 철학적 사상을 바탕으로 일상에서 겪는 문제들을 어떻게 해결할 수 있는지 알아봅니다.")
                 .status(ContentStatus.PUBLISHED)
                 .build(),
-            
+
             ShortFormContent.builder()
                 .book(books.get(1))
                 .quote(quotes.get(2))
@@ -319,7 +319,7 @@ public class DataInitializer {
                 .description("유발 하라리가 설명하는 인류의 역사와 문명의 발전 과정을 짧게 요약했습니다.")
                 .status(ContentStatus.PUBLISHED)
                 .build(),
-            
+
             ShortFormContent.builder()
                 .book(books.get(2))
                 .quote(quotes.get(3))
@@ -327,7 +327,7 @@ public class DataInitializer {
                 .description("소크라테스의 철학과 그의 가르침이 현대 사회에 주는 의미를 살펴봅니다.")
                 .status(ContentStatus.PUBLISHED)
                 .build(),
-            
+
             ShortFormContent.builder()
                 .book(books.get(3))
                 .quote(quotes.get(4))
@@ -336,7 +336,7 @@ public class DataInitializer {
                 .status(ContentStatus.PUBLISHED)
                 .build()
         );
-        
+
         // 콘텐츠 정보 추가 설정
         for (ShortFormContent content : contents) {
             // setter 메서드를 사용하여 콘텐츠 속성 설정
@@ -346,21 +346,21 @@ public class DataInitializer {
             content.setDuration(random.nextInt(180) + 30);
             content.setContentType(ContentType.VIDEO);
             content.setSubtitles("자막 예시: " + content.getTitle());
-            
+
             // 조회수, 좋아요, 공유 수 랜덤 설정
             for (int i = 0; i < random.nextInt(50) + 10; i++) {
                 content.incrementViewCount();
             }
-            
+
             for (int i = 0; i < random.nextInt(20) + 5; i++) {
                 content.updateLikeCount(1);
             }
-            
+
             for (int i = 0; i < random.nextInt(10) + 1; i++) {
                 content.incrementShareCount();
             }
         }
-        
+
         contentRepository.saveAll(contents);
         log.info("숏폼 콘텐츠 {} 개가 생성되었습니다.", contents.size());
     }
@@ -369,20 +369,20 @@ public class DataInitializer {
     public void initInteractions() {
         List<User> users = userRepository.findAll();
         List<ShortFormContent> contents = contentRepository.findAll();
-        
+
         if (users.isEmpty() || contents.isEmpty()) {
             log.warn("사용자 또는 콘텐츠 데이터가 없어 상호작용을 생성할 수 없습니다.");
             return;
         }
-        
+
         for (User user : users) {
             createUserInteractions(user, contents);
         }
-        
+
         contentRepository.saveAll(contents); // 댓글 수 업데이트 저장
         log.info("사용자-콘텐츠 상호작용이 생성되었습니다.");
     }
-    
+
     private void createUserInteractions(User user, List<ShortFormContent> contents) {
         for (ShortFormContent content : contents) {
             // 50% 확률로 상호작용 생성
@@ -391,37 +391,37 @@ public class DataInitializer {
             }
         }
     }
-    
+
     private void createSingleInteraction(User user, ShortFormContent content) {
         ContentInteraction interaction = ContentInteraction.builder()
             .user(user)
             .content(content)
             .build();
-        
+
         applyRandomInteractionState(interaction);
         interactionRepository.save(interaction);
-        
+
         // 댓글 생성 (30% 확률)
         createCommentIfNeeded(user, content);
     }
-    
+
     private void applyRandomInteractionState(ContentInteraction interaction) {
         // 좋아요, 북마크 상태 랜덤 설정
         boolean liked = random.nextBoolean();
         boolean bookmarked = random.nextBoolean();
-        
+
         if (liked) {
             interaction.toggleLike(); // 좋아요 상태로 변경
         }
-        
+
         if (bookmarked) {
             interaction.toggleBookmark(); // 북마크 상태로 변경
         }
-        
+
         // 조회 시간 설정
         interaction.setViewedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
     }
-    
+
     private void createCommentIfNeeded(User user, ShortFormContent content) {
         if (random.nextInt(10) < 3) {
             ContentComment comment = ContentComment.builder()
@@ -429,7 +429,7 @@ public class DataInitializer {
                 .shortFormContent(content)
                 .content("이 콘텐츠에 대한 댓글: " + (random.nextInt(100) + 1))
                 .build();
-            
+
             contentCommentRepository.save(comment);
             content.incrementCommentCount();
         }
@@ -438,27 +438,27 @@ public class DataInitializer {
     @Transactional
     public void initPopularSearchTerms() {
         List<String> searchTerms = Arrays.asList(
-            "철학", "소설", "자기계발", "역사", "과학", 
-            "에세이", "심리학", "정치", "경제", "문화", 
+            "철학", "소설", "자기계발", "역사", "과학",
+            "에세이", "심리학", "정치", "경제", "문화",
             "예술", "인문학", "소크라테스", "플라톤", "아리스토텔레스",
             "헤르만 헤세", "조지 오웰", "유발 하라리", "알랭 드 보통"
         );
-        
+
         for (String term : searchTerms) {
             // 필드 값 설정
             int searchCount = random.nextInt(1000) + 100;
             double popularityScore = searchCount / 100.0;
-            
+
             // 빌더 패턴 사용
             PopularSearchTerm popularTerm = PopularSearchTerm.builder()
                 .searchTerm(term)
                 .searchCount(searchCount)
                 .popularityScore(popularityScore)
                 .build();
-            
+
             popularSearchTermRepository.save(popularTerm);
         }
-        
+
         log.info("인기 검색어 {} 개가 생성되었습니다.", searchTerms.size());
     }
 
@@ -474,15 +474,15 @@ public class DataInitializer {
             String searchType = searchCategories.get(random.nextInt(searchCategories.size()));
 
             Search search = Search.builder()
-                    .searchTerm(searchTerm)
-                    .searchCount(random.nextInt(10) + 1)
-                    .searchType(searchType)
-                    .user(randomUser)
-                    .build();
+                .searchTerm(searchTerm)
+                .searchCount(random.nextInt(10) + 1)
+                .searchType(searchType)
+                .user(randomUser)
+                .build();
 
             searchRepository.save(search);
         }
-        
+
         log.info("사용자별 검색 기록이 생성되었습니다.");
     }
 } 

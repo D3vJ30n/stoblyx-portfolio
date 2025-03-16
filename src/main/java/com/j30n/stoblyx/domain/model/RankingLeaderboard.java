@@ -2,10 +2,10 @@ package com.j30n.stoblyx.domain.model;
 
 import com.j30n.stoblyx.domain.enums.RankType;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -55,7 +55,7 @@ public class RankingLeaderboard {
 
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
-    
+
     @Column(name = "is_deleted")
     private Boolean isDeleted = false;
 
@@ -63,7 +63,7 @@ public class RankingLeaderboard {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         modifiedAt = LocalDateTime.now();
-        
+
         // 기본값 설정
         if (rankType == null) {
             rankType = RankType.fromScore(score);
@@ -76,7 +76,7 @@ public class RankingLeaderboard {
     @PreUpdate
     protected void onUpdate() {
         modifiedAt = LocalDateTime.now();
-        
+
         // 점수에 따른 랭크 업데이트
         rankType = RankType.fromScore(score);
     }

@@ -16,7 +16,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,10 +41,10 @@ public class AuthService implements AuthUseCase {
     @Transactional
     public void signUp(SignUpRequest request) {
         log.info("회원가입 시도: {}", request.email());
-        
+
         // 데이터 유효성 검사
         validateSignUpRequest(request);
-        
+
         // 이메일 중복 확인
         if (authPort.findUserByEmail(request.email()).isPresent()) {
             log.warn("회원가입 실패 - 이메일 중복: {}", request.email());
@@ -78,7 +77,7 @@ public class AuthService implements AuthUseCase {
             log.warn("회원가입 실패 - 비밀번호 길이 부족: {}", request.email());
             throw new IllegalArgumentException("비밀번호는 8자 이상이어야 합니다.");
         }
-        
+
         if (request.username().length() < 2) {
             log.warn("회원가입 실패 - 사용자명 길이 부족: {}", request.email());
             throw new IllegalArgumentException("사용자명은 2자 이상이어야 합니다.");
@@ -91,17 +90,17 @@ public class AuthService implements AuthUseCase {
         // 로그인 식별자 가져오기(email 또는 username)
         String loginIdentifier = request.getLoginIdentifier();
         log.info("로그인 시도: {}", loginIdentifier);
-        
+
         if (loginIdentifier == null || loginIdentifier.isBlank()) {
             log.warn("로그인 실패 - 로그인 식별자가 비어있음");
             throw new IllegalArgumentException("이메일 또는 사용자명을 입력해주세요.");
         }
-        
+
         if (request.password() == null || request.password().isBlank()) {
             log.warn("로그인 실패 - 비밀번호가 비어있음: {}", loginIdentifier);
             throw new IllegalArgumentException("비밀번호를 입력해주세요.");
         }
-        
+
         try {
             // 인증 시도
             Authentication authentication = authenticationManager.authenticate(
@@ -127,7 +126,7 @@ public class AuthService implements AuthUseCase {
                 log.warn("사용자 ID를 숫자로 변환할 수 없습니다. 테스트 환경으로 간주하고 기본값 1L을 사용합니다.");
                 userId = 1L;
             }
-            
+
             // 리프레시 토큰 저장
             try {
                 authPort.saveRefreshToken(userId, refreshToken, tokenProvider.getRefreshTokenValidityInMilliseconds() / 1000);
@@ -155,12 +154,12 @@ public class AuthService implements AuthUseCase {
     @Transactional
     public TokenResponse refreshToken(String refreshToken) {
         log.info("토큰 갱신 시도");
-        
+
         if (refreshToken == null || refreshToken.isBlank()) {
             log.warn("토큰 갱신 실패 - 리프레시 토큰이 비어있음");
             throw new IllegalArgumentException("리프레시 토큰이 필요합니다.");
         }
-        
+
         if (!tokenProvider.validateToken(refreshToken)) {
             log.warn("토큰 갱신 실패 - 유효하지 않은 리프레시 토큰");
             throw new IllegalArgumentException("유효하지 않은 리프레시 토큰입니다.");
@@ -187,7 +186,7 @@ public class AuthService implements AuthUseCase {
             log.warn("토큰 갱신 실패 - 토큰에서 사용자명을 추출할 수 없음");
             throw new IllegalArgumentException("토큰에서 사용자 정보를 추출할 수 없습니다.");
         }
-        
+
         // 사용자 정보 조회
         User user;
         try {
@@ -239,7 +238,7 @@ public class AuthService implements AuthUseCase {
         } catch (Exception e) {
             log.warn("기존 리프레시 토큰 삭제 중 오류 발생: {}. 토큰 갱신은 계속 진행됩니다.", e.getMessage());
         }
-        
+
         // 새 토큰 저장
         Long userIdLong;
         try {
@@ -248,7 +247,7 @@ public class AuthService implements AuthUseCase {
             log.warn("사용자 ID를 숫자로 변환할 수 없습니다. 사용자 객체의 ID를 사용합니다.");
             userIdLong = user.getId() != null ? user.getId() : 1L;
         }
-        
+
         try {
             authPort.saveRefreshToken(userIdLong, newRefreshToken, tokenProvider.getRefreshTokenValidityInMilliseconds() / 1000);
             log.debug("새 리프레시 토큰 저장 완료: userId={}", userIdLong);
@@ -263,12 +262,12 @@ public class AuthService implements AuthUseCase {
     @Override
     public void logout(String accessToken) {
         log.info("로그아웃 시도");
-        
+
         if (accessToken == null || accessToken.isBlank()) {
             log.warn("로그아웃 실패 - 액세스 토큰이 비어있음");
             throw new IllegalArgumentException("로그아웃을 위한 액세스 토큰이 필요합니다.");
         }
-        
+
         if (!tokenProvider.validateToken(accessToken)) {
             log.warn("로그아웃 - 유효하지 않은 액세스 토큰이지만 처리 계속 진행");
             // 유효하지 않은 토큰이어도 블랙리스트에 추가 (보안 강화)
@@ -277,7 +276,7 @@ public class AuthService implements AuthUseCase {
         try {
             String username = tokenProvider.getUsername(accessToken);
             log.debug("로그아웃 사용자: {}", username != null ? username : "알 수 없음");
-            
+
             long remainingValidityInSeconds;
             try {
                 remainingValidityInSeconds = tokenProvider.getRemainingValidityInSeconds(accessToken);
@@ -300,10 +299,10 @@ public class AuthService implements AuthUseCase {
     @Transactional
     public void changePassword(Long userId, PasswordChangeRequest request) {
         log.info("비밀번호 변경 시도: userId={}", userId);
-        
+
         // 요청 데이터 검증
         validatePasswordChangeRequest(request);
-        
+
         try {
             // 사용자 조회
             User user = authPort.findUserById(userId)
@@ -311,17 +310,17 @@ public class AuthService implements AuthUseCase {
                     log.warn("비밀번호 변경 실패 - 존재하지 않는 사용자: {}", userId);
                     return new IllegalArgumentException("존재하지 않는 사용자입니다.");
                 });
-            
+
             // 현재 비밀번호 검증
             if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
                 log.warn("비밀번호 변경 실패 - 현재 비밀번호 불일치: userId={}", userId);
                 throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
             }
-            
+
             // 비밀번호 변경
             user.updatePassword(passwordEncoder.encode(request.getNewPassword()));
             authPort.saveUser(user);
-            
+
             log.info("비밀번호 변경 완료: userId={}", userId);
         } catch (IllegalArgumentException e) {
             throw e; // 이미 적절한 메시지로 래핑된 예외
@@ -330,7 +329,7 @@ public class AuthService implements AuthUseCase {
             throw new RuntimeException("비밀번호 변경 처리 중 오류가 발생했습니다: " + e.getMessage(), e);
         }
     }
-    
+
     /**
      * 비밀번호 변경 요청의 유효성을 검사합니다.
      */
@@ -338,23 +337,23 @@ public class AuthService implements AuthUseCase {
         if (request.getCurrentPassword() == null || request.getCurrentPassword().isBlank()) {
             throw new IllegalArgumentException("현재 비밀번호를 입력해주세요.");
         }
-        
+
         if (request.getNewPassword() == null || request.getNewPassword().isBlank()) {
             throw new IllegalArgumentException("새 비밀번호를 입력해주세요.");
         }
-        
+
         if (request.getConfirmPassword() == null || request.getConfirmPassword().isBlank()) {
             throw new IllegalArgumentException("새 비밀번호 확인을 입력해주세요.");
         }
-        
+
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
             throw new IllegalArgumentException("새 비밀번호와 확인 비밀번호가 일치하지 않습니다.");
         }
-        
+
         if (request.getNewPassword().length() < 8) {
             throw new IllegalArgumentException("새 비밀번호는 8자 이상이어야 합니다.");
         }
-        
+
         if (request.getNewPassword().equals(request.getCurrentPassword())) {
             throw new IllegalArgumentException("새 비밀번호는 현재 비밀번호와 달라야 합니다.");
         }

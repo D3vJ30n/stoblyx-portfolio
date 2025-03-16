@@ -1,8 +1,8 @@
 package com.j30n.stoblyx.adapter.in.web.dto.quote;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Max;
 
 /**
  * 문구 수정 요청 DTO
