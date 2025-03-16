@@ -32,8 +32,15 @@ ENV MANAGEMENT_SERVER_PORT=8080
 ENV MANAGEMENT_ENDPOINTS_WEB_BASE_PATH=/actuator
 # 애플리케이션 준비 상태 지연 설정
 ENV SPRING_LIFECYCLE_TIMEOUT_PER_SHUTDOWN_PHASE=20s
+# JPA 지연 초기화 설정 추가
+ENV SPRING_JPA_DEFER_DATASOURCE_INITIALIZATION=true
+ENV SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_LOB_NON_CONTEXTUAL_CREATION=true
+# 추가 서버 설정
+ENV SERVER_TOMCAT_THREADS_MAX=50
+ENV SERVER_TOMCAT_THREADS_MIN=20
+ENV SERVER_TOMCAT_MAX_CONNECTIONS=200
 
-# 헬스체크 설정 (30초 대기 후 5초마다 체크)
-HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=3 CMD ["sh", "-c", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+# 헬스체크 설정 (커스텀 엔드포인트 활용, 90초 대기, 10초마다 체크)
+HEALTHCHECK --interval=10s --timeout=5s --start-period=90s --retries=5 CMD ["sh", "-c", "curl -f http://localhost:8080/health || exit 1"]
 
-CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
+CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-Dspring.jpa.defer-datasource-initialization=true", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
