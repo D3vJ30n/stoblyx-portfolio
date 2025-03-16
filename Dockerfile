@@ -25,4 +25,15 @@ ENV SERVER_SHUTDOWN=graceful
 ENV MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
 ENV MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info
 
+# 명시적 서버 포트 설정
+ENV SERVER_PORT=8080
+# 액추에이터 설정 추가
+ENV MANAGEMENT_SERVER_PORT=8080
+ENV MANAGEMENT_ENDPOINTS_WEB_BASE_PATH=/actuator
+# 애플리케이션 준비 상태 지연 설정
+ENV SPRING_LIFECYCLE_TIMEOUT_PER_SHUTDOWN_PHASE=20s
+
+# 헬스체크 설정 (30초 대기 후 5초마다 체크)
+HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=3 CMD ["sh", "-c", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+
 CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
