@@ -75,4 +75,9 @@ public class HealthCheckController {
                     .body(new ApiResponse<>("ERROR", "시스템 상태 확인 중 오류가 발생했습니다.", null));
         }
     }
+
+    @GetMapping("/")
+    public ResponseEntity<String> root() {
+        return ResponseEntity.ok("Application is running");
+    }
 } 
