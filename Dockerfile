@@ -25,4 +25,4 @@ ENV SERVER_SHUTDOWN=graceful
 ENV MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
 ENV MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info
 
-CMD ["java", "-XX:+AlwaysPreTouch", "-Dlogging.config=classpath:logback-spring.xml", "-Dspring.jpa.open-in-view=false", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
+CMD ["java", "-XX:+AlwaysPreTouch", "-Dspring.jpa.open-in-view=false", "-jar", "build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar"] 
