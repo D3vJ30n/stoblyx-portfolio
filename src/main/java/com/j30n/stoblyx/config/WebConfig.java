@@ -34,6 +34,10 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/uploads/**")
             .addResourceLocations("file:" + uploadPath + "/");
+            
+        // REST Docs 문서 파일 경로 추가
+        registry.addResourceHandler("/docs/**")
+            .addResourceLocations("classpath:/static/docs/", "file:build/docs/asciidoc/");
     }
 
     @Override
