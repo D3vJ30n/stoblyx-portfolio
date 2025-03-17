@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponse<T> {
+    public static final String SUCCESS = "SUCCESS";
+    public static final String ERROR = "ERROR";
+    
     private String result;    // SUCCESS or ERROR
     private String message;   // success or error message
     private T data;

@@ -57,6 +57,7 @@ public class RankingLeaderboard {
     private LocalDateTime modifiedAt;
 
     @Column(name = "is_deleted")
+    @Builder.Default
     private Boolean isDeleted = false;
 
     @PrePersist

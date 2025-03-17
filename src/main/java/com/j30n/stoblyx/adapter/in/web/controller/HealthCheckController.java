@@ -38,11 +38,11 @@ public class HealthCheckController {
             healthData.put("status", "UP");
             healthData.put("timestamp", System.currentTimeMillis());
             
-            return ResponseEntity.ok(new ApiResponse<>("SUCCESS", "시스템이 정상 작동 중입니다.", healthData));
+            return ResponseEntity.ok(new ApiResponse<>(ApiResponse.SUCCESS, "시스템이 정상 작동 중입니다.", healthData));
         } catch (Exception e) {
             log.error("헬스 체크 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "시스템 상태 확인 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ApiResponse.ERROR, "시스템 상태 확인 중 오류가 발생했습니다.", null));
         }
     }
 
@@ -68,11 +68,11 @@ public class HealthCheckController {
             String message = isUp ? "시스템이 정상 작동 중입니다." : "시스템에 문제가 발생했습니다.";
             
             return ResponseEntity.status(httpStatus)
-                    .body(new ApiResponse<>(isUp ? "SUCCESS" : "ERROR", message, healthData));
+                    .body(new ApiResponse<>(isUp ? ApiResponse.SUCCESS : ApiResponse.ERROR, message, healthData));
         } catch (Exception e) {
             log.error("상세 헬스 체크 중 오류 발생", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>("ERROR", "시스템 상태 확인 중 오류가 발생했습니다.", null));
+                    .body(new ApiResponse<>(ApiResponse.ERROR, "시스템 상태 확인 중 오류가 발생했습니다.", null));
         }
     }
 

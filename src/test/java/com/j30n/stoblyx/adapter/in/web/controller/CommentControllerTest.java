@@ -5,10 +5,7 @@ import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentCreateRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.comment.CommentUpdateRequest;
 import com.j30n.stoblyx.application.service.comment.CommentService;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MonitoringTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.config.WebMvcTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("댓글 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
+@Import(WebMvcTestConfig.class)
 class CommentControllerTest {
 
     private MockMvc mockMvc;
@@ -351,4 +348,4 @@ class CommentControllerTest {
 
         verify(commentService).getCommentsByQuote(eq(1L), any());
     }
-} 
+}

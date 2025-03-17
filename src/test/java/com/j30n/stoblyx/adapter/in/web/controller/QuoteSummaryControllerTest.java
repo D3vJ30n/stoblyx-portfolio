@@ -2,10 +2,7 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.adapter.in.web.dto.quote.QuoteSummaryResponse;
 import com.j30n.stoblyx.application.service.quote.QuoteSummaryService;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MonitoringTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.config.WebMvcTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,10 +36,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(QuoteSummaryController.class)
+@DisplayName("인용구 요약 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
-@DisplayName("QuoteSummaryController 테스트")
+@Import(WebMvcTestConfig.class)
 class QuoteSummaryControllerTest {
 
     private MockMvc mockMvc;

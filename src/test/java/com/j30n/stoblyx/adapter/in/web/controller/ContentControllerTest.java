@@ -1,13 +1,11 @@
 package com.j30n.stoblyx.adapter.in.web.controller;
 
+
 import com.j30n.stoblyx.adapter.in.web.dto.bookmark.BookmarkStatusResponse;
 import com.j30n.stoblyx.adapter.in.web.dto.content.ContentResponse;
 import com.j30n.stoblyx.application.service.bookmark.BookmarkService;
 import com.j30n.stoblyx.application.service.content.ContentService;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MonitoringTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.config.WebMvcTestConfig;
 import com.j30n.stoblyx.domain.enums.ContentStatus;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,10 +45,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ContentController.class)
+@DisplayName("컨텐츠 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
-@DisplayName("ContentController 테스트")
+@Import(WebMvcTestConfig.class)
 class ContentControllerTest {
 
     private MockMvc mockMvc;

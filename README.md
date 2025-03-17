@@ -101,7 +101,7 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 #### AI Integration
 
-> AI 기술은 독서 경험을 향상시키는 핵심 요소입니다. KoBART와 Hugging Face 모델을 활용하여 한국어 자연어 처리와 감정 분석을 구현하고, 멀티미디어 콘텐츠 통합을 위해 다양한 API를 활용합니다.
+> AI 기술은 독서 경험을 향상시키는 핵심 요소입니다. KoBART와 Hugging Face 모델을 활용하여 한국어 자연어 처리를 구현하고, 멀티미디어 콘텐츠 통합을 위해 다양한 API를 활용합니다.
 
 ![KoBART](https://img.shields.io/badge/KoBART-자연어_처리-FF6F00?style=flat-square&logo=tensorflow)
 ![pyttsx3](https://img.shields.io/badge/pyttsx3-감정_분석-3776AB?style=flat-square&logo=python)
@@ -111,7 +111,7 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 #### Algorithms & Data Science
 
-> 사용자 경험 개인화와 콘텐츠 추천을 위해 다양한 알고리즘을 구현했습니다. EWMA는 사용자 활동 점수를 계산하고, 협업 필터링은 맞춤형 추천을 제공하며, TF-IDF와 페이지랭크 변형은 검색 및 콘텐츠 인기도
+> 사용자 경험 개인화와 콘텐츠 추천을 위해 다양한 알고리즘을 구현했습니다. EWMA는 사용자 활동 점수를 계산하고, 협업 필터링은 맞춤형 추천을 제공하며, 페이지랭크 변형은 검색 및 콘텐츠 인기도
 > 측정에 활용됩니다.
 
 ![EWMA](https://img.shields.io/badge/EWMA-사용자_점수_계산-4285F4?style=flat-square&logo=function)

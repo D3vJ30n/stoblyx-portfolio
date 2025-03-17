@@ -20,4 +20,4 @@ server:
 kobart:
   enabled: ${KOBART_ENABLED:true}
   api:
-    url: ${KOBART_API_URL:http://localhost:5000}
+    url: ${KOBART_API_URL:http://localhost:8000}

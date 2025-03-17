@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
         "spring.data.redis.password=",
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration," +
             "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
-        "kobart.api.url=http://localhost:5000",
+        "kobart.api.url=http://localhost:8000",
         "spring.jpa.hibernate.ddl-auto=create-drop",
         "spring.jpa.show-sql=true",
         "spring.jpa.properties.hibernate.format_sql=true",

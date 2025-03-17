@@ -24,11 +24,15 @@ public class RankingLeaderboardAdapter implements RankingLeaderboardPort {
 
     private static final String REDIS_LEADERBOARD_KEY = "realtime:leaderboard";
 
+    private final RankingLeaderboardRepository rankingLeaderboardRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+    
     @Autowired
-    private RankingLeaderboardRepository rankingLeaderboardRepository;
-
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    public RankingLeaderboardAdapter(RankingLeaderboardRepository rankingLeaderboardRepository, 
+                                    RedisTemplate<String, String> redisTemplate) {
+        this.rankingLeaderboardRepository = rankingLeaderboardRepository;
+        this.redisTemplate = redisTemplate;
+    }
 
     /**
      * 랭킹 정보 저장

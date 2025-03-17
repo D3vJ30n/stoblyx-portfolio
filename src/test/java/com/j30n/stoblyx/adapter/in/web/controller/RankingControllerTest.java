@@ -2,11 +2,9 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j30n.stoblyx.adapter.in.web.dto.ranking.RankingActivityRequest;
+import com.j30n.stoblyx.application.port.in.ranking.RankingLeaderboardUseCase;
 import com.j30n.stoblyx.application.port.in.ranking.RankingUserScoreUseCase;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MonitoringTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.config.WebMvcTestConfig;
 import com.j30n.stoblyx.domain.enums.RankType;
 import com.j30n.stoblyx.domain.model.RankingUserScore;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
@@ -51,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 @ActiveProfiles("test")
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
+@Import(WebMvcTestConfig.class)
 @DisplayName("랭킹 컨트롤러 테스트")
 class RankingControllerTest {
 
@@ -67,6 +65,9 @@ class RankingControllerTest {
 
     @MockBean
     private RankingUserScoreUseCase rankingUserScoreUseCase;
+
+    @MockBean
+    private RankingLeaderboardUseCase rankingLeaderboardUseCase;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider restDocumentation) {

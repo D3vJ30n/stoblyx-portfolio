@@ -2,10 +2,7 @@ package com.j30n.stoblyx.adapter.in.web.controller;
 
 import com.j30n.stoblyx.application.service.content.ContentService;
 import com.j30n.stoblyx.application.service.like.LikeService;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MonitoringTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.config.WebMvcTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,10 +36,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LikeController.class)
+@DisplayName("좋아요 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
-@DisplayName("LikeController 테스트")
+@Import(WebMvcTestConfig.class)
 class LikeControllerTest {
 
     private MockMvc mockMvc;

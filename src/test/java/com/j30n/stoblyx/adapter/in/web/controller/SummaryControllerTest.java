@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j30n.stoblyx.adapter.in.web.dto.summary.SummaryRequest;
 import com.j30n.stoblyx.adapter.in.web.dto.summary.SummaryResponse;
 import com.j30n.stoblyx.application.port.in.summary.SummaryUseCase;
-import com.j30n.stoblyx.config.ContextTestConfig;
-import com.j30n.stoblyx.config.MonitoringTestConfig;
-import com.j30n.stoblyx.config.SecurityTestConfig;
-import com.j30n.stoblyx.config.XssTestConfig;
+import com.j30n.stoblyx.config.WebMvcTestConfig;
 import com.j30n.stoblyx.support.docs.RestDocsUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,10 +42,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SummaryController.class)
+@DisplayName("요약 컨트롤러 테스트")
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-@Import({SecurityTestConfig.class, ContextTestConfig.class, XssTestConfig.class, MonitoringTestConfig.class})
-@DisplayName("SummaryController 테스트")
+@Import(WebMvcTestConfig.class)
 class SummaryControllerTest {
 
     private MockMvc mockMvc;
