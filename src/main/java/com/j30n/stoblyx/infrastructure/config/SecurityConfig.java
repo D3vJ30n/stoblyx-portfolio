@@ -97,7 +97,8 @@ public class SecurityConfig {
                     "/books/search",
                     "/books/{id}",
                     "/",
-                    "/admin/**"
+                    "/admin/**",
+                    "/docs/**"
                 ).permitAll()
                 .requestMatchers(GET, "/books").permitAll()
                 .requestMatchers(POST, "/books").hasRole(ROLE_ADMIN)
