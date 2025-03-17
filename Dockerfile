@@ -8,12 +8,16 @@ RUN chmod +x ./gradlew
 # 필요한 디렉토리 생성
 RUN mkdir -p build/generated-snippets
 
-# asciidoctor 태스크를 건너뛰고 bootJar만 실행
-RUN ./gradlew bootJar -x asciidoctor -x test -x check --stacktrace --no-daemon
+# asciidoctor 태스크를 포함하여 빌드 실행
+RUN ./gradlew bootJar asciidoctor --stacktrace --no-daemon
+
+# HTML 문서를 static 디렉토리로 복사
+RUN mkdir -p build/resources/main/static/docs && \
+    cp -r build/docs/asciidoc/* build/resources/main/static/docs/
 
 EXPOSE 8080
 ENV SPRING_PROFILES_ACTIVE=mysql
-ENV JAVA_OPTS="-Xmx400m -Xms200m -Dserver.tomcat.mbeanregistry.enabled=true -Dspring.liveBeansView.mbeanDomain=stoblyx -Dspring.boot.admin.client.instance.prefer-ip=true"
+ENV JAVA_OPTS="-Xmx300m -Xms150m -XX:+UseG1GC -XX:+UseStringDeduplication -Dserver.tomcat.mbeanregistry.enabled=true -Dspring.liveBeansView.mbeanDomain=stoblyx -Dspring.boot.admin.client.instance.prefer-ip=true"
 ENV SPRING_DATASOURCE_URL=jdbc:mysql://mysql-domyeongjeon.alwaysdata.net:3306/domyeongjeon_stoblyx_sandbox_db?useSSL=false&serverTimezone=UTC
 ENV SPRING_DATASOURCE_USERNAME=404306
 ENV SPRING_DATASOURCE_PASSWORD=ehaud_0112
@@ -24,6 +28,14 @@ ENV LOGGING_LEVEL_COM_J30N_STOBLYX=DEBUG
 ENV SERVER_SHUTDOWN=graceful
 ENV MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS=always
 ENV MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info
+ENV MANAGEMENT_HEALTH_DISKSPACE_ENABLED=false
+ENV MANAGEMENT_HEALTH_REDIS_ENABLED=false
+
+# Redis 비활성화 설정 추가
+ENV SPRING_DATA_REDIS_ENABLED=false
+# RabbitMQ 비활성화 설정 추가
+ENV SPRING_RABBITMQ_ENABLED=false
+ENV RABBITMQ_ENABLED=false
 
 # 명시적 서버 포트 설정
 ENV SERVER_PORT=8080
@@ -48,11 +60,17 @@ ENV JWT_TOKEN_ISSUER=stoblyx.j30n.com
 
 # 스크립트 파일 생성 및 실행 권한 부여
 RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'java -XX:+AlwaysPreTouch -Dspring.jpa.open-in-view=false -Dspring.jpa.defer-datasource-initialization=true \\' >> /app/start.sh && \
+    echo 'java -XX:+AlwaysPreTouch -XX:+UseG1GC -XX:+UseStringDeduplication -Xmx300m -Xms150m \\' >> /app/start.sh && \
+    echo '  -Dspring.jpa.open-in-view=false -Dspring.jpa.defer-datasource-initialization=true \\' >> /app/start.sh && \
     echo '  -Djwt.secret=${JWT_SECRET} \\' >> /app/start.sh && \
     echo '  -Djwt.access-token-validity-in-seconds=${JWT_ACCESS_TOKEN_VALIDITY_IN_SECONDS} \\' >> /app/start.sh && \
     echo '  -Djwt.refresh-token-validity-in-seconds=${JWT_REFRESH_TOKEN_VALIDITY_IN_SECONDS} \\' >> /app/start.sh && \
     echo '  -Djwt.token-issuer=${JWT_TOKEN_ISSUER} \\' >> /app/start.sh && \
+    echo '  -Dspring.data.redis.enabled=false \\' >> /app/start.sh && \
+    echo '  -Dmanagement.health.diskspace.enabled=false \\' >> /app/start.sh && \
+    echo '  -Dmanagement.health.redis.enabled=false \\' >> /app/start.sh && \
+    echo '  -Dspring.rabbitmq.enabled=false \\' >> /app/start.sh && \
+    echo '  -Drabbitmq.enabled=false \\' >> /app/start.sh && \
     echo '  -jar build/libs/stoblyx-portfolio-0.0.1-SNAPSHOT.jar' >> /app/start.sh && \
     chmod +x /app/start.sh
 
