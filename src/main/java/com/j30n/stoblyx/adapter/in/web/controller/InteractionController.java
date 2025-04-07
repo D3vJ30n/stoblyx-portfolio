@@ -24,8 +24,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class InteractionController {
 
-    private static final String RESULT_SUCCESS = "SUCCESS";
-    private static final String RESULT_ERROR = "ERROR";
     private static final String ERROR_AUTH_REQUIRED = "인증이 필요합니다.";
     private static final String ERROR_SERVER = "서버 오류가 발생했습니다.";
 

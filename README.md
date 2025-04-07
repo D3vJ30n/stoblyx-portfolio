@@ -180,15 +180,15 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 - **헥사고날 아키텍처 기반 AI 서비스 통합**
 
-  - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
-  - 도메인 로직과 AI 서비스 간의 느슨한 결합
-  - 폴백 메커니즘을 통한 서비스 안정성 확보
+    - 포트와 어댑터 패턴을 통한 외부 AI 서비스 연동
+    - 도메인 로직과 AI 서비스 간의 느슨한 결합
+    - 폴백 메커니즘을 통한 서비스 안정성 확보
 
 - **AI 통합 컴포넌트**
-  - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
-  - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동(구현 예정)
-  - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
-  - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
+    - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
+    - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동(구현 예정)
+    - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
+    - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
 
 ---
 
@@ -242,9 +242,9 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 #### ERD 다이어그램
 
 <div align="center">
-  
+
 ![ERD](./src/docs/diagrams/erd_V7.png)
-  
+
 </div>
 
 ## 6. 데이터베이스 설계
@@ -257,584 +257,20 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 - 설명: 모든 엔티티가 상속받는 시간 관련 기본 클래스입니다.
 - 주요 필드
-  - `created_at`: TIMESTAMP - 생성 시간, @CreatedDate 어노테이션으로 자동 관리
-  - `modified_at`: TIMESTAMP - 수정 시간, @LastModifiedDate 어노테이션으로 자동 관리
+    - `created_at`: TIMESTAMP - 생성 시간, @CreatedDate 어노테이션으로 자동 관리
+    - `modified_at`: TIMESTAMP - 수정 시간, @LastModifiedDate 어노테이션으로 자동 관리
 - JPA의 @EntityListeners(AuditingEntityListener.class) 적용
 
 ### **BaseEntity**
 
 - 설명: BaseTimeEntity를 확장한 공통 기본 클래스입니다.
 - 주요 필드
-  - `is_deleted`: BOOLEAN - 삭제 여부 (논리적 삭제 지원)
+    - `is_deleted`: BOOLEAN - 삭제 여부 (논리적 삭제 지원)
 - 주요 메서드
-  - `delete()`: 논리적 삭제 처리
-  - `restore()`: 논리적 삭제 복구
-  - `isDeleted()`: 삭제 상태 확인
-  - `updateModifiedAt()`: 수정 시간 갱신
-
-### **User (사용자)**
-
-- 테이블: `users`
-- 설명: 사용자 계정 및 인증 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 사용자 고유 식별자 (PK)
-  - `username`: VARCHAR(50) - 사용자 이름, 로그인 시 사용 (NOT NULL, UNIQUE)
-  - `password`: VARCHAR(255) - 암호화된 비밀번호 (NOT NULL)
-  - `nickname`: VARCHAR(50) - 화면에 표시되는 닉네임
-  - `email`: VARCHAR(100) - 이메일 주소 (NOT NULL, UNIQUE)
-  - `role`: VARCHAR(20) - 사용자 권한 (USER, EDITOR, WRITER, ADMIN) (NOT NULL)
-  - `accountStatus`: VARCHAR(20) - 계정 상태 (ACTIVE, SUSPENDED, DELETED) (DEFAULT 'ACTIVE')
-  - `profileImageUrl`: VARCHAR(255) - 프로필 이미지 URL
-  - `lastLoginAt`: TIMESTAMP - 마지막 로그인 시간
-- 제약조건
-  - 사용자 이름과 이메일은 고유해야 함 (uk_username, uk_email)
-
-### **UserInterest (사용자 관심사)**
-
-- 테이블: `user_interests`
-- 설명: 사용자의 관심 분야 정보를 저장합니다. 개인화된 추천에 활용됩니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `interests`: TEXT - 관심사 목록
-- 관계
-  - User(1) ↔ UserInterest(1) (일대일)
-- 제약조건
-  - user_id는 고유해야 함 (uk_user_interests)
-  - users 테이블의 id를 참조 (fk_user_interests_user)
-
-### **Auth (인증)**
-
-- 테이블: `auth`
-- 설명: 사용자 인증 관련 데이터(JWT 토큰 등)를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `refreshToken`: VARCHAR(255) - JWT 리프레시 토큰
-  - `tokenType`: VARCHAR(20) - 토큰 유형 (NOT NULL)
-  - `expiryDate`: TIMESTAMP - 토큰 만료 일시 (NOT NULL)
-  - `lastUsedAt`: TIMESTAMP - 마지막 사용 시간
-- 관계
-  - User(1) ↔ Auth(1) (일대일)
-- 제약조건
-  - user_id는 고유해야 함 (uk_auth_user)
-  - users 테이블의 id를 참조 (fk_auth_user)
-
-### **Book (책)**
-
-- 테이블: `books`
-- 설명: 책 정보를 저장합니다. 외부 API 또는 관리자가 등록합니다.
-- 주요 필드
-  - `id`: BIGINT - 책 고유 식별자 (PK)
-  - `title`: VARCHAR(255) - 책 제목 (NOT NULL)
-  - `author`: VARCHAR(100) - 저자명 (NOT NULL)
-  - `isbn`: VARCHAR(13) - ISBN 코드
-  - `isbn13`: VARCHAR(13) - ISBN-13 코드
-  - `description`: VARCHAR(2000) - 책 설명
-  - `publisher`: VARCHAR(100) - 출판사
-  - `publishDate`: DATE - 출판일
-  - `thumbnailUrl`: VARCHAR(255) - 책 표지 썸네일 URL
-  - `cover`: VARCHAR(255) - 커버 이미지 URL
-  - `publicationYear`: INTEGER - 출판 연도
-  - `totalPages`: INTEGER - 총 페이지 수
-  - `avgReadingTime`: INTEGER - 평균 읽기 시간(분)
-  - `averageRating`: DOUBLE - 평균 평점
-  - `ratingCount`: INTEGER - 평점 수
-  - `popularity`: INTEGER - 인기도 (DEFAULT 0)
-  - `priceStandard`: INTEGER - 정가
-  - `priceSales`: INTEGER - 판매가
-  - `categoryId`: VARCHAR(50) - 카테고리 ID
-  - `categoryName`: VARCHAR(255) - 카테고리 이름
-- 관계
-  - Book(1) ↔ BookGenre(N) (일대다)
-  - Book(1) ↔ Quote(N) (일대다)
-  - Book(1) ↔ ShortFormContent(N) (일대다)
-  - Book(1) ↔ Summary(N) (일대다)
-  - Book(1) ↔ BookMedia(N) (일대다)
-
-### **BookGenre (책 장르)**
-
-- 테이블: `book_genres`
-- 설명: 책과 장르 간의 다대다 관계를 관리합니다.
-- 주요 필드
-  - `book_id`: BIGINT - 책 ID (FK, NOT NULL)
-  - `genre`: VARCHAR(100) - 장르명 (NOT NULL)
-- 관계
-  - Book(1) ↔ BookGenre(N) (일대다)
-- 제약조건
-  - book_id와 genre의 조합은 고유함 (복합 PK)
-  - books 테이블의 id를 참조 (fk_book_genres_book)
-
-### **Quote (문구)**
-
-- 테이블: `quotes`
-- 설명: 책에서 추출한 인용구 또는 문구를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 문구 고유 식별자 (PK)
-  - `content`: TEXT - 문구 내용 (NOT NULL)
-  - `page`: INT - 페이지 번호
-  - `memo`: TEXT - 사용자 메모
-  - `like_count`: INTEGER - 좋아요 수 (DEFAULT 0)
-  - `save_count`: INTEGER - 저장 수 (DEFAULT 0)
-  - `user_id`: BIGINT - 문구를 등록한 사용자 ID (FK, NOT NULL)
-  - `book_id`: BIGINT - 출처 책 ID (FK, NOT NULL)
-- 관계
-  - User(1) ↔ Quote(N) (일대다)
-  - Book(1) ↔ Quote(N) (일대다)
-  - Quote(1) ↔ Like(N) (일대다)
-  - Quote(1) ↔ SavedQuote(N) (일대다)
-  - Quote(1) ↔ Comment(N) (일대다)
-  - Quote(1) ↔ QuoteSummary(N) (일대다)
-  - Quote(1) ↔ ShortFormContent(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_quotes_user)
-  - books 테이블의 id를 참조 (fk_quotes_book)
-
-### **Comment (댓글)**
-
-- 테이블: `comments`
-- 설명: 문구에 대한 사용자 댓글을 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 댓글 고유 식별자 (PK)
-  - `content`: TEXT - 댓글 내용 (NOT NULL)
-  - `user_id`: BIGINT - 작성자 ID (FK, NOT NULL)
-  - `quote_id`: BIGINT - 문구 ID (FK, NOT NULL)
-- 관계
-  - User(1) ↔ Comment(N) (일대다)
-  - Quote(1) ↔ Comment(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_comments_user)
-  - quotes 테이블의 id를 참조 (fk_comments_quote)
-
-### **Like (좋아요)**
-
-- 테이블: `likes`
-- 설명: 사용자가 문구에 표시한 좋아요 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 좋아요 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `quote_id`: BIGINT - 문구 ID (FK, NOT NULL)
-- 관계
-  - User(1) ↔ Like(N) (일대다)
-  - Quote(1) ↔ Like(N) (일대다)
-- 제약조건
-  - user_id와 quote_id의 조합은 고유함 (uk_likes)
-  - users 테이블의 id를 참조 (fk_likes_user)
-  - quotes 테이블의 id를 참조 (fk_likes_quote)
-
-### **SavedQuote (저장된 문구)**
-
-- 테이블: `saved_quotes`
-- 설명: 사용자가 저장한 문구 정보를 관리합니다.
-- 주요 필드
-  - `id`: BIGINT - 저장 기록 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `quote_id`: BIGINT - 문구 ID (FK, NOT NULL)
-  - `note`: VARCHAR(255) - 저장 시 추가한 메모
-- 관계
-  - User(1) ↔ SavedQuote(N) (일대다)
-  - Quote(1) ↔ SavedQuote(N) (일대다)
-- 제약조건
-  - user_id와 quote_id의 조합은 고유함 (uk_saved_quotes)
-  - users 테이블의 id를 참조 (fk_saved_quotes_user)
-  - quotes 테이블의 id를 참조 (fk_saved_quotes_quote)
-
-### **QuoteSummary (문구 요약)**
-
-- 테이블: `quote_summaries`
-- 설명: 문구에 대한 AI 생성 요약을 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 요약 고유 식별자 (PK)
-  - `content`: VARCHAR(1000) - 요약 내용 (NOT NULL)
-  - `algorithm`: VARCHAR(50) - 사용된 알고리즘 정보
-  - `generatedAt`: TIMESTAMP - 생성 시간
-  - `quality`: DOUBLE - 요약 품질 점수 (DEFAULT 0.0)
-  - `quote_id`: BIGINT - 원본 문구 ID (FK, NOT NULL)
-- 관계
-  - Quote(1) ↔ QuoteSummary(N) (일대다)
-- 제약조건
-  - quotes 테이블의 id를 참조 (fk_quote_summaries_quote)
-
-### **ShortFormContent (숏폼 콘텐츠)**
-
-- 테이블: `SHORT_FORM_CONTENTS`
-- 설명: AI로 생성된 숏폼 콘텐츠 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 콘텐츠 고유 식별자 (PK)
-  - `title`: VARCHAR(100) - 콘텐츠 제목 (NOT NULL)
-  - `description`: VARCHAR(1000) - 콘텐츠 설명
-  - `status`: VARCHAR(20) - 콘텐츠 상태 (DRAFT, PUBLISHED, REMOVED) (NOT NULL)
-  - `duration`: INT - 재생 시간(초)
-  - `viewCount`: INT - 조회수 (DEFAULT 0)
-  - `likeCount`: INT - 좋아요 수 (DEFAULT 0)
-  - `shareCount`: INT - 공유 수 (DEFAULT 0)
-  - `commentCount`: INT - 댓글 수 (DEFAULT 0)
-  - `contentType`: VARCHAR(50) - 콘텐츠 유형
-  - `subtitles`: TEXT - 자막
-  - `videoUrl`: TEXT - 비디오 URL
-  - `thumbnailUrl`: TEXT - 썸네일 URL
-  - `audioUrl`: TEXT - 오디오 URL
-  - `book_id`: BIGINT - 연관된 책 ID (FK)
-  - `quote_id`: BIGINT - 연관된 문구 ID (FK)
-- 관계
-  - Book(1) ↔ ShortFormContent(N) (일대다)
-  - Quote(1) ↔ ShortFormContent(N) (일대다)
-  - ShortFormContent(1) ↔ ContentInteraction(N) (일대다)
-  - ShortFormContent(1) ↔ ContentComment(N) (일대다)
-  - ShortFormContent(1) ↔ MediaResource(N) (일대다)
-  - ShortFormContent(1) ↔ ContentLike(N) (일대다)
-  - ShortFormContent(1) ↔ ContentBookmark(N) (일대다)
-- 제약조건
-  - books 테이블의 id를 참조 (fk_short_form_contents_book)
-  - quotes 테이블의 id를 참조 (fk_short_form_contents_quote)
-
-### **ContentInteraction (콘텐츠 상호작용)**
-
-- 테이블: `CONTENT_INTERACTION`
-- 설명: 사용자와 콘텐츠 간의 상호작용 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 상호작용 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `content_id`: BIGINT - 콘텐츠 ID (FK, NOT NULL)
-  - `liked`: BOOLEAN - 좋아요 여부 (DEFAULT FALSE)
-  - `bookmarked`: BOOLEAN - 북마크 여부 (DEFAULT FALSE)
-  - `viewedAt`: TIMESTAMP - 조회 시간
-- 관계
-  - User(1) ↔ ContentInteraction(N) (일대다)
-  - ShortFormContent(1) ↔ ContentInteraction(N) (일대다)
-- 제약조건
-  - user_id와 content_id의 조합은 고유함 (uk_content_interactions)
-  - users 테이블의 id를 참조 (fk_content_interactions_user)
-  - SHORT_FORM_CONTENTS 테이블의 id를 참조 (fk_content_interactions_content)
-
-### **ContentComment (콘텐츠 댓글)**
-
-- 테이블: `content_comments`
-- 설명: 숏폼 콘텐츠에 대한 사용자 댓글을 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 댓글 고유 식별자 (PK)
-  - `content`: TEXT - 댓글 내용 (NOT NULL)
-  - `user_id`: BIGINT - 작성자 ID (FK, NOT NULL)
-  - `content_id`: BIGINT - 콘텐츠 ID (FK, NOT NULL)
-- 관계
-  - User(1) ↔ ContentComment(N) (일대다)
-  - ShortFormContent(1) ↔ ContentComment(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_content_comments_user)
-  - SHORT_FORM_CONTENTS 테이블의 id를 참조 (fk_content_comments_content)
-
-### **MediaResource (미디어 리소스)**
-
-- 테이블: `media_resources`
-- 설명: 콘텐츠에 사용되는 미디어 리소스 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 리소스 고유 식별자 (PK)
-  - `content_id`: BIGINT - 연관된 콘텐츠 ID (FK, NOT NULL)
-  - `type`: VARCHAR(50) - 미디어 유형 (IMAGE, VIDEO, AUDIO) (NOT NULL)
-  - `url`: TEXT - 리소스 URL (NOT NULL)
-  - `thumbnailUrl`: VARCHAR(255) - 썸네일 URL
-  - `description`: VARCHAR(1000) - 미디어 설명
-  - `duration`: INT - 미디어 재생 시간(초)
-- 관계
-  - ShortFormContent(1) ↔ MediaResource(N) (일대다)
-- 제약조건
-  - SHORT_FORM_CONTENTS 테이블의 id를 참조 (fk_media_resources_content)
-
-### **UserSimilarity (사용자 유사도)**
-
-- 테이블: `user_similarities`
-- 설명: 사용자 간의 유사도 점수를 저장하여 추천 시스템에 활용합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `source_user_id`: BIGINT - 기준 사용자 ID (FK, NOT NULL)
-  - `target_user_id`: BIGINT - 비교 대상 사용자 ID (FK, NOT NULL)
-  - `similarity_score`: DOUBLE - 유사도 점수 (NOT NULL)
-  - `is_active`: BOOLEAN - 활성화 여부 (DEFAULT TRUE)
-- 관계
-  - User(1) ↔ UserSimilarity(N) (source_user_id) (일대다)
-  - User(1) ↔ UserSimilarity(N) (target_user_id) (일대다)
-- 제약조건
-  - source_user_id와 target_user_id의 조합은 고유함 (uk_user_similarities)
-  - users 테이블의 id를 참조 (fk_similarities_source_user, fk_similarities_target_user)
-
-### **SystemSetting (시스템 설정)**
-
-- 테이블: `system_settings`
-- 설명: 시스템 전반의 설정값을 저장하고 관리합니다.
-- 주요 필드
-  - `id`: BIGINT - 설정 고유 식별자 (PK)
-  - `setting_key`: VARCHAR(100) - 설정 키 (NOT NULL, UNIQUE)
-  - `setting_value`: VARCHAR(1000) - 설정 값 (NOT NULL)
-  - `description`: VARCHAR(500) - 설정 설명
-  - `category`: VARCHAR(50) - 설정 카테고리 (NOT NULL)
-  - `is_encrypted`: BOOLEAN - 암호화 여부 (NOT NULL, DEFAULT FALSE)
-  - `is_system_managed`: BOOLEAN - 시스템 관리 여부 (NOT NULL, DEFAULT FALSE)
-  - `last_modified_by`: BIGINT - 마지막 수정자 ID
-  - `default_value`: VARCHAR(1000) - 기본값
-  - `validation_pattern`: VARCHAR(255) - 유효성 검사 패턴
-- 제약조건
-  - setting_key는 고유해야 함 (uk_setting_key)
-
-### **Search (검색)**
-
-- 테이블: `search`
-- 설명: 사용자의 검색 이력을 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 검색 기록 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK)
-  - `search_term`: VARCHAR(255) - 검색어 (NOT NULL)
-  - `search_type`: VARCHAR(50) - 검색 유형 (NOT NULL)
-  - `search_count`: INT - 검색 횟수 (DEFAULT 1)
-  - `last_searched_at`: TIMESTAMP - 마지막 검색 시간
-- 관계
-  - User(1) ↔ Search(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_search_user)
-
-### **SearchTermProfile (검색어 프로필)**
-
-- 테이블: `search_term_profiles`
-- 설명: 검색어에 대한 통계 및 추가 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `search_term`: VARCHAR(255) - 검색어 (NOT NULL, UNIQUE)
-  - `search_count`: INT - 검색 횟수 (DEFAULT 0)
-  - `user_demographic_data`: TEXT - 사용자 인구통계 데이터
-  - `related_terms`: TEXT - 관련 검색어
-  - `trend_data`: TEXT - 트렌드 데이터
-- 제약조건
-  - search_term은 고유해야 함 (uk_search_term)
-
-### **RankingUserScore (사용자 랭킹 점수)**
-
-- 테이블: `ranking_user_score`
-- 설명: 사용자 활동에 따른 랭킹 점수 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 점수 기록 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (NOT NULL, UNIQUE)
-  - `current_score`: INT - 현재 점수 (NOT NULL)
-  - `previous_score`: INT - 이전 점수
-  - `rank_type`: VARCHAR(20) - 랭크 유형 (BRONZE, SILVER, GOLD, PLATINUM, DIAMOND) (NOT NULL)
-  - `last_activity_date`: TIMESTAMP - 마지막 활동 시간
-  - `suspicious_activity`: BOOLEAN - 의심스러운 활동 여부 (NOT NULL, DEFAULT FALSE)
-  - `report_count`: INT - 신고 횟수 (NOT NULL, DEFAULT 0)
-  - `account_suspended`: BOOLEAN - 계정 정지 여부 (NOT NULL, DEFAULT FALSE)
-
-### **RankingUserActivity (사용자 랭킹 활동)**
-
-- 테이블: `ranking_user_activity`
-- 설명: 점수를 획득한 사용자 활동 내역을 기록합니다.
-- 주요 필드
-  - `id`: BIGINT - 활동 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `activity_type`: VARCHAR(50) - 활동 유형 (NOT NULL)
-  - `points`: INT - 획득한 포인트 (NOT NULL)
-  - `activity_date`: TIMESTAMP - 활동 일시 (NOT NULL)
-  - `reference_id`: BIGINT - 참조 ID
-  - `reference_type`: VARCHAR(50) - 참조 유형
-- 관계
-  - User(1) ↔ RankingUserActivity(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_ranking_activity_user)
-
-### **RankingLeaderboard (랭킹 리더보드)**
-
-- 테이블: `ranking_leaderboard`
-- 설명: 특정 기간 동안의 사용자 랭킹 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `username`: VARCHAR(50) - 사용자 이름 (NOT NULL)
-  - `score`: INT - 점수 (NOT NULL)
-  - `rank_type`: VARCHAR(20) - 랭크 유형 (NOT NULL)
-  - `leaderboard_type`: VARCHAR(20) - 리더보드 유형 (NOT NULL)
-  - `rank_position`: INT - 순위
-  - `period_start_date`: TIMESTAMP - 기간 시작일 (NOT NULL)
-  - `period_end_date`: TIMESTAMP - 기간 종료일 (NOT NULL)
-- 관계
-  - User(1) ↔ RankingLeaderboard(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_leaderboard_user)
-
-### **RankingBadge (랭킹 뱃지)**
-
-- 테이블: `ranking_badge`
-- 설명: 사용자가 획득할 수 있는 뱃지 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 뱃지 고유 식별자 (PK)
-  - `name`: VARCHAR(100) - 뱃지 이름 (NOT NULL)
-  - `description`: VARCHAR(500) - 뱃지 설명
-  - `image_url`: VARCHAR(255) - 뱃지 이미지 URL
-  - `badge_type`: VARCHAR(50) - 뱃지 유형 (NOT NULL)
-  - `requirement_type`: VARCHAR(50) - 획득 요구사항 유형 (NOT NULL)
-  - `threshold_value`: INT - 임계값 (NOT NULL)
-  - `points_awarded`: INT - 획득 시 지급 포인트 (DEFAULT 0)
-
-### **RankingAchievement (랭킹 업적)**
-
-- 테이블: `ranking_achievement`
-- 설명: 사용자가 획득한 뱃지를 기록합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `badge_id`: BIGINT - 뱃지 ID (FK, NOT NULL)
-  - `achieved_at`: TIMESTAMP - 획득 일시 (NOT NULL)
-- 관계
-  - User(1) ↔ RankingAchievement(N) (일대다)
-  - RankingBadge(1) ↔ RankingAchievement(N) (일대다)
-- 제약조건
-  - user_id와 badge_id의 조합은 고유함 (uk_user_badge)
-  - users 테이블의 id를 참조 (fk_achievement_user)
-  - ranking_badge 테이블의 id를 참조 (fk_achievement_badge)
-
-### **Post (게시물)**
-
-- 테이블: `posts`
-- 설명: 사용자가 작성한 게시물 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 게시물 고유 식별자 (PK)
-  - `title`: VARCHAR(255) - 게시물 제목 (NOT NULL)
-  - `content`: TEXT - 게시물 내용 (NOT NULL)
-  - `user_id`: BIGINT - 작성자 ID (FK, NOT NULL)
-  - `thumbnail_url`: VARCHAR(255) - 썸네일 URL
-- 관계
-  - User(1) ↔ Post(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_posts_user)
-
-### **PopularSearchTerm (인기 검색어)**
-
-- 테이블: `popular_search_terms`
-- 설명: 인기 검색어와 빈도 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `search_term`: VARCHAR(255) - 검색어 (NOT NULL, UNIQUE)
-  - `search_count`: INT - 검색 횟수 (NOT NULL, DEFAULT 0)
-  - `popularity_score`: DOUBLE - 인기도 점수 (NOT NULL, DEFAULT 1.0)
-  - `last_updated_at`: TIMESTAMP - 마지막 업데이트 시간
-- 제약조건
-  - search_term은 고유해야 함 (uk_search_term)
-
-### **GamificationReward (게이미피케이션 보상)**
-
-- 테이블: `gamification_rewards`
-- 설명: 사용자 활동에 대한 보상 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 보상 고유 식별자 (PK)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-  - `reward_type`: VARCHAR(50) - 보상 유형 (NOT NULL)
-  - `points`: INT - 포인트 (NOT NULL, DEFAULT 0)
-  - `description`: VARCHAR(255) - 보상 설명
-  - `reference_id`: BIGINT - 참조 ID
-  - `reference_type`: VARCHAR(50) - 참조 유형
-  - `is_claimed`: BOOLEAN - 수령 여부 (DEFAULT FALSE)
-  - `expiry_date`: TIMESTAMP - 만료일
-- 관계
-  - User(1) ↔ GamificationReward(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_rewards_user)
-
-### **ContentLike (콘텐츠 좋아요)**
-
-- 테이블: `content_likes`
-- 설명: 사용자가 콘텐츠에 표시한 좋아요 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 좋아요 고유 식별자 (PK)
-  - `content_id`: BIGINT - 콘텐츠 ID (FK, NOT NULL)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-- 관계
-  - ShortFormContent(1) ↔ ContentLike(N) (일대다)
-  - User(1) ↔ ContentLike(N) (일대다)
-- 제약조건
-  - content_id와 user_id의 조합은 고유함 (uk_content_likes)
-  - SHORT_FORM_CONTENTS 테이블의 id를 참조 (fk_content_likes_content)
-  - users 테이블의 id를 참조 (fk_content_likes_user)
-
-### **ContentBookmark (콘텐츠 북마크)**
-
-- 테이블: `content_bookmarks`
-- 설명: 사용자가 북마크한 콘텐츠 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 북마크 고유 식별자 (PK)
-  - `content_id`: BIGINT - 콘텐츠 ID (FK, NOT NULL)
-  - `user_id`: BIGINT - 사용자 ID (FK, NOT NULL)
-- 관계
-  - ShortFormContent(1) ↔ ContentBookmark(N) (일대다)
-  - User(1) ↔ ContentBookmark(N) (일대다)
-- 제약조건
-  - content_id와 user_id의 조합은 고유함 (uk_content_bookmarks)
-  - SHORT_FORM_CONTENTS 테이블의 id를 참조 (fk_content_bookmarks_content)
-  - users 테이블의 id를 참조 (fk_content_bookmarks_user)
-
-### **Summary (책 요약)**
-
-- 테이블: `summaries`
-- 설명: 책에 대한 AI 생성 요약을 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 요약 고유 식별자 (PK)
-  - `book_id`: BIGINT - 책 ID (FK, NOT NULL)
-  - `content`: TEXT - 요약 내용 (NOT NULL)
-  - `chapter`: VARCHAR(100) - 챕터 정보
-  - `page`: VARCHAR(50) - 페이지 정보
-- 관계
-  - Book(1) ↔ Summary(N) (일대다)
-- 제약조건
-  - books 테이블의 id를 참조 (fk_summaries_book)
-
-### **MediaFallback (미디어 폴백)**
-
-- 테이블: `media_fallbacks`
-- 설명: Pexels API 호출 실패 시 사용할 백업 미디어 리소스를 관리합니다.
-- 주요 필드
-  - `id`: BIGINT - 폴백 리소스 고유 식별자 (PK)
-  - `media_type`: VARCHAR(50) - 미디어 유형 (NOT NULL)
-  - `content_category`: VARCHAR(100) - 콘텐츠 카테고리 (NOT NULL)
-  - `fallback_url`: TEXT - 폴백 리소스 URL (NOT NULL)
-  - `description`: VARCHAR(500) - 폴백 리소스 설명
-  - `priority`: INTEGER - 우선순위 (DEFAULT 1)
-  - `is_default`: BOOLEAN - 기본 폴백 여부 (DEFAULT FALSE)
-- 제약조건
-  - media_type, content_category, is_default의 조합은 고유함 (uk_media_fallbacks)
-
-### **ApiCallLog (API 호출 로그)**
-
-- 테이블: `api_call_logs`
-- 설명: 외부 API 호출 로그 및 성능 모니터링 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 로그 고유 식별자 (PK)
-  - `api_name`: VARCHAR(100) - API 이름 (NOT NULL)
-  - `endpoint`: VARCHAR(255) - 엔드포인트 (NOT NULL)
-  - `request_params`: TEXT - 요청 파라미터
-  - `response_status`: INTEGER - 응답 상태 코드
-  - `response_time`: BIGINT - 응답 시간
-  - `error_message`: TEXT - 오류 메시지
-  - `success`: BOOLEAN - 성공 여부 (DEFAULT TRUE)
-  - `fallback_used`: BOOLEAN - 폴백 사용 여부 (DEFAULT FALSE)
-  - `fallback_resource_id`: BIGINT - 사용된 폴백 리소스 ID (FK)
-  - `user_id`: BIGINT - 사용자 ID (FK)
-  - `content_id`: BIGINT - 콘텐츠 ID
-- 관계
-  - User(1) ↔ ApiCallLog(N) (일대다)
-  - MediaFallback(1) ↔ ApiCallLog(N) (일대다)
-- 제약조건
-  - users 테이블의 id를 참조 (fk_api_logs_user)
-  - media_fallbacks 테이블의 id를 참조 (fk_api_logs_fallback)
-
-### **BookMedia (책 미디어)**
-
-- 테이블: `book_media`
-- 설명: 책 관련 미디어 리소스와 책을 직접 연결하는 정보를 저장합니다.
-- 주요 필드
-  - `id`: BIGINT - 고유 식별자 (PK)
-  - `book_id`: BIGINT - 책 ID (FK, NOT NULL)
-  - `media_type`: VARCHAR(50) - 미디어 유형 (NOT NULL)
-  - `url`: TEXT - 미디어 URL (NOT NULL)
-  - `is_fallback`: BOOLEAN - 폴백 리소스 여부 (DEFAULT FALSE)
-  - `source`: VARCHAR(50) - 미디어 소스 (DEFAULT 'PEXELS')
-- 관계
-  - Book(1) ↔ BookMedia(N) (일대다)
-- 제약조건
-  - books 테이블의 id를 참조 (fk_book_media_book)
+    - `delete()`: 논리적 삭제 처리
+    - `restore()`: 논리적 삭제 복구
+    - `isDeleted()`: 삭제 상태 확인
+    - `updateModifiedAt()`: 수정 시간 갱신
 
 ---
 
@@ -843,63 +279,63 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 ### 회원 시스템
 
 - JWT 기반 인증/인가
-  - JwtTokenProvider, JwtAuthenticationFilter 구현
-  - 토큰 유효성 검증 및 예외 처리
+    - JwtTokenProvider, JwtAuthenticationFilter 구현
+    - 토큰 유효성 검증 및 예외 처리
 - Access/Refresh Token 분리
-  - 보안 강화 및 토큰 갱신 메커니즘 구현
+    - 보안 강화 및 토큰 갱신 메커니즘 구현
 - BCrypt를 통한 비밀번호 안전 저장
-  - PasswordEncoder를 통한 단방향 암호화
+    - PasswordEncoder를 통한 단방향 암호화
 - 보안 설정 및 CSRF 보호
 - 세션 고정 공격 방지를 위한 Redis 설정 (현재 비활성화 상태)
 
 ### 문구 및 AI 추천 기능 (부분 구현)
 
 - 문구 검색 기능
-  - 키워드, 작가, 카테고리별 검색 지원
+    - 키워드, 작가, 카테고리별 검색 지원
 - KoBART 기반 콘텐츠 요약 기능
-  - 장문 컨텐츠의 효율적 요약 처리
+    - 장문 컨텐츠의 효율적 요약 처리
 - 요약 실패 시 폴백 메커니즘
-  - "첫 문장 + 마지막 문장 조합" 제공
+    - "첫 문장 + 마지막 문장 조합" 제공
 - 콘텐츠 추천 기능 (기본 구현)
-  - 인기도 기반 기본 추천 기능
+    - 인기도 기반 기본 추천 기능
 - AI 기반 고급 추천 시스템 (구현 예정)
-  - 사용자 맞춤형 추천 알고리즘
+    - 사용자 맞춤형 추천 알고리즘
 
 ### 커뮤니티 기능
 
 - 좋아요 시스템
-  - 콘텐츠별 좋아요 상태 관리
-  - 실시간 좋아요 수 업데이트
+    - 콘텐츠별 좋아요 상태 관리
+    - 실시간 좋아요 수 업데이트
 - 댓글 시스템
-  - 계층형 댓글 구조 지원
-  - 댓글 작성/수정/삭제 기능
+    - 계층형 댓글 구조 지원
+    - 댓글 작성/수정/삭제 기능
 - 북마크 기능
-  - 개인 콘텐츠 저장 및 관리
-  - 저장된 콘텐츠 목록 조회
+    - 개인 콘텐츠 저장 및 관리
+    - 저장된 콘텐츠 목록 조회
 - 콘텐츠 공유 기능
 - 트렌드 피드 제공 (기본 구현)
-  - 인기 콘텐츠 노출 시스템
+    - 인기 콘텐츠 노출 시스템
 
 ### 콘텐츠 관리 시스템
 
 - 콘텐츠 생성 및 관리
-  - 다양한 유형의 콘텐츠 지원
-  - 상태 관리 (임시저장, 발행, 삭제)
+    - 다양한 유형의 콘텐츠 지원
+    - 상태 관리 (임시저장, 발행, 삭제)
 - 콘텐츠 승인 프로세스
-  - 관리자 승인 워크플로우
-  - 콘텐츠 검토 및 피드백
+    - 관리자 승인 워크플로우
+    - 콘텐츠 검토 및 피드백
 - 다중 미디어 지원 (부분 구현)
-  - 이미지, 텍스트 통합 지원
-  - 비디오 및 오디오 기본 지원
+    - 이미지, 텍스트 통합 지원
+    - 비디오 및 오디오 기본 지원
 
 ### 검색 시스템
 
 - 다양한 검색 필터
-  - 키워드, 작성자, 카테고리 등
+    - 키워드, 작성자, 카테고리 등
 - 검색 결과 정렬 옵션
-  - 최신순, 인기순, 관련도순
+    - 최신순, 인기순, 관련도순
 - 페이지네이션 처리
-  - 대용량 검색 결과 효율적 처리
+    - 대용량 검색 결과 효율적 처리
 
 ### 랭킹 및 게이미피케이션 기능
 
@@ -929,13 +365,13 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 #### 4. 게이미피케이션 & 랭킹 시스템 (기본 구현)
 
-| 랭크     | 조건 (구현 상태)                       | 혜택 (구현 상태)                                |
-| -------- | -------------------------------------- | ----------------------------------------------- |
-| 브론즈   | 기본 기능 사용 가능                    | 일일 콘텐츠 생성 3회 (기본 구현)                |
-| 실버     | 인기 문구 TOP 10 확인 가능 (기본 구현) | 일일 콘텐츠 생성 5회, 프리미엄 BGM (일부 구현)  |
-| 골드     | 100+ 좋아요 문구 저장 가능 (기본 구현) | 일일 콘텐츠 생성 10회, 고급 템플릿 (일부 구현)  |
-| 플래티넘 | AI 추천 영상 제작 가능 (구현 예정)     | 무제한 콘텐츠 생성, 커스텀 워터마크 (구현 예정) |
-| 다이아   | 콘텐츠 트렌드 피드 노출 (구현 예정)    | 모든 혜택 + 콘텐츠 우선 노출 (구현 예정)        |
+| 랭크   | 조건 (구현 상태)                 | 혜택 (구현 상태)                     |
+|------|----------------------------|--------------------------------|
+| 브론즈  | 기본 기능 사용 가능                | 일일 콘텐츠 생성 3회 (기본 구현)           |
+| 실버   | 인기 문구 TOP 10 확인 가능 (기본 구현) | 일일 콘텐츠 생성 5회, 프리미엄 BGM (일부 구현) |
+| 골드   | 100+ 좋아요 문구 저장 가능 (기본 구현)  | 일일 콘텐츠 생성 10회, 고급 템플릿 (일부 구현)  |
+| 플래티넘 | AI 추천 영상 제작 가능 (구현 예정)     | 무제한 콘텐츠 생성, 커스텀 워터마크 (구현 예정)   |
+| 다이아  | 콘텐츠 트렌드 피드 노출 (구현 예정)      | 모든 혜택 + 콘텐츠 우선 노출 (구현 예정)      |
 
 #### 랭킹 산정 공식
 
@@ -947,7 +383,9 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 ```java
 // 가중 이동 평균(EWMA) 알고리즘 적용
-currentScore = (int) Math.round(alpha * newActivityScore + (1-alpha) * currentScore);
+currentScore =(int)Math.
+
+round(alpha *newActivityScore+(1-alpha) *currentScore);
 ```
 
 - **알파값(α):** 0.2 (최근 활동에 20% 가중치 부여)
@@ -964,7 +402,9 @@ currentScore = (int) Math.round(alpha * newActivityScore + (1-alpha) * currentSc
 
 ```java
 // 비활동 사용자 점수 감소 알고리즘 (엔티티에 메서드 구현, 주기적 실행은 구현 예정)
-currentScore = (int) Math.round(currentScore * (1 - decayFactor));
+currentScore =(int)Math.
+
+round(currentScore *(1-decayFactor));
 ```
 
 - **감소 계수:** 0.05 (계획: 7일마다 5% 감소)
@@ -1302,7 +742,8 @@ ISBN 검색은 가장 정확한 도서 정보를 제공하며, 기본적인 정�
 
 ## K6 테스트를 통한 사용자 흐름 시나리오 검증
 
-[K6](https://k6.io/)는 성능 테스트 도구로, 실제 사용자 행동을 시뮬레이션하여 애플리케이션의 성능과 안정성을 검증합니다. 스토블릭스 프로젝트에서는 모든 핵심 기능에 대한 종합적인 시나리오 테스트를 구현했습니다.
+[K6](https://k6.io/)는 성능 테스트 도구로, 실제 사용자 행동을 시뮬레이션하여 애플리케이션의 성능과 안정성을 검증합니다. 스토블릭스 프로젝트에서는 모든 핵심 기능에 대한 종합적인 시나리오 테스트를
+구현했습니다.
 
 ### 테스트 시나리오 및 결과
 
@@ -1606,8 +1047,9 @@ K6 테스트 결과는 다음과 같습니다.
 
 #### 14. 빈 의존성 주입(DI) 문제 해결
 
-- **문제**: 가장 빈번하게 발생한 UnsatisfiedDependencyException 및 NoSuchBeanDefinitionException 오류
-- **해결**: 스프링 부트 애플리케이션의 시작 로그를 확인하여 어떤 빈이 등록되었고, 어떤 빈이 실패했는지 자세한 내용을 파악한 후, 같은 타입을 가진 빈이 여러 개 있을 경우, @Primary, @Qualifier 등을 사용하여 주입할 빈을 명시적으로 지정
+- **문제**: 가장 빈번하게 발생한 UnsatisfiedDependencyException 및 NoSuchBeanDefinitionException 오류
+- **해결**: 스프링 부트 애플리케이션의 시작 로그를 확인하여 어떤 빈이 등록되었고, 어떤 빈이 실패했는지 자세한 내용을 파악한 후, 같은 타입을 가진 빈이 여러 개 있을 경우, @Primary,
+  @Qualifier 등을 사용하여 주입할 빈을 명시적으로 지정
 
 이러한 문제 해결 과정을 통해 더 안정적이고 유지보수하기 쉬운 코드베이스를 구축할 수 있었습니다.
 
@@ -1716,12 +1158,14 @@ src/
 // 입력 포트 (애플리케이션 서비스가 구현)
 public interface RankingUserScoreUseCase {
     RankingUserScore getUserScore(Long userId);
+
     List<RankingUserScore> getTopUsers(int limit);
 }
 
 // 출력 포트 (영속성 어댑터가 구현)
 public interface RankingUserScorePort {
     RankingUserScore findByUserId(Long userId);
+
     List<RankingUserScore> findTopByOrderByScoreDesc(int limit);
 }
 ```
@@ -1810,21 +1254,21 @@ com.j30n.stoblyx
 
 ### 캐시 및 데이터 처리
 
-| 전략         | 구현 방식                                      | 적용 대상                          | 개선 효과                  |
-| ------------ | ---------------------------------------------- | ---------------------------------- | -------------------------- |
-| Lazy Loading | `FetchType.LAZY` 설정                          | 사용자-문구 관계, 콘텐츠-댓글 관계 | 불필요한 데이터 로딩 방지  |
-| Cache-Aside  | Redis(비활성화 상태) `@Cacheable` + TTL(1시간) | 인기 문구 조회, 랭킹 정보          | 추후 활성화로 DB 부하 감소 |
-| Batch Insert | `hibernate.jdbc.batch_size=50`                 | 대량 콘텐츠 및 댓글 입력           | 대량 데이터 처리 최적화    |
-| 병렬 처리    | `CompletableFuture`를 활용한 비동기 API 호출   | 외부 API 호출 (KoBART, Pexels)     | 응답 시간 단축             |
-| 조회 최적화  | `@EntityGraph`를 통한 N+1 문제 해결            | 콘텐츠 조회, 사용자 활동 조회      | 쿼리 수 감소               |
+| 전략           | 구현 방식                                  | 적용 대상                      | 개선 효과            |
+|--------------|----------------------------------------|----------------------------|------------------|
+| Lazy Loading | `FetchType.LAZY` 설정                    | 사용자-문구 관계, 콘텐츠-댓글 관계       | 불필요한 데이터 로딩 방지   |
+| Cache-Aside  | Redis(비활성화 상태) `@Cacheable` + TTL(1시간) | 인기 문구 조회, 랭킹 정보            | 추후 활성화로 DB 부하 감소 |
+| Batch Insert | `hibernate.jdbc.batch_size=50`         | 대량 콘텐츠 및 댓글 입력             | 대량 데이터 처리 최적화    |
+| 병렬 처리        | `CompletableFuture`를 활용한 비동기 API 호출    | 외부 API 호출 (KoBART, Pexels) | 응답 시간 단축         |
+| 조회 최적화       | `@EntityGraph`를 통한 N+1 문제 해결           | 콘텐츠 조회, 사용자 활동 조회          | 쿼리 수 감소          |
 
 ### 모니터링 및 로깅
 
-| 항목            | 구현 기술              | 목적                              |
-| --------------- | ---------------------- | --------------------------------- |
-| API 성능 측정   | k6 테스트 스크립트     | 주요 API 응답 시간 및 처리량 측정 |
-| 오류 추적       | Logback 중앙 집중 로깅 | 예외 상황 감지 및 조치            |
-| 리소스 모니터링 | JVM 메모리 사용량 로깅 | 메모리 누수 및 성능 저하 방지     |
+| 항목        | 구현 기술            | 목적                    |
+|-----------|------------------|-----------------------|
+| API 성능 측정 | k6 테스트 스크립트      | 주요 API 응답 시간 및 처리량 측정 |
+| 오류 추적     | Logback 중앙 집중 로깅 | 예외 상황 감지 및 조치         |
+| 리소스 모니터링  | JVM 메모리 사용량 로깅   | 메모리 누수 및 성능 저하 방지     |
 
 ---
 
@@ -1837,6 +1281,7 @@ com.j30n.stoblyx
 - 캐싱 적용 대상: 사용자 정보, 콘텐츠 조회, 랭킹 정보
 
 ```java
+
 @Cacheable(value = "contents", key = "#id", unless = "#result == null")
 public ContentDto getContentById(Long id) {
     return contentRepository.findById(id)
@@ -1852,6 +1297,7 @@ public ContentDto getContentById(Long id) {
 - N+1 문제 해결: `@EntityGraph`와 JPQL JOIN FETCH 적용
 
 ```java
+
 @EntityGraph(attributePaths = {"user", "category"})
 Page<Content> findByStatusOrderByCreatedAtDesc(ContentStatus status, Pageable pageable);
 ```
@@ -1891,12 +1337,12 @@ private <T> T throttleRequest(Supplier<T> requestSupplier, T fallback) {
 ```javascript
 // k6 성능 테스트 예시
 export const options = {
-  vus: 50,
-  duration: "30s",
+    vus: 50,
+    duration: "30s",
 };
 
 export default function () {
-  http.get("http://localhost:8080/api/contents?page=0&size=10");
+    http.get("http://localhost:8080/api/contents?page=0&size=10");
 }
 ```
 
@@ -1909,40 +1355,40 @@ export default function () {
 ### 단위 테스트 (Unit Test)
 
 - **컨트롤러 테스트가 대체**
-  - JUnit 5 + MockMvc를 활용한 컨트롤러 메소드별 격리된 테스트
-  - @MockBean을 통한 서비스 레이어 모킹으로 비즈니스 로직 분리
-  - 요청/응답 구조 검증으로 API 계약 테스트
-  - RestDocs를 활용한 API 문서 자동화 연계
+    - JUnit 5 + MockMvc를 활용한 컨트롤러 메소드별 격리된 테스트
+    - @MockBean을 통한 서비스 레이어 모킹으로 비즈니스 로직 분리
+    - 요청/응답 구조 검증으로 API 계약 테스트
+    - RestDocs를 활용한 API 문서 자동화 연계
 
 ### 통합 테스트 (Integration Test)
 
 - **컨트롤러 테스트 + k6 테스트로 대체**
-  - 컨트롤러 테스트: Spring Security, 필터 등 통합
-  - k6 테스트: 실제 DB 연동, 외부 API 연동 검증
-  - 테스트 데이터 자동 초기화 및 정리
+    - 컨트롤러 테스트: Spring Security, 필터 등 통합
+    - k6 테스트: 실제 DB 연동, 외부 API 연동 검증
+    - 테스트 데이터 자동 초기화 및 정리
 
 ### E2E 테스트 (End-to-End Test)
 
 - **k6 테스트가 완벽히 대체**
-  - 실제 애플리케이션 환경에서 전체 흐름 테스트
-  - 사용자 시나리오 기반 테스트 (회원가입-로그인-콘텐츠 생성 등)
-  - 성능/부하 테스트 병행 가능
+    - 실제 애플리케이션 환경에서 전체 흐름 테스트
+    - 사용자 시나리오 기반 테스트 (회원가입-로그인-콘텐츠 생성 등)
+    - 성능/부하 테스트 병행 가능
 
 ```javascript
 // k6 테스트 예시 - 사용자 인증 흐름
 export default function () {
-  // 1. 로그인 요청
-  let loginRes = http.post(`${baseUrl}/api/auth/login`, payload);
-  check(loginRes, { "login status is 200": (r) => r.status === 200 });
+    // 1. 로그인 요청
+    let loginRes = http.post(`${baseUrl}/api/auth/login`, payload);
+    check(loginRes, {"login status is 200": (r) => r.status === 200});
 
-  // 2. 토큰 추출 및 저장
-  const authToken = loginRes.json("data.accessToken");
+    // 2. 토큰 추출 및 저장
+    const authToken = loginRes.json("data.accessToken");
 
-  // 3. 인증이 필요한 API 호출
-  let userRes = http.get(`${baseUrl}/api/users/me`, {
-    headers: { Authorization: `Bearer ${authToken}` },
-  });
-  check(userRes, { "user profile status is 200": (r) => r.status === 200 });
+    // 3. 인증이 필요한 API 호출
+    let userRes = http.get(`${baseUrl}/api/users/me`, {
+        headers: {Authorization: `Bearer ${authToken}`},
+    });
+    check(userRes, {"user profile status is 200": (r) => r.status === 200});
 }
 ```
 
@@ -1961,7 +1407,8 @@ export default function () {
 
 ### 개요
 
-Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비디오를 제공합니다. 그러나 API 호출 실패, 네트워크 오류, 타임아웃 등의 상황이 발생할 수 있습니다. 이런 경우에도 사용자 경험이 중단되지 않도록 폴백 메커니즘을 구현했습니다.
+Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비디오를 제공합니다. 그러나 API 호출 실패, 네트워크 오류, 타임아웃 등의 상황이 발생할 수 있습니다. 이런 경우에도 사용자 경험이
+중단되지 않도록 폴백 메커니즘을 구현했습니다.
 
 ### 폴백 구현 방식
 
@@ -1974,10 +1421,10 @@ Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비�
 
 2. **비동기 처리 및 타임아웃 관리**
 
-   - `CompletableFuture`를 사용한 비동기 API 호출
-   - 타임아웃 설정으로 응답 지연 방지 (5초)
-   - 예외 발생 시 자동으로 폴백 리소스 제공
-   - 로깅을 통한 실패 원인 추적
+    - `CompletableFuture`를 사용한 비동기 API 호출
+    - 타임아웃 설정으로 응답 지연 방지 (5초)
+    - 예외 발생 시 자동으로 폴백 리소스 제공
+    - 로깅을 통한 실패 원인 추적
 
    ```java
    public ImageResponse searchImages(String query) {
@@ -1998,10 +1445,10 @@ Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비�
 
 3. **멀티미디어 통합 생성 시 부분 실패 처리**
 
-   - 이미지/비디오/오디오/BGM 생성 요청을 동시에 처리
-   - 일부 요청만 실패할 경우 부분적으로 폴백 리소스 적용
-   - 사용자는 가능한 많은 콘텐츠를 제한 없이 이용 가능
-   - 캐싱 가능한 응답은 향후 Redis 적용 시 캐싱 예정
+    - 이미지/비디오/오디오/BGM 생성 요청을 동시에 처리
+    - 일부 요청만 실패할 경우 부분적으로 폴백 리소스 적용
+    - 사용자는 가능한 많은 콘텐츠를 제한 없이 이용 가능
+    - 캐싱 가능한 응답은 향후 Redis 적용 시 캐싱 예정
 
 ---
 
@@ -2011,12 +1458,12 @@ Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비�
 
 1. **단위 테스트**
 
-   - `FallbackMechanismTest`: 의도적으로 API 호출 실패를 발생시켜 폴백 동작을 검증
-   - 다양한 실패 시나리오(타임아웃, 네트워크 오류, API 오류 등) 테스트
+    - `FallbackMechanismTest`: 의도적으로 API 호출 실패를 발생시켜 폴백 동작을 검증
+    - 다양한 실패 시나리오(타임아웃, 네트워크 오류, API 오류 등) 테스트
 
 2. **통합 테스트**
-   - `RealAPIClientTest`: 실제 Pexels API 호출이 정상 작동하는지 확인
-   - 실제 환경과 유사한 조건에서 시스템 복원력 검증
+    - `RealAPIClientTest`: 실제 Pexels API 호출이 정상 작동하는지 확인
+    - 실제 환경과 유사한 조건에서 시스템 복원력 검증
 
 ### 로깅 전략
 
@@ -2062,44 +1509,44 @@ Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비�
 
 - **도전 과제**
 
-  - 외부 AI API 연동 시 타임아웃 및 오류 처리 전략 수립 (KoBART, Pexels API)
-  - JWT 기반 인증/인가 시스템 구현 및 보안 강화
-  - 가중 이동 평균(EWMA) 알고리즘을 활용한 랭킹 시스템 설계
-  - 컨트롤러 테스트에서 의존성 주입 문제 해결 (@MockBean 활용)
-  - k6 테스트를 활용한 사용자 흐름 검증 및 성능 측정
-  - Pexels API 연동을 통한 이미지 및 비디오 콘텐츠 확보
+    - 외부 AI API 연동 시 타임아웃 및 오류 처리 전략 수립 (KoBART, Pexels API)
+    - JWT 기반 인증/인가 시스템 구현 및 보안 강화
+    - 가중 이동 평균(EWMA) 알고리즘을 활용한 랭킹 시스템 설계
+    - 컨트롤러 테스트에서 의존성 주입 문제 해결 (@MockBean 활용)
+    - k6 테스트를 활용한 사용자 흐름 검증 및 성능 측정
+    - Pexels API 연동을 통한 이미지 및 비디오 콘텐츠 확보
 
 - **배운 점**
 
-  - 헥사고날 아키텍처 적용을 통한 코드 유지보수성 향상
-  - KoBART 모델을 활용한 책 내용 요약 알고리즘 구현
-  - 컨트롤러 테스트와 k6 테스트 조합으로 효율적인 테스트 전략 구축
-  - API 응답 실패 시 폴백 메커니즘의 중요성
-  - RestDocs를 활용한 API 문서 자동화의 편리함
-  - 사용자 활동 점수 관리를 위한 효율적인 데이터 모델링
+    - 헥사고날 아키텍처 적용을 통한 코드 유지보수성 향상
+    - KoBART 모델을 활용한 책 내용 요약 알고리즘 구현
+    - 컨트롤러 테스트와 k6 테스트 조합으로 효율적인 테스트 전략 구축
+    - API 응답 실패 시 폴백 메커니즘의 중요성
+    - RestDocs를 활용한 API 문서 자동화의 편리함
+    - 사용자 활동 점수 관리를 위한 효율적인 데이터 모델링
 
 - **추후 계획**
-  - Koyeb 환경에서의 안정적인 배포 및 모니터링 구축
-  - Redis 캐싱 기능 활성화 및 성능 최적화 구현
-  - 책 멀티미디어 콘텐츠 생성 기능의 성능 최적화
-  - 랭킹 시스템 알고리즘 고도화 및 악용 방지 메커니즘 강화
-  - 사용자 경험 향상을 위한 UI/UX 개선
-  - 실시간 알림 시스템 구현
+    - Koyeb 환경에서의 안정적인 배포 및 모니터링 구축
+    - Redis 캐싱 기능 활성화 및 성능 최적화 구현
+    - 책 멀티미디어 콘텐츠 생성 기능의 성능 최적화
+    - 랭킹 시스템 알고리즘 고도화 및 악용 방지 메커니즘 강화
+    - 사용자 경험 향상을 위한 UI/UX 개선
+    - 실시간 알림 시스템 구현
 
 ---
 
 ## 18. 기여 가이드라인
 
 - 코드 기여 방법
-  - 이슈 생성 또는 기존 이슈 선택
-  - 포크 및 브랜치 생성
-  - 코드 작성 및 테스트
-  - 풀 리퀘스트 제출
+    - 이슈 생성 또는 기존 이슈 선택
+    - 포크 및 브랜치 생성
+    - 코드 작성 및 테스트
+    - 풀 리퀘스트 제출
 - 코드 스타일
-  - Google Java Style Guide 준수
-  - 메서드 및 클래스에 JavaDoc 주석 작성
-  - JUnit 5 기반 테스트 코드 포함
-  - 헥사고날 아키텍처 패턴 유지
+    - Google Java Style Guide 준수
+    - 메서드 및 클래스에 JavaDoc 주석 작성
+    - JUnit 5 기반 테스트 코드 포함
+    - 헥사고날 아키텍처 패턴 유지
 
 ## 19. 연락처
 
