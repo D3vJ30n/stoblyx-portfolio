@@ -186,7 +186,7 @@ STOBLYX 프로젝트는 안정성, 확장성 및 유지보수성을 고려하여
 
 - **AI 통합 컴포넌트**
     - `PexelsClient`: 키워드 기반 이미지/비디오 검색 및 결과 처리
-    - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동(구현 예정)
+    - `TTSClient`: 텍스트를 음성으로 변환하는 Python 스크립트 연동
     - `BGMClient`: 텍스트 감정 분석을 통한 BGM 선택 로직
     - `AIAdapter`: 외부 AI 서비스와의 통합 인터페이스
 
@@ -388,7 +388,6 @@ currentScore =(int)Math.
 round(alpha *newActivityScore+(1-alpha) *currentScore);
 ```
 
-- **알파값(α):** 0.2 (최근 활동에 20% 가중치 부여)
 - **장점:** 점진적 점수 변화, 이상치 영향 최소화, 시계열 데이터 효과적 처리
 
 #### 향후 확장 계획
@@ -439,7 +438,7 @@ round(currentScore *(1-decayFactor));
 - **비동기 처리:** @Async 어노테이션을 통한 백그라운드 작업 처리
 - **이미지 자원 통합:** Pexels API에서 가져온 이미지 활용
 - **오류 처리 전략:** 각 단계별 기본 폴백 메커니즘과 로깅
-- **TTS(Text-to-Speech):** 외부 서비스 연동 준비 (구현 예정)
+- **TTS(Text-to-Speech):** 외부 서비스 연동 준비
 - **자막 생성:** 기본 텍스트 추출 기능 (고급 자막 생성은 구현 예정)
 - **종합 미디어 파이프라인:** 완전한 통합 파이프라인 (구현 예정)
 
@@ -1560,6 +1559,7 @@ Stoblyx는 Pexels API를 사용하여 책 내용과 관련된 이미지와 비�
 - Spring Boot 및 관련 프로젝트
 - KoBART API (한국어 텍스트 요약 모델)
 - Pexels API (이미지 및 비디오 콘텐츠)
+- pyttsx3 (TTS 라이브러리)
 - 알라딘 Open API (도서 정보)
 - k6 (성능 테스트 도구)
 - Spring REST Docs (API 문서화)
